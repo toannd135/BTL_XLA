@@ -28,4 +28,4 @@ Classifier mới: public acc 0.999 (cũ 0.993), own 27/28 (cũ 28/28). test_own 
 ## Đang chờ
 - Người dùng thu thập ảnh bằng camera thật, rồi train lại.
 - (XONG 2026-10-24) Ô 4.3b của notebook train joint: `JOINT_MODEL=yolo11s`, `EPOCHS_JOINT=80`, `OWN_REP=4` -> `runs/det_joint`; không nằm trong danh sách OVERWRITE của CONFIG nên không ghi đè khi chạy lại; đã thêm vào bước xuất. Chưa chạy thử trên máy. `det_finetune` (yolo11n) vẫn còn, nhưng `exports/det_finetune_best.*` hiện là bản joint: đừng chạy lại 5.1 mà không đổi tên.
-- Chưa commit git.
+- Đã commit git 1749d2d (dữ liệu, model, runs, configs/kaggle.json nằm trong .gitignore).
