@@ -1,0 +1,8 @@
+map:
+  freshbanana: banana_fresh
+  rottenbanana: banana_rotten
+  freshapples: apple_fresh
+  rottenapples: apple_rotten
+  freshoranges: orange_fresh
+  rottenoranges: orange_rotten
+  freshcucumber: null   # Thư mục chứa dưa chuột không nằm trong 3 loại quả cần làm thì chọn null
