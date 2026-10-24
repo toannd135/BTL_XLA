@@ -1,0 +1,19 @@
+# dữ liệu, model, kết quả train (nặng, tái tạo được)
+*.zip
+*.pt
+*.onnx
+raw/
+raw_cls/
+own/
+own_cam/
+local_dataset/
+work/
+runs/
+exports/
+backup_*/
+node_modules/
+dist/
+.env
+__pycache__/
+.ipynb_checkpoints/
+configs/kaggle.json

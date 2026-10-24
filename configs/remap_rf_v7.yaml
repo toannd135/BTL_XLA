@@ -1,0 +1,15 @@
+map:
+  freshapple: apple
+  rottenapple: apple
+  freshbanana: banana
+  rottenbanana: banana
+  freshorange: orange
+  rottenorange: orange
+  freshcucumber: null
+  rottencucumber: null
+  freshokra: null
+  rottenokra: null
+  freshpotato: null
+  rottenpotato: null
+  freshtomato: null
+  rottentomato: null
