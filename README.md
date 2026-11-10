@@ -2,6 +2,40 @@
 
 Web demo cho đồ án: YOLO11 detect quả (chuối, táo, cam), cắt từng quả rồi phân loại tươi/hỏng.
 
+## Cài đặt
+
+```bash
+git clone <url-repo> && cd fruit
+python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
+pip install -r backend/requirements.txt opencv-python-headless
+```
+
+Repo đã kèm 2 model trong `exports/` (`det_finetune_best.pt` detect, `cls_finetune_best.pt` phân loại tươi/hỏng). Có GPU NVIDIA thì cài PyTorch bản CUDA trước; không có GPU vẫn chạy được trên CPU (đặt `HALF=0` khi chạy backend).
+
+## Chạy detection bằng dòng lệnh
+
+```bash
+python run_detection.py <anh.jpg | thu_muc_anh>        # thêm --conf 0.4 để đổi ngưỡng
+```
+
+In danh sách quả (loại, tươi/hỏng, độ tin cậy) và lưu ảnh vẽ box vào `out/`. Ngưỡng mặc định 0.4; hạ xuống 0.25-0.35 nếu bỏ sót chuối.
+
+## Train lại detector
+
+Dữ liệu train (~270MB) không nằm trên git. Nhận file `fruit_train_data.zip` từ người chia sẻ (Drive/USB), giải nén vào gốc repo:
+
+```bash
+unzip fruit_train_data.zip       # tạo local_dataset/det, own_neg, own_cam, work/audit
+python train_detection.py        # fine-tune từ exports/det_finetune_best.pt, 25 epoch, batch 16
+```
+
+Tuỳ chọn: `python train_detection.py <model.pt> <tên_run> <epochs> <batch> <neg_rep (≤2)>`.
+
+- Cần GPU NVIDIA. VRAM 6GB mà báo hết bộ nhớ thì hạ batch xuống 8; không chạy việc khác trên GPU lúc train.
+- Kết quả ở `runs/exp/<tên_run>/weights/{best,last}.pt`. Cuối script tự in so sánh bản đang dùng và bản mới (số ảnh nền báo sai, mAP50, mAP50-95 trên test). Model cũ không bị ghi đè.
+- Dùng `last.pt`, không dùng `best.pt` (thường rơi vào epoch 1 vì tập val không có ảnh nền). Muốn áp dụng bản mới: copy `last.pt` đè `exports/det_finetune_best.pt`, rồi khởi động lại backend.
+- Bị ngắt giữa chừng: `python -c "from ultralytics import YOLO; YOLO('runs/exp/<tên_run>/weights/last.pt').train(resume=True)"`.
+
 ## Backend (FastAPI)
 
 ```bash
