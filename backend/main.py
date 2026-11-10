@@ -24,8 +24,10 @@ DET_PATH = os.getenv("MODEL_PATH", str(ROOT / "exports/det_finetune_best.pt"))
 CLS_PATH = os.getenv("CLS_MODEL_PATH", str(ROOT / "exports/cls_finetune_best.pt"))
 
 # giống notebook: CONF_PRED, IMGSZ, CLS_IMGSZ, CROP_PAD
-CONF = 0.25
+CONF = float(os.getenv("CONF", "0.4"))   # chốt 0.40 cho model C (F1 tổng 0.82, nền sai 1/71); hạ xuống 0.25-0.35 nếu hay bỏ sót chuối
 IMGSZ = 640
+NMS_IOU = float(os.getenv("NMS_IOU", "0.6"))   # NMS chặt hơn mặc định 0.7: bớt box trùng trên cùng một quả (xem work/audit)
+QUANT = 16 if os.getenv("HALF", "1") == "1" else None   # FP16 trên GPU (ultralytics tự tắt khi chạy CPU); đặt HALF=0 để tắt
 CLS_IMGSZ = 224
 CROP_PAD = 0.10
 
@@ -47,8 +49,8 @@ async def lifespan(app):
     models["cls"] = YOLO(CLS_PATH)
     # chạy thử 1 lượt để request đầu tiên không bị chậm
     blank = np.zeros((IMGSZ, IMGSZ, 3), np.uint8)
-    models["det"].predict(blank, imgsz=IMGSZ, verbose=False)
-    models["cls"].predict(blank, imgsz=CLS_IMGSZ, verbose=False)
+    models["det"].predict(blank, imgsz=IMGSZ, quantize=QUANT, verbose=False)
+    models["cls"].predict(blank, imgsz=CLS_IMGSZ, quantize=QUANT, verbose=False)
     yield
     models.clear()
 
@@ -80,12 +82,12 @@ def predict(img):
     det, cls = models["det"], models["cls"]
     with lock:
         # agnostic_nms: một quả chỉ giữ 1 nhãn, tránh vừa "chuối" vừa "táo" ở cùng chỗ
-        r = det.predict(img, conf=CONF, imgsz=IMGSZ, agnostic_nms=True, verbose=False)[0]
+        r = det.predict(img, conf=CONF, imgsz=IMGSZ, quantize=QUANT, agnostic_nms=True, iou=NMS_IOU, verbose=False)[0]
         boxes = r.boxes.xyxy.tolist()
         if not boxes:
             return []
         crops = [crop_box(img, b) for b in boxes]
-        rs = cls.predict(crops, imgsz=CLS_IMGSZ, verbose=False)
+        rs = cls.predict(crops, imgsz=CLS_IMGSZ, quantize=QUANT, verbose=False)
     out = []
     for b, c, conf, p in zip(boxes, r.boxes.cls.tolist(), r.boxes.conf.tolist(), rs):
         out.append({
