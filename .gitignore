@@ -9,7 +9,10 @@ own_cam/
 local_dataset/
 work/
 runs/
-exports/
+exports/*
+# chỉ 2 model cần để chạy detection (~22MB), còn lại vẫn bị ignore
+!exports/det_finetune_best.pt
+!exports/cls_finetune_best.pt
 backup_*/
 node_modules/
 dist/
@@ -17,3 +20,4 @@ dist/
 __pycache__/
 .ipynb_checkpoints/
 configs/kaggle.json
+out/
