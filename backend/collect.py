@@ -26,6 +26,8 @@ STATES = ["fresh", "rotten"]
 CLASS_NAMES = [f"{f}_{s}" for f in FRUITS for s in STATES]   # giống notebook
 COCO_ID = {46: "banana", 47: "apple", 49: "orange"}
 
+NMS_IOU = float(os.getenv("NMS_IOU", "0.6"))
+QUANT = 16 if os.getenv("HALF", "1") == "1" else None
 IOU_MATCH = 0.5
 DET_SURE = 0.7       # box chỉ detector thấy: nhận khi conf >= ngưỡng này
 TEACHER_SURE = 0.6   # box chỉ YOLO11l thấy (detector bỏ sót): nhận khi conf >= ngưỡng này
@@ -113,7 +115,7 @@ def label_frame(img, models, lock, crop_box, conf, imgsz, cls_imgsz):
     """Trả về (danh sách (class_id, xyxy), None) hoặc (None, lý do)."""
     det, cls = models["det"], models["cls"]
     with lock:
-        r = det.predict(img, conf=conf, imgsz=imgsz, agnostic_nms=True, verbose=False)[0]
+        r = det.predict(img, conf=conf, imgsz=imgsz, quantize=QUANT, agnostic_nms=True, iou=NMS_IOU, verbose=False)[0]
         t = teacher().predict(img, conf=TEACHER_MIN, imgsz=imgsz, classes=list(COCO_ID),
                               agnostic_nms=True, verbose=False)[0]
     dets = [(det.names[int(c)], float(p), b) for b, c, p in
@@ -132,7 +134,7 @@ def label_frame(img, models, lock, crop_box, conf, imgsz, cls_imgsz):
     if any((b[2] - b[0]) * (b[3] - b[1]) < MIN_BOX_FRAC * w * h for _, b in boxes):
         return None, "tiny"
     with lock:
-        rs = cls.predict([crop_box(img, b) for _, b in boxes], imgsz=cls_imgsz, verbose=False)
+        rs = cls.predict([crop_box(img, b) for _, b in boxes], imgsz=cls_imgsz, quantize=QUANT, verbose=False)
     out = []
     for (fruit, b), p in zip(boxes, rs):
         if float(p.probs.top1conf) < STATE_CONF:

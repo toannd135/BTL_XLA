@@ -8,7 +8,7 @@ import { pct } from './labels'
 const { Content } = Layout
 
 export default function App() {
-  const [minConf, setMinConf] = useState(0.5)
+  const [minConf, setMinConf] = useState(0.4)
   const [tab, setTab] = useState('images')
   const [video, setVideo] = useState(null)
   const screens = Grid.useBreakpoint()
@@ -35,7 +35,7 @@ export default function App() {
   const threshold = (
     <label className="threshold">
       <span>Ngưỡng tin cậy <b>{pct(minConf)}%</b></span>
-      <Slider min={0.25} max={0.95} step={0.05} value={minConf} onChange={setMinConf}
+      <Slider min={0.4} max={0.95} step={0.05} value={minConf} onChange={setMinConf}
         tooltip={{ open: false }} />
     </label>
   )
