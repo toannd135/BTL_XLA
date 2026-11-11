@@ -8,7 +8,8 @@ import ResultTable from './ResultTable'
 import SummaryBar from './SummaryBar'
 import { downloadCanvas } from './draw'
 import { checkFile, isVideo, DROP_ACCEPT, MAX_FILES, MAX_MB } from './files'
-import { count, FRUIT, STATE_COLOR, stateColor, stateText } from './labels'
+import { count, STATE_COLOR } from './labels'
+import { boxColor } from './boxStyle'
 
 const STATUS = {
   wait: <Tag>Chờ</Tag>,
@@ -23,8 +24,8 @@ const ARROW_OWNERS = 'input, textarea, select, video, [contenteditable="true"], 
 // tên file bắt đầu bằng = + - @ bị Excel hiểu là công thức, thêm ' phía trước để giữ nguyên chữ
 const csvText = (s) => `"${(/^[=+\-@\t\r]/.test(s) ? "'" + s : s).replaceAll('"', '""')}"`
 
-const filterObjects =(result, minConf) =>
-  (result?.objects || []).filter((o) => o.confidence >= minConf)
+const filterObjects = (result, minConf, excluded = []) =>
+  (result?.objects || []).filter((o, i) => o.confidence >= minConf && !excluded.includes(i))
 
 // ảnh thu nhỏ + khung theo % kích thước ảnh, nhẹ hơn vẽ canvas cỡ gốc cho từng ảnh
 function Thumb({ row, active, onOpen, onRemove }) {
@@ -35,7 +36,7 @@ function Thumb({ row, active, onOpen, onRemove }) {
         <img src={row.url} alt={row.name} loading="lazy" />
         {res && row.objects.map((o, i) => {
           const [x1, y1, x2, y2] = o.bbox
-          const color = stateColor(o)
+          const color = boxColor(i)
           return (
             <span key={i} className="g-box" style={{
               left: `${(x1 / res.image_width) * 100}%`,
@@ -45,7 +46,7 @@ function Thumb({ row, active, onOpen, onRemove }) {
               borderColor: color,
             }}>
               <span className="g-tag" style={{ background: color }}>
-                {FRUIT[o.label] || o.label} {stateText(o).toLowerCase()}
+                #{i + 1}
               </span>
             </span>
           )
@@ -72,6 +73,7 @@ export default function ImagesView({ minConf, onVideo }) {
   const { message } = AntApp.useApp()
   const [items, setItems] = useState([])
   const [selectedKey, setSelectedKey] = useState(null)
+  const [selectedBox, setSelectedBox] = useState(null)
   const [running, setRunning] = useState(false)
   const [stopping, setStopping] = useState(false)
   const canvas = useRef(null)
@@ -108,7 +110,7 @@ export default function ImagesView({ minConf, onVideo }) {
       try {
         const data = await predict(it.file)
         // ảnh đã bị bỏ trong lúc chờ thì update không tìm thấy key, kết quả tự bị bỏ qua
-        update(it.key, { status: 'done', result: data, error: null })
+        update(it.key, { status: 'done', result: data, error: null, excluded: [] })
       } catch (err) {
         update(it.key, { status: 'error', error: errorText(err) })
       }
@@ -175,8 +177,26 @@ export default function ImagesView({ minConf, onVideo }) {
     pump()
   }
 
+  const rerunSelected = () => {
+    if (!selectedKey || runningRef.current) return
+    update(selectedKey, { status: 'wait', error: null, result: null, excluded: [] })
+    pump()
+  }
+
+  const recognitionInfo = (
+    <div className="image-mode">
+      <Space wrap>
+        <span>Nhận dạng ảnh</span>
+        <Tag color="blue">Kiểm tra kỹ</Tag>
+      </Space>
+      <Typography.Text type="secondary">
+        Hãy đối chiếu các khung với từng quả, đặc biệt khi quả nằm sát nhau hoặc che khuất.
+      </Typography.Text>
+    </div>
+  )
+
   const rows = useMemo(() => items.map((it) => {
-    const objects = filterObjects(it.result, minConf)
+    const objects = filterObjects(it.result, minConf, it.excluded)
     return { ...it, objects, c: count(objects) }
   }), [items, minConf])
   const done = rows.filter((r) => r.status === 'done')
@@ -188,7 +208,18 @@ export default function ImagesView({ minConf, onVideo }) {
   const sel = rows[index]
   // giữ mảng khung ổn định giữa các lần render để canvas không vẽ lại thừa
   const selResult = sel?.status === 'done' ? sel.result : null
-  const selObjects = useMemo(() => filterObjects(selResult, minConf), [selResult, minConf])
+  const selExcluded = sel?.excluded
+  const selObjects = useMemo(() => filterObjects(selResult, minConf, selExcluded), [selResult, minConf, selExcluded])
+  useEffect(() => { setSelectedBox(null) }, [selectedKey, selResult, minConf, selExcluded])
+  const selectBox = (i) => setSelectedBox((current) => current === i ? null : i)
+  const excludeSelectedBox = () => {
+    if (selectedBox === null || !selResult) return
+    const object = selObjects[selectedBox]
+    const originalIndex = selResult.objects.indexOf(object)
+    if (originalIndex < 0 || sel.excluded?.includes(originalIndex)) return
+    update(sel.key, { excluded: [...(sel.excluded || []), originalIndex] })
+    setSelectedBox(null)
+  }
 
   const go = (step) => {
     const next = rows[index + step]
@@ -210,10 +241,10 @@ export default function ImagesView({ minConf, onVideo }) {
   })
 
   const exportCsv = () => {
-    const head = 'ten_file,so_qua,tuoi,hong,chua_chac,thoi_gian_ms,nguong_tin_cay'
+    const head = 'ten_file,so_qua,tuoi,hong,chua_chac,thoi_gian_ms,nguong_tin_cay,che_do,khung_loai_thu_cong'
     const lines = done.map((r) =>
       [csvText(r.name), r.c.total, r.c.fresh, r.c.rotten, r.c.unsure,
-        r.result.inference_ms, minConf].join(','))
+        r.result.inference_ms, minConf, r.result.mode || 'careful', r.excluded?.length || 0].join(','))
     // thêm BOM để Excel đọc đúng tiếng Việt
     const blob = new Blob(['﻿' + [head, ...lines].join('\n')], { type: 'text/csv' })
     const a = document.createElement('a')
@@ -232,6 +263,7 @@ export default function ImagesView({ minConf, onVideo }) {
     return (
       <div ref={box}>
         <Card size="small">
+          {recognitionInfo}
           <Upload.Dragger className="drop-big" multiple accept={DROP_ACCEPT}
             showUploadList={false} beforeUpload={add}>
             <p className="ant-upload-text">Thả một hoặc nhiều ảnh vào đây, hoặc bấm để chọn</p>
@@ -267,8 +299,25 @@ export default function ImagesView({ minConf, onVideo }) {
     resultBody = (
       <>
         <SummaryBar c={selC}
-          note={`Xử lý ${sel.result.inference_ms} ms, ảnh ${sel.result.image_width}×${sel.result.image_height}`} />
-        <ResultTable objects={selObjects} />
+          note={`${sel.result.inference_ms} ms, ảnh ${sel.result.image_width}×${sel.result.image_height}`} />
+        <Typography.Paragraph type="secondary" className="box-hint">
+          Số và màu khớp với khung trên ảnh. Bấm một dòng để làm nổi khung hoặc loại khung sai.
+        </Typography.Paragraph>
+        {selectedBox !== null && (
+          <Space wrap className="mb16">
+            <Button size="small" onClick={() => setSelectedBox(null)}>Hiện tất cả khung</Button>
+            <Button size="small" danger onClick={excludeSelectedBox}>Loại khung #{selectedBox + 1} khỏi kết quả</Button>
+          </Space>
+        )}
+        {!!sel.excluded?.length && (
+          <Typography.Paragraph type="secondary">
+            Đã loại thủ công {sel.excluded.length} khung.{' '}
+            <Button type="link" size="small" onClick={() => update(sel.key, { excluded: [] })}>
+              Khôi phục các khung đã loại
+            </Button>
+          </Typography.Paragraph>
+        )}
+        <ResultTable objects={selObjects} selectedIndex={selectedBox} onSelect={selectBox} />
       </>
     )
   }
@@ -276,6 +325,7 @@ export default function ImagesView({ minConf, onVideo }) {
   return (
     <div ref={box}>
       <Card size="small" className="mb16">
+        {recognitionInfo}
         <div className="img-toolbar">
           <Upload.Dragger className="drop-small" multiple accept={DROP_ACCEPT}
             showUploadList={false} beforeUpload={add}>
@@ -285,6 +335,7 @@ export default function ImagesView({ minConf, onVideo }) {
 
           <div className="img-actions">
             <Space wrap>
+              <Button onClick={rerunSelected} disabled={running || !sel}>Nhận dạng lại ảnh này</Button>
               {running && (
                 <Button danger onClick={stop} loading={stopping}>
                   {stopping ? 'Đang dừng…' : 'Dừng'}
@@ -335,7 +386,7 @@ export default function ImagesView({ minConf, onVideo }) {
           >
             {sel ? (
               <Spin spinning={sel.status === 'run'}>
-                <ImageBoxes ref={canvas} src={sel.url} result={selResult} objects={selObjects} />
+                <ImageBoxes ref={canvas} src={sel.url} result={selResult} objects={selObjects} selectedIndex={selectedBox} />
               </Spin>
             ) : (
               <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Chọn một ảnh ở danh sách bên dưới" />

@@ -46,6 +46,12 @@ body { margin: 0; background: #eef3ea; }
 .drop-small .ant-upload-text { margin: 0 !important; font-size: 14px !important; }
 .drop-small .ant-upload-hint { margin: 0 !important; font-size: 12px !important; }
 .img-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.image-mode { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+.box-id { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 24px; padding: 0 3px; border-radius: 4px; color: #fff; font-size: 12px; font-weight: 700; }
+.box-row { cursor: pointer; }
+.box-row-selected > td { background: #e8efff !important; }
+.box-row:focus-visible { outline: 2px solid #2563eb; outline-offset: -2px; }
+.box-hint { margin-bottom: 8px !important; font-size: 12px; }
 .img-actions { flex: 2 1 320px; display: flex; flex-direction: column; gap: 8px; }
 .img-progress { display: flex; align-items: center; gap: 12px; font-size: 13px; color: #5b6b5c; white-space: nowrap; }
 .img-progress .ant-progress { flex: 1; max-width: 240px; margin: 0; }

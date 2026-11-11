@@ -173,7 +173,7 @@ export default function LiveView({ minConf, incoming, onTaken }) {
         const frame = await grab(v)
         let data
         try {
-          data = await predict(frame, ctrl.signal)
+            data = await predict(frame, ctrl.signal, 'fast')
         } catch (err) {
           if (!alive || isCanceled(err)) return
           setError(errorText(err))

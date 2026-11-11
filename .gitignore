@@ -1,23 +1,47 @@
-# dữ liệu, model, kết quả train (nặng, tái tạo được)
-*.zip
-*.pt
-*.onnx
-raw/
-raw_cls/
-own/
-own_cam/
-local_dataset/
-work/
+# Tài nguyên cần bàn giao được phép track:
+# exports/ (*.pt, *.onnx), local_dataset/, own_cam/, own_neg/, own_mixed/,
+# docs/, tools/, notebooks và file cấu hình mẫu.
+
+# Giữ script và metadata audit cần tái lập; các file sinh ra trong work bỏ qua.
+/work/**
+!/work/**/
+!/work/**/*.py
+!/work/audit/*.csv
+!/work/audit/*.json
+!/work/audit/quarantine_train.txt
+
+# Kết quả có thể tạo lại; không commit bản zip trùng dataset đã giải nén.
+out/
 runs/
-exports/*
-# chỉ 2 model cần để chạy detection (~22MB), còn lại vẫn bị ignore
-!exports/det_finetune_best.pt
-!exports/cls_finetune_best.pt
 backup_*/
+*.zip
+*.cache
+*.log
+
+# Môi trường và cache mỗi máy tự tạo sau khi clone.
+.venv/
+venv/
+env/
 node_modules/
 dist/
-.env
+build/
 __pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
 .ipynb_checkpoints/
-configs/kaggle.json
-out/
+*.egg-info/
+
+# Thông tin riêng của từng máy/tài khoản; giữ file cấu hình mẫu.
+.env
+.env.*
+!.env.example
+!.env.*.example
+kaggle.json
+
+# File của hệ điều hành.
+.DS_Store
+Thumbs.db
+Desktop.ini
