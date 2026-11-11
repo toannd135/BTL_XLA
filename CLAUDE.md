@@ -9,6 +9,7 @@ Máy: RTX 3060 Laptop 6GB, Ultralytics 8.4.180. Máy hay nóng (CPU ~97–100°C
 - Khởi động app/git: đưa lệnh cho người dùng tự gõ `! <lệnh>`.
 
 ## Trạng thái model (cập nhật 2026-11-08)
+- **2026-11-11: backend mặc định dùng `exports/det_C_candidate.pt`, `QUALITY_IMGSZ` 640** (960 đếm chuối thừa ~2.4x). Đếm chuối: `work/eval_banana_count.py`, xem `docs/handoff/dem-chuoi.md`.
 - `exports/det_finetune_best.pt` = **thí nghiệm C** (`runs/exp/det_C_neg/weights/last.pt`, epoch 11/25; fine-tune từ B, lr0 0.002, thêm 287 ảnh nền own_neg x2, bỏ own_cam). Bản B: `exports/det_B_clean_backup.pt/.onnx`; bản A: `det_A_baseline_backup.*`. Chọn last.pt vì best.pt (epoch 1) do val không có ảnh nền.
 - `exports/cls_finetune_best.pt` = classifier yolo11n-cls (acc 0.999 public, 27/28 own). Chưa thấy lý do train lại.
 - Backend dùng FP16 (`quantize=16`) và NMS 0.6, chưa chạy thử với bản C (cần khởi động lại backend).

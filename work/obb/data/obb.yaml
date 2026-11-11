@@ -1,0 +1,10 @@
+# Không có "path": Ultralytics lấy thư mục chứa tệp yaml này, nên chạy được ở mọi máy (Colab, local).
+# Dòng "./..." trong các tệp .txt được tính tương đối theo thư mục này.
+train: train.txt
+val: val.txt
+test: test.txt
+nc: 3
+names:
+  0: banana
+  1: apple
+  2: orange

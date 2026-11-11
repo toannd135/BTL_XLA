@@ -9,6 +9,18 @@
 !/work/audit/*.csv
 !/work/audit/*.json
 !/work/audit/quarantine_train.txt
+# Dữ liệu OBB đã dựng (để train trên Colab) + 71 ảnh nền giữ riêng dùng khi đo
+!/work/obb/data/**
+!/work/obb/*.ipynb
+!/work/exp/neg/test/**
+
+# Dữ liệu thô gốc (đã chuyển thành local_dataset/), video, trọng số pretrained tự tải: quá nặng cho GitHub (giới hạn 2GB/lần push)
+/raw/
+/raw_cls/
+/own/videos/
+/yolo*.pt
+# Dataset classifier (1.7GB): gửi riêng bằng zip, Colab train OBB không cần
+/local_dataset/cls/
 
 # Kết quả có thể tạo lại; không commit bản zip trùng dataset đã giải nén.
 out/

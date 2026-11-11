@@ -156,3 +156,26 @@ def detect(model, image, conf=0.4, imgsz=640, iou=0.6, quantize=None, rotated=Fa
     if _has_nested_candidates(*primary):
         return refine_group_detections(primary, view(270), iou=iou)
     return primary
+
+
+def detect_obb(model, image, conf=0.4, imgsz=640, iou=0.6, quantize=None):
+    """Model khung xoay (YOLO-OBB): NMS dùng IoU xoay nên quả nằm chéo sát nhau không bị xoá nhầm.
+    Trả (polygons Nx4x2, xyxy Nx4 bao ngoài, scores, classes)."""
+    r = model.predict(image, conf=conf, imgsz=imgsz, quantize=quantize, agnostic_nms=True, iou=iou,
+                      max_det=300, verbose=False)[0]
+    o = r.obb
+    return (o.xyxyxyxy.cpu().numpy(), o.xyxy.cpu().numpy(),
+            np.asarray(o.conf.tolist(), dtype=np.float32), np.asarray(o.cls.tolist(), dtype=np.int64))
+
+
+def crop_rotated(img, poly, pad=0.10):
+    """Cắt vùng khung xoay và xoay thẳng (cạnh dài nằm ngang), nới mỗi chiều pad."""
+    rect = cv2.minAreaRect(np.asarray(poly, dtype=np.float32))
+    (cx, cy), (w, h), ang = rect
+    w, h = max(w * (1 + 2 * pad), 2), max(h * (1 + 2 * pad), 2)
+    if w < h:
+        w, h, ang = h, w, ang + 90
+    M = cv2.getRotationMatrix2D((cx, cy), ang, 1.0)
+    M[0, 2] += w / 2 - cx
+    M[1, 2] += h / 2 - cy
+    return cv2.warpAffine(img, M, (int(round(w)), int(round(h))), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
