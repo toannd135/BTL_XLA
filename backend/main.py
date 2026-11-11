@@ -1,12 +1,19 @@
 import io
 import os
+
+# Bound CPU work before torch/BLAS initializes; the user can override this explicitly.
+CPU_THREADS = max(1, min(8, int(os.getenv("CPU_THREADS", "2"))))
+os.environ.setdefault("OMP_NUM_THREADS", str(CPU_THREADS))
+os.environ.setdefault("MKL_NUM_THREADS", str(CPU_THREADS))
 import threading
 import time
 from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Literal
 
 import cv2
 import numpy as np
+import torch
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,6 +22,7 @@ from PIL import Image
 from ultralytics import YOLO
 
 import collect
+from detection import detect
 
 # Pillow tự cảnh báo/chặn ảnh lớn; giới hạn đã kiểm tra riêng bằng MAX_PIXELS
 Image.MAX_IMAGE_PIXELS = None
@@ -26,6 +34,7 @@ CLS_PATH = os.getenv("CLS_MODEL_PATH", str(ROOT / "exports/cls_finetune_best.pt"
 # giống notebook: CONF_PRED, IMGSZ, CLS_IMGSZ, CROP_PAD
 CONF = float(os.getenv("CONF", "0.4"))   # chốt 0.40 cho model C (F1 tổng 0.82, nền sai 1/71); hạ xuống 0.25-0.35 nếu hay bỏ sót chuối
 IMGSZ = 640
+QUALITY_IMGSZ = 960
 NMS_IOU = float(os.getenv("NMS_IOU", "0.6"))   # NMS chặt hơn mặc định 0.7: bớt box trùng trên cùng một quả (xem work/audit)
 QUANT = 16 if os.getenv("HALF", "1") == "1" else None   # FP16 trên GPU (ultralytics tự tắt khi chạy CPU); đặt HALF=0 để tắt
 CLS_IMGSZ = 224
@@ -45,12 +54,16 @@ lock = threading.Lock()
 
 @asynccontextmanager
 async def lifespan(app):
+    torch.set_num_threads(CPU_THREADS)
+    cv2.setNumThreads(CPU_THREADS)
     models["det"] = YOLO(DET_PATH)
     models["cls"] = YOLO(CLS_PATH)
     # chạy thử 1 lượt để request đầu tiên không bị chậm
     blank = np.zeros((IMGSZ, IMGSZ, 3), np.uint8)
     models["det"].predict(blank, imgsz=IMGSZ, quantize=QUANT, verbose=False)
     models["cls"].predict(blank, imgsz=CLS_IMGSZ, quantize=QUANT, verbose=False)
+    # Some Ultralytics device setup paths reset torch's thread count.
+    torch.set_num_threads(CPU_THREADS)
     yield
     models.clear()
 
@@ -78,24 +91,28 @@ def crop_box(img, xyxy, pad=CROP_PAD):
     return img[y1:y2, x1:x2]
 
 
-def predict(img):
+def predict(img, mode="careful"):
     det, cls = models["det"], models["cls"]
     with lock:
-        # agnostic_nms: một quả chỉ giữ 1 nhãn, tránh vừa "chuối" vừa "táo" ở cùng chỗ
-        r = det.predict(img, conf=CONF, imgsz=IMGSZ, quantize=QUANT, agnostic_nms=True, iou=NMS_IOU, verbose=False)[0]
-        boxes = r.boxes.xyxy.tolist()
-        if not boxes:
+        torch.set_num_threads(CPU_THREADS)
+        boxes, scores, classes = detect(det, img, conf=CONF,
+            imgsz=QUALITY_IMGSZ if mode == "careful" else IMGSZ,
+            iou=NMS_IOU, quantize=QUANT, rotated=mode == "careful")
+        if not len(boxes):
             return []
         crops = [crop_box(img, b) for b in boxes]
-        rs = cls.predict(crops, imgsz=CLS_IMGSZ, quantize=QUANT, verbose=False)
+        # Explicit chunks: predict(list) does not honor batch in every Ultralytics version.
+        rs = []
+        for start in range(0, len(crops), 8):
+            rs.extend(cls.predict(crops[start:start + 8], imgsz=CLS_IMGSZ, quantize=QUANT, verbose=False))
     out = []
-    for b, c, conf, p in zip(boxes, r.boxes.cls.tolist(), r.boxes.conf.tolist(), rs):
+    for b, c, conf, p in zip(boxes, classes, scores, rs):
         out.append({
             "label": det.names[int(c)],
             "confidence": round(float(conf), 4),
             "state": cls.names[int(p.probs.top1)],
             "state_confidence": round(float(p.probs.top1conf), 4),
-            "bbox": [round(v, 1) for v in b],
+            "bbox": [round(float(v), 1) for v in b],
         })
     return out
 
@@ -108,6 +125,10 @@ def health():
         "device": str(models["det"].predictor.device) if models else None,
         "det_model": Path(DET_PATH).name,
         "cls_model": Path(CLS_PATH).name,
+        "cpu_threads": torch.get_num_threads(),
+        "conf": CONF,
+        "default_mode": "careful",
+        "careful_imgsz": QUALITY_IMGSZ,
     }
 
 
@@ -138,10 +159,10 @@ async def read_image(file):
 
 
 @app.post("/api/predict")
-async def predict_api(file: UploadFile = File(...)):
+async def predict_api(file: UploadFile = File(...), mode: Literal["fast", "careful"] = Form("careful")):
     _, img = await read_image(file)
     t = time.perf_counter()
-    objects = await run_in_threadpool(predict, img)
+    objects = await run_in_threadpool(predict, img, mode)
     ms = (time.perf_counter() - t) * 1000
 
     h, w = img.shape[:2]
@@ -149,6 +170,7 @@ async def predict_api(file: UploadFile = File(...)):
         "image_width": w,
         "image_height": h,
         "inference_ms": round(ms, 1),
+        "mode": mode,
         "objects": objects,
     }
 
