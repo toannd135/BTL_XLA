@@ -355,6 +355,8 @@ Quyết định thiết kế:
 
 ## 11. Cài đặt và chạy
 
+Member clone/pull mới: xem [hướng dẫn bàn giao tài nguyên và chạy trên Windows/CPU](docs/clone-va-chay.md). Repo kèm dataset detection trong `local_dataset/det`, script cần thiết trong `work` và ba model ở `exports`. Dùng `python tools/check_repo_resources.py` để kiểm tra tài nguyên sau khi cài môi trường.
+
 ### Cài đặt
 
 ```bash
@@ -363,7 +365,7 @@ python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\
 pip install -r backend/requirements.txt opencv-python-headless
 ```
 
-Repo kèm sẵn 2 model trong `exports/`. Có GPU NVIDIA thì cài PyTorch bản CUDA trước; không có GPU vẫn chạy được trên CPU (đặt `HALF=0` khi chạy backend).
+Repo kèm sẵn 3 model trong `exports/`: hai detector `det_finetune_best.pt`, `det_C_candidate.pt` và classifier `cls_finetune_best.pt`. Bản khuyến nghị cho backend là `det_C_candidate.pt` qua biến `MODEL_PATH`. Có GPU NVIDIA thì cài PyTorch bản CUDA trước; không có GPU vẫn chạy được trên CPU (đặt `HALF=0` khi chạy backend).
 
 ### Dòng lệnh
 

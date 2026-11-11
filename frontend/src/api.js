@@ -5,9 +5,10 @@ const api = axios.create({
   timeout: 60000,
 })
 
-export async function predict(file, signal) {
+export async function predict(file, signal, mode = 'careful') {
   const form = new FormData()
   form.append('file', file)
+  form.append('mode', mode)
   const res = await api.post('/api/predict', form, { signal })
   return res.data
 }
