@@ -22,19 +22,19 @@ from PIL import Image
 from ultralytics import YOLO
 
 import collect
-from detection import detect
+from detection import crop_rotated, detect, detect_obb
 
 # Pillow tự cảnh báo/chặn ảnh lớn; giới hạn đã kiểm tra riêng bằng MAX_PIXELS
 Image.MAX_IMAGE_PIXELS = None
 
 ROOT = Path(__file__).resolve().parent.parent
-DET_PATH = os.getenv("MODEL_PATH", str(ROOT / "exports/det_finetune_best.pt"))
+DET_PATH = os.getenv("MODEL_PATH", str(ROOT / "exports/det_C_candidate.pt"))   # đếm chuối nhiều quả tốt hơn (docs/handoff/dem-chuoi.md)
 CLS_PATH = os.getenv("CLS_MODEL_PATH", str(ROOT / "exports/cls_finetune_best.pt"))
 
 # giống notebook: CONF_PRED, IMGSZ, CLS_IMGSZ, CROP_PAD
 CONF = float(os.getenv("CONF", "0.4"))   # chốt 0.40 cho model C (F1 tổng 0.82, nền sai 1/71); hạ xuống 0.25-0.35 nếu hay bỏ sót chuối
 IMGSZ = 640
-QUALITY_IMGSZ = 960
+QUALITY_IMGSZ = 640   # 960 đếm chuối thừa ~2.4x, nền sai 3/71 (docs/handoff/dem-chuoi.md)
 NMS_IOU = float(os.getenv("NMS_IOU", "0.6"))   # NMS chặt hơn mặc định 0.7: bớt box trùng trên cùng một quả (xem work/audit)
 QUANT = 16 if os.getenv("HALF", "1") == "1" else None   # FP16 trên GPU (ultralytics tự tắt khi chạy CPU); đặt HALF=0 để tắt
 CLS_IMGSZ = 224
@@ -95,25 +95,32 @@ def predict(img, mode="careful"):
     det, cls = models["det"], models["cls"]
     with lock:
         torch.set_num_threads(CPU_THREADS)
-        boxes, scores, classes = detect(det, img, conf=CONF,
-            imgsz=QUALITY_IMGSZ if mode == "careful" else IMGSZ,
-            iou=NMS_IOU, quantize=QUANT, rotated=mode == "careful")
+        polys = None
+        if det.task == "obb":   # khung xoay: một lượt, không cần xoay ảnh (model đã học góc bất kỳ)
+            polys, boxes, scores, classes = detect_obb(det, img, conf=CONF, imgsz=IMGSZ, iou=NMS_IOU, quantize=QUANT)
+        else:
+            boxes, scores, classes = detect(det, img, conf=CONF,
+                imgsz=QUALITY_IMGSZ if mode == "careful" else IMGSZ,
+                iou=NMS_IOU, quantize=QUANT, rotated=mode == "careful")
         if not len(boxes):
             return []
-        crops = [crop_box(img, b) for b in boxes]
+        crops = [crop_rotated(img, q, CROP_PAD) for q in polys] if polys is not None else [crop_box(img, b) for b in boxes]
         # Explicit chunks: predict(list) does not honor batch in every Ultralytics version.
         rs = []
         for start in range(0, len(crops), 8):
             rs.extend(cls.predict(crops[start:start + 8], imgsz=CLS_IMGSZ, quantize=QUANT, verbose=False))
     out = []
-    for b, c, conf, p in zip(boxes, classes, scores, rs):
-        out.append({
+    for k, (b, c, conf, p) in enumerate(zip(boxes, classes, scores, rs)):
+        item = {
             "label": det.names[int(c)],
             "confidence": round(float(conf), 4),
             "state": cls.names[int(p.probs.top1)],
             "state_confidence": round(float(p.probs.top1conf), 4),
             "bbox": [round(float(v), 1) for v in b],
-        })
+        }
+        if polys is not None:
+            item["polygon"] = [[round(float(x), 1), round(float(y), 1)] for x, y in polys[k]]
+        out.append(item)
     return out
 
 

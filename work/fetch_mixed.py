@@ -1,0 +1,49 @@
+"""Tải ảnh NHIỀU LOẠI QUẢ chung khung (chuối/táo/cam) từ Wikimedia Commons vào own_mixed/raw. Chỉ lấy giấy phép CC/Public domain; ghi nguồn vào own_mixed/sources.csv.
+Dùng: python work/fetch_mixed.py [số ảnh tối đa=150]"""
+import csv, re, sys, time
+from pathlib import Path
+import requests
+
+ROOT = Path(__file__).resolve().parents[1]
+OUT = ROOT / "own_mixed" / "raw"; OUT.mkdir(parents=True, exist_ok=True)
+MAXN = int(sys.argv[1]) if len(sys.argv) > 1 else 150
+API = "https://commons.wikimedia.org/w/api.php"
+S = requests.Session(); S.headers["User-Agent"] = "fruit-btl-research/1.0 (student project; image dataset)"
+Q = ["bananas apples oranges", "apples oranges bananas fruit", "fruit bowl apples bananas oranges", "fruit basket apple orange banana",
+     "mixed fruit still life", "green apples oranges bananas", "fruit market apples oranges bananas", "assorted fruits table apple banana orange",
+     "fruit stall bananas oranges apples", "fruits on wooden table", "still life with fruit bananas", "fruit salad ingredients apples bananas oranges"]
+OK = re.compile(r"^(cc[- ]by|cc0|public domain|pd)", re.I)
+seen, rows = set(), []
+for q in Q:
+    for off in (0, 30):
+        for _try in range(4):
+            resp = S.get(API, params=dict(action="query", generator="search", gsrsearch=q, gsrnamespace=6, gsrlimit=30, gsroffset=off, prop="imageinfo",
+                                   iiprop="url|extmetadata|size|mime", iiurlwidth=1280, format="json"), timeout=30)
+            if resp.status_code == 200 and resp.text.startswith("{"):
+                break
+            time.sleep(5 * (_try + 1))
+        else:
+            print("bỏ qua", q, off, resp.status_code); continue
+        r = resp.json()
+        for p in r.get("query", {}).get("pages", {}).values():
+            ii = (p.get("imageinfo") or [None])[0]
+            if not ii or ii["mime"] not in ("image/jpeg", "image/png") or p["pageid"] in seen:
+                continue
+            seen.add(p["pageid"]); lic = ii["extmetadata"].get("LicenseShortName", {}).get("value", "")
+            if not OK.match(lic) or min(ii["width"], ii["height"]) < 400:
+                continue
+            rows.append((p["pageid"], p["title"], lic, ii["descriptionurl"], ii.get("thumburl") or ii["url"]))
+        time.sleep(0.5)
+print("ứng viên:", len(rows))
+with open(OUT.parent / "sources.csv", "w", newline="") as f:
+    w = csv.writer(f); w.writerow(["file", "title", "license", "page"])
+    n = 0
+    for pid, title, lic, page, url in rows[:MAXN]:
+        fn = f"mix{pid}.jpg"
+        try:
+            b = S.get(url, timeout=60).content
+            (OUT / fn).write_bytes(b); w.writerow([fn, title, lic, page]); n += 1
+        except Exception as e:
+            print("lỗi", title, e)
+        time.sleep(0.3)
+print("đã tải:", n, "->", OUT)

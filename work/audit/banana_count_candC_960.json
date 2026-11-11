@@ -1,0 +1,60 @@
+{
+ "tag": "candC_960",
+ "weights": "exports/det_C_candidate.pt",
+ "kw": {
+  "conf": 0.4,
+  "imgsz": 960,
+  "iou": 0.6,
+  "quantize": 16,
+  "rotated": false
+ },
+ "all": {
+  "n_img": 106,
+  "gt_total": 156,
+  "pred_total": 279,
+  "MAE": 1.443,
+  "bias": 1.16,
+  "exact": 0.255,
+  "within1": 0.594,
+  "over": 69,
+  "under": 10,
+  "group_boxes": 2,
+  "dup_pairs": 26,
+  "P50": 0.326,
+  "R50": 0.583,
+  "F1_50": 0.418
+ },
+ "clean": {
+  "n_img": 95,
+  "gt_total": 127,
+  "pred_total": 241,
+  "MAE": 1.389,
+  "bias": 1.2,
+  "exact": 0.274,
+  "within1": 0.6,
+  "over": 62,
+  "under": 7,
+  "group_boxes": 2,
+  "dup_pairs": 19,
+  "P50": 0.311,
+  "R50": 0.591,
+  "F1_50": 0.408
+ },
+ "clean_multi(gt>=2)": {
+  "n_img": 19,
+  "gt_total": 51,
+  "pred_total": 58,
+  "MAE": 1.105,
+  "bias": 0.368,
+  "exact": 0.368,
+  "within1": 0.684,
+  "over": 7,
+  "under": 5,
+  "group_boxes": 1,
+  "dup_pairs": 5,
+  "P50": 0.586,
+  "R50": 0.667,
+  "F1_50": 0.624
+ },
+ "neg_fp": "3/71"
+}

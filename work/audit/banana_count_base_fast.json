@@ -1,0 +1,60 @@
+{
+ "tag": "base_fast",
+ "weights": "/mnt/01DC7E1E309A75E0/CODE/BTL_XLA/fruit/exports/det_finetune_best.pt",
+ "kw": {
+  "conf": 0.4,
+  "imgsz": 640,
+  "iou": 0.6,
+  "quantize": 16,
+  "rotated": false
+ },
+ "all": {
+  "n_img": 106,
+  "gt_total": 156,
+  "pred_total": 152,
+  "MAE": 0.491,
+  "bias": -0.038,
+  "exact": 0.632,
+  "within1": 0.896,
+  "over": 17,
+  "under": 22,
+  "group_boxes": 0,
+  "dup_pairs": 9,
+  "P50": 0.763,
+  "R50": 0.744,
+  "F1_50": 0.753
+ },
+ "clean": {
+  "n_img": 95,
+  "gt_total": 127,
+  "pred_total": 123,
+  "MAE": 0.379,
+  "bias": -0.042,
+  "exact": 0.695,
+  "within1": 0.937,
+  "over": 13,
+  "under": 16,
+  "group_boxes": 0,
+  "dup_pairs": 6,
+  "P50": 0.797,
+  "R50": 0.772,
+  "F1_50": 0.784
+ },
+ "clean_multi(gt>=2)": {
+  "n_img": 19,
+  "gt_total": 51,
+  "pred_total": 38,
+  "MAE": 1.0,
+  "bias": -0.684,
+  "exact": 0.263,
+  "within1": 0.789,
+  "over": 2,
+  "under": 12,
+  "group_boxes": 0,
+  "dup_pairs": 0,
+  "P50": 0.789,
+  "R50": 0.588,
+  "F1_50": 0.674
+ },
+ "neg_fp": "1/71"
+}

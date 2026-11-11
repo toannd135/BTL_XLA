@@ -1,0 +1,1 @@
+own/ này do ô 1.1b tự tạo; ô đó chỉ ghi đè khi OVERWRITE['own_auto']=True.

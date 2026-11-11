@@ -2,6 +2,18 @@ import { boxColor } from './boxStyle'
 
 const FONT = "'Be Vietnam Pro', system-ui, sans-serif"
 
+// khung xoay (model OBB) nếu có polygon, ngược lại box thẳng
+function shapePath(ctx, o) {
+  ctx.beginPath()
+  if (o.polygon?.length === 4) {
+    o.polygon.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)))
+    ctx.closePath()
+  } else {
+    const [x1, y1, x2, y2] = o.bbox
+    ctx.rect(x1, y1, x2 - x1, y2 - y1)
+  }
+}
+
 // vẽ khung + tem nhãn lên ctx, toạ độ theo pixel ảnh gốc
 export function drawBoxes(ctx, objects, w, h, { selectedIndex = null, displayScale } = {}) {
   const s = displayScale ?? Math.max(0.35, Math.max(w, h) / 960)
@@ -21,14 +33,15 @@ export function drawBoxes(ctx, objects, w, h, { selectedIndex = null, displaySca
     // A thin dark outline keeps bright borders visible on both white and yellow fruit.
     ctx.strokeStyle = 'rgba(0,0,0,0.55)'
     ctx.lineWidth = (active ? 5 : 3) * s
-    ctx.strokeRect(x1, y1, x2 - x1, y2 - y1)
+    shapePath(ctx, o)
+    ctx.stroke()
     ctx.strokeStyle = color
     ctx.lineWidth = (active ? 3 : 1.5) * s
-    ctx.strokeRect(x1, y1, x2 - x1, y2 - y1)
+    ctx.stroke()
     if (active) {
       ctx.globalAlpha = 0.08
       ctx.fillStyle = color
-      ctx.fillRect(x1, y1, x2 - x1, y2 - y1)
+      ctx.fill()
       ctx.globalAlpha = 1
     }
     if (muted) return

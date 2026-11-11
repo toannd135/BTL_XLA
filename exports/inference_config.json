@@ -1,0 +1,23 @@
+{
+  "fruits": [
+    "banana",
+    "apple",
+    "orange"
+  ],
+  "states": [
+    "fresh",
+    "rotten"
+  ],
+  "class_names": [
+    "banana_fresh",
+    "banana_rotten",
+    "apple_fresh",
+    "apple_rotten",
+    "orange_fresh",
+    "orange_rotten"
+  ],
+  "imgsz": 640,
+  "cls_imgsz": 224,
+  "conf_pred": 0.4,
+  "crop_pad": 0.1
+}
