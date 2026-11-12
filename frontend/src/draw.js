@@ -25,7 +25,10 @@ export function drawBoxes(ctx, objects, w, h, { selectedIndex = null, displaySca
   if (selected !== null) order.push(...order.splice(order.indexOf(selected), 1))
   order.forEach((index) => {
     const o = objects[index]
-    const [x1, y1, x2, y2] = o.bbox
+    // Khung xoay: góc trên-trái của bbox bao ngoài nằm xa khung (khoảng trống), nên gắn tem vào đỉnh cao nhất của polygon.
+    const [x1, y1] = o.polygon?.length === 4
+      ? o.polygon.reduce((top, p) => (p[1] < top[1] ? p : top))
+      : o.bbox
     const active = selected === index
     const muted = selected !== null && !active
     const color = boxColor(index)
