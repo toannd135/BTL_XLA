@@ -3,3 +3,7 @@ uvicorn==0.52.4
 python-multipart==0.0.32
 ultralytics==8.4.180
 pillow==12.3.0
+# CLIP kiểm tra loại quả; cài: pip install --no-deps open_clip_torch==2.30.0 timm (tránh pip kéo torch mới)
+open_clip_torch==2.30.0
+timm
+ftfy

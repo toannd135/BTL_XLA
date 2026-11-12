@@ -6,7 +6,7 @@ import { predict, collectFrame, collectStats, errorText, isCanceled } from './ap
 import ResultTable from './ResultTable'
 import SummaryBar from './SummaryBar'
 import { drawBoxes, downloadCanvas } from './draw'
-import { count, FRUIT, STATE } from './labels'
+import { count, FRUIT, STATE, passConf } from './labels'
 
 const SPEEDS = [0.25, 0.5, 1, 1.5, 2]
 const COLLECT_EVERY = [1, 2, 5, 10] // giây giữa hai lần chụp khi thu thập dữ liệu
@@ -45,7 +45,7 @@ export default function LiveView({ minConf, incoming, onTaken }) {
   const conf = useRef(minConf)
   conf.current = minConf
 
-  const objects = (result?.objects || []).filter((o) => o.confidence >= minConf)
+  const objects = (result?.objects || []).filter((o) => passConf(o, minConf))
   const hasMedia = source === 'file' ? !!videoFile : camOn
 
   const clearResult = () => {

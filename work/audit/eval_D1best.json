@@ -1,0 +1,89 @@
+{
+ "tag": "D1best",
+ "weights": "runs/exp/det_D_synth/weights/best.pt",
+ "split": "test",
+ "ultralytics": "8.4.180",
+ "imgsz": 640,
+ "conf_pr": 0.25,
+ "mAP50": 0.8921,
+ "mAP50-95": 0.7273,
+ "AP50": {
+  "banana": 0.8438,
+  "apple": 0.8793,
+  "orange": 0.9532
+ },
+ "confusion_c25": [
+  [
+   121,
+   0,
+   0,
+   52
+  ],
+  [
+   2,
+   82,
+   0,
+   19
+  ],
+  [
+   6,
+   6,
+   91,
+   15
+  ],
+  [
+   27,
+   10,
+   4,
+   0
+  ]
+ ],
+ "P_all": 0.8624,
+ "R_all": 0.8504,
+ "per_class_PR_c25": {
+  "banana": {
+   "P": 0.6994,
+   "R": 0.7756,
+   "TP": 121,
+   "FP": 52,
+   "FN": 27
+  },
+  "apple": {
+   "P": 0.7961,
+   "R": 0.8367,
+   "TP": 82,
+   "FP": 21,
+   "FN": 10
+  },
+  "orange": {
+   "P": 0.7712,
+   "R": 0.9579,
+   "TP": 91,
+   "FP": 27,
+   "FN": 4
+  }
+ },
+ "fp_types": {
+  "banana": {
+   "duplicate": 16,
+   "split_of_larger_gt": 11,
+   "localization_fp": 11,
+   "background_fp": 10,
+   "class_fp": 1
+  },
+  "apple": {
+   "background_fp": 16,
+   "split_of_larger_gt": 1,
+   "class_fp": 2
+  },
+  "orange": {
+   "background_fp": 11,
+   "localization_fp": 2,
+   "duplicate": 3,
+   "class_fp": 9,
+   "split_of_larger_gt": 2
+  }
+ },
+ "latency_ms_fp16_median": 17.1,
+ "peak_vram_mb": 142
+}

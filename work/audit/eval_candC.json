@@ -1,0 +1,88 @@
+{
+ "tag": "candC",
+ "weights": "exports/det_C_candidate.pt",
+ "split": "test",
+ "ultralytics": "8.4.180",
+ "imgsz": 640,
+ "conf_pr": 0.25,
+ "mAP50": 0.8947,
+ "mAP50-95": 0.7393,
+ "AP50": {
+  "banana": 0.8198,
+  "apple": 0.9106,
+  "orange": 0.9535
+ },
+ "confusion_c25": [
+  [
+   137,
+   0,
+   0,
+   79
+  ],
+  [
+   1,
+   87,
+   1,
+   12
+  ],
+  [
+   1,
+   4,
+   93,
+   21
+  ],
+  [
+   17,
+   7,
+   1,
+   0
+  ]
+ ],
+ "P_all": 0.8811,
+ "R_all": 0.8239,
+ "per_class_PR_c25": {
+  "banana": {
+   "P": 0.6343,
+   "R": 0.8782,
+   "TP": 137,
+   "FP": 79,
+   "FN": 17
+  },
+  "apple": {
+   "P": 0.8614,
+   "R": 0.8878,
+   "TP": 87,
+   "FP": 14,
+   "FN": 7
+  },
+  "orange": {
+   "P": 0.7815,
+   "R": 0.9789,
+   "TP": 93,
+   "FP": 26,
+   "FN": 1
+  }
+ },
+ "fp_types": {
+  "banana": {
+   "split_of_larger_gt": 27,
+   "duplicate": 32,
+   "background_fp": 10,
+   "localization_fp": 18
+  },
+  "apple": {
+   "background_fp": 6,
+   "localization_fp": 1,
+   "class_fp": 1
+  },
+  "orange": {
+   "background_fp": 11,
+   "split_of_larger_gt": 5,
+   "localization_fp": 2,
+   "duplicate": 5,
+   "class_fp": 4
+  }
+ },
+ "latency_ms_fp16_median": 16.6,
+ "peak_vram_mb": 144
+}

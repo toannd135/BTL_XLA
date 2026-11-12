@@ -8,7 +8,7 @@ import ResultTable from './ResultTable'
 import SummaryBar from './SummaryBar'
 import { downloadCanvas } from './draw'
 import { checkFile, isVideo, DROP_ACCEPT, MAX_FILES, MAX_MB } from './files'
-import { count, STATE_COLOR } from './labels'
+import { count, passConf, STATE_COLOR } from './labels'
 import { boxColor } from './boxStyle'
 
 const STATUS = {
@@ -25,7 +25,7 @@ const ARROW_OWNERS = 'input, textarea, select, video, [contenteditable="true"], 
 const csvText = (s) => `"${(/^[=+\-@\t\r]/.test(s) ? "'" + s : s).replaceAll('"', '""')}"`
 
 const filterObjects = (result, minConf, excluded = []) =>
-  (result?.objects || []).filter((o, i) => o.confidence >= minConf && !excluded.includes(i))
+  (result?.objects || []).filter((o, i) => passConf(o, minConf) && !excluded.includes(i))
 
 // ảnh thu nhỏ + khung theo % kích thước ảnh, nhẹ hơn vẽ canvas cỡ gốc cho từng ảnh
 function Thumb({ row, active, onOpen, onRemove }) {
