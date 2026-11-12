@@ -179,3 +179,29 @@ def crop_rotated(img, poly, pad=0.10):
     M[0, 2] += w / 2 - cx
     M[1, 2] += h / 2 - cy
     return cv2.warpAffine(img, M, (int(round(w)), int(round(h))), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+
+
+def refine_types(det_names, classes, type_names, type_probs, t_other=0.6, t_swap=0.7, scores=None, conf=None, t_rescue=0.9):
+    """Kiểm tra lại loại quả bằng bộ phân loại crop (banana/apple/orange/other).
+    - p(other) >= t_other: bỏ box (vật không phải chuối/táo/cam, vd. dâu, nho).
+    - loại quả khác detector và p >= t_swap: đổi nhãn theo bộ phân loại.
+    - scores/conf: box có điểm detector < conf (chạy detector ở ngưỡng thấp hơn) chỉ giữ khi p(quả) >= t_rescue.
+    Trả (keep: mảng bool, classes mới theo chỉ số của detector)."""
+    det_idx = {n: i for i, n in det_names.items()}
+    keep = np.ones(len(classes), dtype=bool)
+    out = np.asarray(classes, dtype=np.int64).copy()
+    fruit_ids = [i for i, n in type_names.items() if n != "other"]
+    for k, p in enumerate(type_probs):
+        p = np.asarray(p, dtype=np.float32)
+        # box dưới ngưỡng detector (conf) chỉ giữ khi bộ kiểm tra chắc chắn là quả (>= t_rescue)
+        if scores is not None and conf is not None and scores[k] < conf and max(p[i] for i in fruit_ids) < t_rescue:
+            keep[k] = False
+            continue
+        top = int(p.argmax())
+        name = type_names[top]
+        if name == "other":
+            if p[top] >= t_other:
+                keep[k] = False
+        elif name in det_idx and det_idx[name] != out[k] and p[top] >= t_swap:
+            out[k] = det_idx[name]
+    return keep, out

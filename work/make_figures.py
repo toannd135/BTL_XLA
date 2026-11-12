@@ -1,5 +1,5 @@
 """Vẽ biểu đồ cho báo cáo. Chạy: python work/make_figures.py  ->  docs/figures/*.png
-Số liệu lấy từ runs/*/results.csv, work/audit/eval_B_clean.json và các bảng trong README (mục 5)."""
+Số liệu lấy từ runs/*/results.csv, work/audit/eval_*.json, work/fruitcls/eval_gate_clip_test*.json, work/obb/eval/*.json và các bảng trong README (mục 5)."""
 import csv
 import json
 from pathlib import Path
@@ -65,18 +65,22 @@ def heat(ax, m, labels_x, labels_y, title, fmt="{:.0f}", norm_rows=False):
 metrics = ["mAP50", "mAP50-95", "AP50 chuối", "AP50 táo", "AP50 cam"]
 vals = {"A": [0.903, 0.758, 0.802, 0.927, 0.979],
         "B": [0.910, 0.759, 0.836, 0.935, 0.960],
-        "C (đang dùng)": [0.889, 0.732, 0.805, 0.905, 0.958]}
-fig, ax = plt.subplots(figsize=(9, 4.2))
-w, x = 0.26, np.arange(len(metrics))
+        "C": [0.889, 0.732, 0.805, 0.905, 0.958]}
+for tag, name in (("candC", "C'"), ("D1best", "D1 (không nhận)")):   # work/audit/eval_<tag>.json
+    e = json.load(open(ROOT / f"work/audit/eval_{tag}.json"))
+    vals[name] = [e["mAP50"], e["mAP50-95"], e["AP50"]["banana"], e["AP50"]["apple"], e["AP50"]["orange"]]
+fig, ax = plt.subplots(figsize=(11, 4.4))
+n = len(vals)
+w, x = 0.8 / n, np.arange(len(metrics))
 for k, ((name, v), c) in enumerate(zip(vals.items(), S)):
-    bars = ax.bar(x + (k - 1) * (w + 0.02), v, w, color=c, label=name, zorder=3)
+    bars = ax.bar(x + (k - (n - 1) / 2) * w, v, w * 0.92, color=c, label=name, zorder=3)
     for b, val in zip(bars, v):
-        ax.text(b.get_x() + b.get_width() / 2, val + 0.008, f"{val:.3f}", ha="center", fontsize=7.5, color=INK2)
+        ax.text(b.get_x() + b.get_width() / 2, val + 0.008, f"{val:.2f}", ha="center", fontsize=6.5, color=INK2)
 ax.set_xticks(x, metrics)
 ax.set_ylim(0, 1.08)
 ax.set_ylabel("Giá trị")
 ax.set_title("Detector trên test 373 ảnh (conf 0.25, NMS IoU 0.7)")
-ax.legend(frameon=False, ncol=3, loc="upper center", bbox_to_anchor=(0.5, -0.08))
+ax.legend(frameon=False, ncol=5, loc="upper center", bbox_to_anchor=(0.5, -0.08))
 ax.grid(axis="x", visible=False)
 save(fig, "01_detector_A_B_C.png")
 
@@ -230,3 +234,58 @@ ax.legend(frameon=False)
 ax.grid(axis="x", visible=False)
 fig.tight_layout()
 save(fig, "09_dataset.png")
+
+
+# ---------- 10. CLIP kiểm tra loại quả sau detector OBB (test 373 ảnh) ----------
+# work/fruitcls/eval_gate_clip_test.json (B-32), _c0.4.json (L-14), _c0.25.json (L-14 + cứu box + hai lần nhìn)
+fc = ROOT / "work/fruitcls"
+src = [("Chỉ OBB", "eval_gate_clip_test_c0.4.json", 0), ("+ CLIP B-32", "eval_gate_clip_test.json", -1),
+       ("+ CLIP L-14", "eval_gate_clip_test_c0.4.json", -1), ("+ cứu box,\nhai lần nhìn\n(mặc định)", "eval_gate_clip_test_c0.25.json", -1)]
+names, exact, other, miss = [], [], [], []
+for name, f, i in src:
+    r = json.load(open(fc / f))["rows"][i]
+    a, b = map(int, r["other_fp_images"].split("/"))
+    names.append(name); exact.append(100 * r["det"]["all_exact"]); other.append(100 * a / b)
+    miss.append(r["det"]["confusion"]["banana"]["miss"])
+fig, axs = plt.subplots(1, 3, figsize=(12, 3.8))
+cols = [S[4], S[3], S[0], S[2]]
+for ax, title, v, fmt, ylim in (
+    (axs[0], "Ảnh đếm đúng hoàn toàn (%)", exact, "{:.1f}", (0, 100)),
+    (axs[1], "Ảnh vật khác báo có quả (% trên 1054)", other, "{:.1f}", (0, 35)),
+    (axs[2], "Chuối bị bỏ sót (trên 156 quả)", miss, "{:.0f}", (0, 40)),
+):
+    bars = ax.bar(range(len(v)), v, 0.6, color=cols, zorder=3)
+    for bb, val in zip(bars, v):
+        ax.text(bb.get_x() + bb.get_width() / 2, val + (ylim[1] - ylim[0]) * 0.02, fmt.format(val), ha="center", fontweight="bold", fontsize=9)
+    ax.set_xticks(range(len(v)), names, fontsize=8)
+    ax.set_ylim(*ylim)
+    ax.set_title(title, fontsize=10)
+    ax.grid(axis="x", visible=False)
+fig.suptitle("CLIP sau detector OBB, test 373 ảnh: lọc vật khác 30% -> 7.5%, chuối sót 32 -> 17", x=0.01, ha="left", fontsize=10, color=INK2)
+fig.tight_layout()
+save(fig, "10_clip_gate.png")
+
+# ---------- 11. Đếm quả: C' (box thẳng) và OBB (box xoay), conf 0.40 ----------
+cnt = {"C'": json.load(open(ROOT / "work/obb/eval/C_hbb.json")), "OBB": json.load(open(ROOT / "work/obb/eval/obb_colab.json"))}
+fruits = [("banana", "Chuối"), ("apple", "Táo"), ("orange", "Cam")]
+fig, axs = plt.subplots(1, 2, figsize=(10, 3.8), gridspec_kw={"width_ratios": [3, 2]})
+x = np.arange(len(fruits))
+for k, (name, d) in enumerate(cnt.items()):
+    v = [d["test"][f]["mae"] for f, _ in fruits]
+    bars = axs[0].bar(x + (k - 0.5) * 0.36, v, 0.34, color=S[k], label=name, zorder=3)
+    for bb, val in zip(bars, v):
+        axs[0].text(bb.get_x() + bb.get_width() / 2, val + 0.015, f"{val:.2f}", ha="center", fontsize=8.5)
+axs[0].set_xticks(x, [t for _, t in fruits])
+axs[0].set_title("MAE đếm số quả mỗi ảnh, test 373 ảnh (thấp hơn là tốt)", fontsize=10)
+axs[0].legend(frameon=False)
+axs[0].grid(axis="x", visible=False)
+v = [100 * cnt[n]["test"]["all_exact"] for n in cnt]
+bars = axs[1].bar(list(cnt), v, 0.5, color=S[:2], zorder=3)
+for bb, val in zip(bars, v):
+    axs[1].text(bb.get_x() + bb.get_width() / 2, val + 2, f"{val:.1f}%", ha="center", fontweight="bold")
+axs[1].set_ylim(0, 100)
+axs[1].set_title("Ảnh đếm đúng hoàn toàn", fontsize=10)
+axs[1].grid(axis="x", visible=False)
+fig.suptitle("Nhãn chuối của test là box cả nải nên số chuối chỉ so tương đối", x=0.01, ha="left", fontsize=10, color=INK2)
+fig.tight_layout()
+save(fig, "11_count_C_vs_OBB.png")

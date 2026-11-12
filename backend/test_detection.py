@@ -2,7 +2,7 @@
 
 import unittest
 import numpy as np
-from detection import (merge_detections, restore_clockwise_boxes, restore_counterclockwise_boxes,
+from detection import (refine_types, merge_detections, restore_clockwise_boxes, restore_counterclockwise_boxes,
                        remove_group_boxes, refine_group_detections, detect)
 
 
@@ -126,6 +126,28 @@ class GroupBoxTests(unittest.TestCase):
         model = Model([self.detections([[0, 0, 100, 100]]), self.detections([])])
         detect(model, np.zeros((100, 100, 3), dtype=np.uint8), rotated=True)
         self.assertEqual(model.calls, 2)
+
+
+class RefineTypeTests(unittest.TestCase):
+    DET = {0: "banana", 1: "apple", 2: "orange"}
+    TYPE = {0: "apple", 1: "banana", 2: "orange", 3: "other"}
+
+    def test_drop_swap_keep(self):
+        probs = [[0.05, 0.0, 0.05, 0.9],    # other chắc -> bỏ
+                 [0.1, 0.0, 0.85, 0.05],    # detector apple, crop orange chắc -> đổi
+                 [0.4, 0.0, 0.5, 0.1],      # orange không đủ chắc -> giữ apple
+                 [0.3, 0.0, 0.2, 0.5]]      # other không đủ chắc -> giữ
+        keep, cls = refine_types(self.DET, [1, 1, 1, 2], self.TYPE, probs)
+        self.assertEqual(keep.tolist(), [False, True, True, True])
+        self.assertEqual(cls.tolist(), [1, 2, 1, 2])
+
+    def test_rescue_low_score(self):
+        probs = [[0.0, 0.0, 0.95, 0.05],   # điểm thấp nhưng CLIP chắc là cam -> giữ, đổi nhãn
+                 [0.6, 0.0, 0.2, 0.2],     # điểm thấp, CLIP không chắc -> bỏ
+                 [0.6, 0.0, 0.2, 0.2]]     # điểm đủ -> giữ
+        keep, cls = refine_types(self.DET, [1, 1, 1], self.TYPE, probs, 0.8, 0.9, scores=[0.3, 0.3, 0.5], conf=0.4)
+        self.assertEqual(keep.tolist(), [True, False, True])
+        self.assertEqual(cls.tolist()[0], 2)
 
 
 if __name__ == "__main__":

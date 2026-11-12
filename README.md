@@ -4,16 +4,19 @@ Báo cáo đồ án môn Xử lý ảnh. Hệ thống tìm từng quả **chuố
 
 ## 1. Bài toán và kiến trúc
 
-Hai tầng YOLO11 nối tiếp:
+Hai tầng YOLO11 nối tiếp, thêm một bước CLIP kiểm tra loại quả (từ 2026-11-12):
 
 ```
-Ảnh ─► Detector YOLO11 (640×640) ─► box: banana | apple | orange
+Ảnh ─► Detector YOLO11s-OBB (640×640) ─► box xoay: banana | apple | orange
          conf ≥ 0.40, NMS IoU 0.6
                       ▼
-          cắt từng box (đệm 10%) ─► Classifier YOLO11n-cls (224×224) ─► fresh | rotten
+          cắt từng box (đệm 10%) ─► CLIP ViT-L-14 (zero-shot) ─► bỏ vật khác / sửa nhãn loại quả
+                      ▼
+                    Classifier YOLO11n-cls (224×224) ─► fresh | rotten
 ```
 
-- **Detector**: 3 lớp (banana, apple, orange), cho biết vị trí và loại quả.
+- **Detector**: 3 lớp (banana, apple, orange), cho biết vị trí và loại quả. Bản đang dùng là YOLO11s-OBB (`exports/det_obb_s.pt`, box xoay) để tách được từng quả chuối trong nải xòe.
+- **CLIP kiểm tra loại quả**: không train, so crop với các câu mô tả "chuối/táo/cam/vật khác". Bỏ box nếu xác suất "vật khác" ≥ 0.8, đổi nhãn nếu CLIP chắc ≥ 0.9 là loại quả khác detector; giữ thêm box điểm 0.25-0.40 khi CLIP chắc ≥ 0.9 là quả (mục 5.5).
 - **Classifier**: 2 lớp (fresh, rotten), huấn luyện riêng trên ảnh quả đã cắt.
 - Tách hai tầng để mỗi model học một việc, dễ đo và cải thiện riêng. Kết quả cuối cho mỗi quả gồm 6 trạng thái (`banana_fresh` ... `orange_rotten`).
 
@@ -83,15 +86,19 @@ Phần cứng: RTX 3060 Laptop 6GB. Ultralytics 8.4.180, PyTorch 2.5.1+cu121. Ch
 |---|---|---|---|
 | **A** (baseline) | YOLO11n pretrained COCO; sau đó fine-tune từ bản tốt nhất với tập có thêm ảnh tự thu | 50, rồi fine-tune 21 (dừng sớm, tối đa 30) | 0.01, rồi 0.002 |
 | **B** (làm sạch nhãn) | YOLO11s pretrained COCO, train lại trên tập đã loại 50 ảnh nghi nhãn sai và gán lại nhãn chuối từng quả | 80 (~37 phút) | 0.01 |
-| **C** (thêm ảnh nền, **đang dùng**) | Fine-tune từ B, thêm 287 ảnh nền (nhãn rỗng) lặp 2 lần, bỏ ảnh webcam tự gán nhãn | 25 tối đa, dùng `last.pt` ở epoch 11 | 0.002 |
-| D1 (thử nghiệm) | Fine-tune từ C, thêm 700 ảnh ghép nhiều loại quả | 20 tối đa | 0.002 |
+| **C** (thêm ảnh nền) | Fine-tune từ B, thêm 287 ảnh nền (nhãn rỗng) lặp 2 lần, bỏ ảnh webcam tự gán nhãn | 25 tối đa, dùng `last.pt` ở epoch 11 | 0.002 |
+| C' (`det_C_candidate.pt`) | Fine-tune tiếp từ C theo đúng công thức C, chạy trên Colab | 25 tối đa | 0.002 |
+| D1 (không nhận) | Fine-tune từ C, thêm 700 ảnh ghép nhiều loại quả | 20 tối đa, đo `best.pt` | 0.002 |
+| rotation_v1 (không nhận) | Fine-tune từ C', thêm bản xoay 90/180/270 của cả ba loại quả (Colab) | 25 tối đa | - |
+| **OBB** (**đang dùng**) | YOLO11s-OBB pretrained, box xoay. Chuối: box xoay lấy từ mặt nạ SAM2 (`minAreaRect`) khi mặt nạ có dáng một quả, bỏ ảnh train có box cả nải; táo/cam giữ box thẳng. Thành phần train như C + ảnh ghép. Colab | 60 | AdamW 0.0014, batch 8, xoay ±20°, lật dọc 0.3 |
 
 Các quyết định đáng chú ý:
 
 - **Ảnh nền** được chia theo khối (ảnh lẻ chia theo hash tên, video chia theo 20 khung liên tiếp) để 71 ảnh giữ riêng không bị rò rỉ sang train.
 - **Dùng `last.pt` thay vì `best.pt` cho C**: tập val không có ảnh nền nên `best.pt` rơi vào epoch 1 (chưa học phân biệt nền). Số liệu train/val lúc huấn luyện vì vậy chỉ để theo dõi; các so sánh chính đều đo trên **test 373 ảnh** và **71 ảnh nền giữ riêng**.
 - **Cùng điều kiện so sánh**: cùng val/test, seed 42, conf 0.25, NMS IoU 0.7 (`work/eval_det.py`, kết quả ở `work/audit/eval_*.json`).
-- Thí nghiệm D1 mới chạy được 4/20 epoch và chưa được đánh giá trên test, nên **chưa đưa vào kết quả**.
+- **Vì sao chuyển sang OBB**: trên ảnh một nải ~20 quả xòe hình quạt, box thẳng của mỗi quả rất to và chồng lên quả bên cạnh (IoU > 0.6), nên NMS xoá cả quả thật; nâng ngưỡng NMS thì lại giữ box trùng (iou 0.8 ra 28 box, 0.9 ra 57 box). Không ngưỡng nào đúng, đây là giới hạn của box thẳng. Box xoay ôm sát từng quả nên NMS theo IoU xoay tách được.
+- D1 và rotation_v1 đã đo và **không nhận** (mục 5.1).
 
 ## 4. Quy trình huấn luyện classifier
 
@@ -106,20 +113,46 @@ Batch 64, ảnh 224×224, seed 42. Cả hai lần đạt accuracy val 1.0, nên 
 
 ### 5.1 Detector (test 373 ảnh, conf 0.25, NMS IoU 0.7)
 
-| | A | B | C (đang dùng) |
-|---|---|---|---|
-| mAP50 | 0.903 | 0.910 | 0.889 |
-| mAP50-95 | 0.758 | 0.759 | 0.732 |
-| AP50 chuối | 0.802 | 0.836 | 0.805 |
-| AP50 táo | 0.927 | 0.935 | 0.905 |
-| AP50 cam | 0.979 | 0.960 | 0.958 |
-| Ảnh nền báo sai (trên 71 ảnh giữ riêng) | - | 34 (48%) | 3 (4%) |
+| | A | B | C | C' | D1 |
+|---|---|---|---|---|---|
+| mAP50 | 0.903 | 0.910 | 0.889 | 0.895 | 0.892 |
+| mAP50-95 | 0.758 | 0.759 | 0.732 | 0.739 | 0.727 |
+| AP50 chuối | 0.802 | 0.836 | 0.805 | 0.820 | 0.844 |
+| AP50 táo | 0.927 | 0.935 | 0.905 | 0.911 | 0.879 |
+| AP50 cam | 0.979 | 0.960 | 0.958 | 0.954 | 0.953 |
+| Precision / Recall | 0.848 / 0.879 | 0.879 / 0.866 | - | 0.881 / 0.824 | 0.862 / 0.850 |
+| Ảnh nền báo sai (trên 71 ảnh giữ riêng) | - | 34 (48%) | 3 (4%) | 0 ở conf 0.4 | 9 ở conf 0.4 |
+| Táo xanh trên ảnh stock (3 quả) | 0 | 0 | 0 | 0 | 3 |
 
+Nguồn: `work/audit/eval_*.json` (C' = `eval_candC.json`, D1 = `eval_D1best.json`).
+
+- **D1 không nhận**: ảnh ghép dạy được táo xanh (ra đủ 3/3) nhưng AP táo giảm 0.032 và báo nhầm nền tăng 0 → 9/71.
+- **rotation_v1 không nhận** (đo trên Colab, cấu hình khác bảng trên nên không so trực tiếp): so với C' trên test, mAP50 0.887 → 0.867, cả ba loại quả đều giảm, nền báo sai 1 → 5/71 (`docs/handoff/ket-qua-rotation-v1.md`).
 - B cải thiện nhẹ so với A (mAP50 +0.007, chuối +0.034) nhờ làm sạch nhãn và dùng YOLO11s, nhưng vẫn báo sai 48% ảnh nền.
 - C giảm báo sai trên ảnh nền từ 48% xuống 4%, **đổi lại** mAP50 giảm 0.021 và AP chuối giảm 0.031. Đây là đánh đổi có chủ đích vì nhận nhầm vật khác thành quả là lỗi dễ thấy nhất khi dùng webcam.
-- Tốc độ B (FP16, GPU): trung vị 16.5 ms/ảnh, VRAM đỉnh 114 MB.
+- C' nhỉnh hơn C mọi chỉ số chính (mAP50 +0.006, chuối +0.015) và không báo nhầm ảnh nền nào ở conf 0.4.
+- Tốc độ (FP16, GPU): B trung vị 16.5 ms/ảnh, VRAM đỉnh 114 MB; C' 16.6 ms/ảnh, 144 MB.
 
 Phân tích lỗi của B ở conf 0.25: chuối có 89 box thừa, trong đó chỉ 10 là nền thật; 29 là box từng quả nằm trong nhãn nải, 28 là box trùng lặp, 15 lệch vị trí. Tức là phần lớn "lỗi" chuối đến từ nhãn không thống nhất chứ không phải model nhận sai (`work/audit/eval_B_clean.json`).
+
+#### Đếm quả: OBB (đang dùng) so với C' (conf 0.40, NMS IoU 0.6)
+
+OBB xuất box xoay nên không tính mAP chung được với bảng trên (mAP50 trên val OBB riêng là 0.889, P/R 0.862/0.860). Hai model được so bằng **sai số đếm số quả mỗi ảnh** (`work/obb/eval_count.py`, kết quả `work/obb/eval/obb_colab.json`, `C_hbb.json`):
+
+| Test 373 ảnh | C' | OBB |
+|---|---|---|
+| MAE đếm chuối / táo / cam | 0.44 / 0.18 / 0.14 | 0.71 / 0.25 / 0.16 |
+| Ảnh đếm đúng hoàn toàn (mọi loại) | 82.3% | 76.9% |
+| Ảnh nền báo sai (71 ảnh) | 1 | 3 |
+| Táo xanh trên ảnh stock (3 quả) | 0 | 2 |
+| Ảnh nải chuối ~20 quả (`naichuoi.jpeg`) | 12 | 12 |
+
+| 300 ảnh ghép giữ riêng (nhãn từng quả chuẩn) | OBB |
+|---|---|
+| MAE chuối / táo / cam | 0.63 / 0.28 / 0.28 |
+| Tổng số quả dự đoán / thật | chuối 1555/1582, táo 882/885, cam 682/676 |
+
+Cách đọc: trên test gốc OBB kém C', **nhưng nhãn chuối của test là box cả nải** (một box cho 4-6 quả) nên đếm từng quả đúng lại bị tính là sai; con số chuối chỉ so tương đối. Trên ảnh ghép có nhãn từng quả, OBB đếm gần đúng tổng số. OBB được chọn cho app vì ra được táo xanh (2/3) và đúng hướng cho chuối nằm chéo; đánh đổi là nền báo sai 1 → 3/71 (cấu hình đầy đủ với CLIP ở mục 5.5 còn 1/71). Ảnh nải xòe ~20 quả vẫn chỉ ra 12, **chưa giải quyết**.
 
 ### 5.2 Chọn ngưỡng tin cậy (model C, quét 0.15-0.60)
 
@@ -155,16 +188,43 @@ Bản fine-tune: nhầm loại quả 0, nhầm tươi/hỏng 0, **bỏ sót 11 q
 Cách đọc: **điểm yếu của hệ thống nằm ở tầng detector, không phải classifier.** Khi detector tìm đúng quả thì classifier đúng 100% trên 28 ảnh này, nhưng detector bỏ sót khoảng 40% quả và báo nhầm nền. Hai điều cần lưu ý khi trình bày:
 
 - Đây là phép đo trên **28 ảnh**, rất nhỏ, kết quả dao động mạnh; ảnh tự chụp khó hơn ảnh công khai (táo/cam hỏng chụp thực tế, nền lộn xộn).
-- Phép đo end-to-end này **chưa được chạy lại với detector C và ngưỡng 0.40** (C chủ yếu làm giảm báo nhầm nền, nên số báo nhầm nền 12 có thể đã cải thiện nhưng chưa được đo). Cần đo lại trước khi kết luận về bản đang dùng.
+- Phép đo end-to-end này **chưa được chạy lại với detector đang dùng (OBB + CLIP) và ngưỡng 0.40**. Cần đo lại trước khi kết luận về bản đang dùng.
 - Con số classifier 99.91% là trên crop của tập công khai; số end-to-end 60.7% là trên ảnh gốc tự chụp qua cả hai tầng. Hai con số trả lời hai câu hỏi khác nhau, không thể so trực tiếp.
 
-### 5.5 Biểu đồ
+### 5.5 CLIP kiểm tra loại quả (zero-shot, sau detector OBB)
+
+Classifier tươi/hỏng không có lớp "không phải quả", nên mọi vật detector nhận nhầm đều thành "quả tươi/hỏng". Thêm CLIP (open_clip, không train) chấm từng crop: xác suất "vật khác" ≥ 0.8 thì bỏ box; loại quả khác detector với xác suất ≥ 0.9 thì đổi nhãn. Ngưỡng chọn trên val. Hai bổ sung sau cùng:
+
+- **Cứu box gần ngưỡng**: detector chạy ở conf 0.25; box điểm 0.25-0.40 chỉ được giữ khi CLIP chắc ≥ 0.9 đó là quả (`RESCUE_CONF`, `CLIP_T_RESCUE`). Mục đích: bớt bỏ sót chuối.
+- **Hai lần nhìn**: box bị CLIP coi là "vật khác" thì nhìn lại phần giữa crop (thu nhỏ 10%), giữ box nếu lần này chắc ≥ 0.9 là quả (`CLIP_T_INNER`). Sửa ca quả cam bị quả dâu che một phần. Bản không siết ngưỡng làm ảnh vật khác báo sai tăng 69 → 126 nên phải đặt 0.9. Thu nhỏ crop cho **mọi** box thì mất chuối nằm chéo, không dùng.
+
+Đo bằng `work/fruitcls/eval_gate.py exports/det_obb_s.pt clip test` (`work/fruitcls/eval_gate_clip_test*.json`):
+
+| Test 373 ảnh | Chỉ OBB (conf 0.40) | + CLIP B-32 | + CLIP L-14 | **+ L-14, cứu box, hai lần nhìn (mặc định)** |
+|---|---|---|---|---|
+| Ảnh đếm đúng hoàn toàn | 75.6% | 78.8% | 77.5% | **79.9%** |
+| MAE đếm chuối / táo / cam | 0.71 / 0.25 / 0.19 | 0.59 / 0.30 / 0.18 | 0.59 / 0.30 / 0.24 | 0.54 / 0.30 / 0.24 |
+| Chuối bị bỏ sót (trên 156 quả) | 32 | 32 | 32 | **17** |
+| Chuối bị gọi là cam | 13 | 1 | 1 | 1 |
+| Táo / cam bị bỏ sót (trên 98 / 95) | 13 / 8 | 16 / 14 | 17 / 14 | 16 / 13 |
+| Ảnh nền báo sai (71 ảnh) | 3 | 0 | 0 | 1 |
+| Ảnh vật khác báo có quả (1054 ảnh Wikimedia, `own_other/`, chỉ để đo) | 318 (30.2%) | 110 (10.4%) | 69 (6.5%) | 79 (7.5%) |
+| Độ trễ / VRAM của CLIP | - | ~2-5 ms/crop, 0.6 GB | ~9 ms/crop, 1.6 GB | ~9 ms/crop, 1.6 GB |
+
+Trên val (301 ảnh), cứu box tăng ảnh đếm đúng 79.7% → 81.7%, 287 ảnh nền vẫn 0 báo sai.
+
+- **Đánh đổi**: CLIP xoá nhầm một số táo/cam thật (táo sót 13 → 16, cam 8 → 13). Cứu box giảm chuối sót gần một nửa (32 → 17) nhưng thêm 1 ảnh nền và 10 ảnh vật khác báo sai.
+- L-14 so với B-32: báo nhầm vật khác ít hơn hẳn (69 so với 110) nên chọn L-14; máy yếu đặt `CLIP_ARCH=ViT-B-32`.
+- Chỉnh câu mô tả (prompt) không cải thiện trên test, giữ bộ gốc.
+- CLIP **không** sửa được quả bị bỏ sót hẳn (detector không ra box) hay box sai hình dạng; đó vẫn là việc của detector.
+
+### 5.6 Biểu đồ
 
 Các hình dưới đây do `python work/make_figures.py` vẽ từ số liệu trong `runs/` và `work/audit/` (lưu ở `docs/figures/`).
 
-**Hình 1. So sánh detector A, B, C trên test.** Trục bắt đầu từ 0 nên chênh lệch giữa ba bản nhỏ (dưới 0.03 ở hầu hết chỉ số).
+**Hình 1. So sánh detector A, B, C, C', D1 trên test.** Trục bắt đầu từ 0 nên chênh lệch giữa các bản nhỏ (dưới 0.04 ở hầu hết chỉ số). D1 cao nhất ở chuối nhưng thấp nhất ở táo. OBB không có trong hình vì box xoay không tính chung mAP được (xem Hình 11).
 
-![So sánh detector A, B, C](docs/figures/01_detector_A_B_C.png)
+![So sánh detector A, B, C, C', D1](docs/figures/01_detector_A_B_C.png)
 
 **Hình 2. Đánh đổi khi thêm ảnh nền (B sang C).** mAP50 chỉ giảm 0.021 trong khi tỷ lệ ảnh nền báo sai giảm từ 48% xuống 4%.
 
@@ -198,7 +258,15 @@ Các hình dưới đây do `python work/make_figures.py` vẽ từ số liệu 
 
 ![Dữ liệu](docs/figures/09_dataset.png)
 
-### 5.6 Hình có sẵn từ Ultralytics trong repo
+**Hình 10. CLIP kiểm tra loại quả sau detector OBB (test 373 ảnh).** CLIP giảm ảnh vật khác báo có quả từ 30.2% xuống 6.5-10.4%; thêm cứu box gần ngưỡng thì chuối bị bỏ sót giảm từ 32 xuống 17, đổi lại báo nhầm vật khác tăng nhẹ 6.5% → 7.5%.
+
+![CLIP](docs/figures/10_clip_gate.png)
+
+**Hình 11. Đếm quả: C' (box thẳng) và OBB (box xoay), conf 0.40.** Trên test gốc OBB đếm kém hơn, chủ yếu ở chuối, vì nhãn chuối của test là box cả nải.
+
+![Đếm quả C' và OBB](docs/figures/11_count_C_vs_OBB.png)
+
+### 5.7 Hình có sẵn từ Ultralytics trong repo
 
 | Nội dung | Tệp |
 |---|---|
@@ -214,19 +282,21 @@ Confusion matrix classifier (hàng = thật, cột = dự đoán, thứ tự fre
 
 Các đường train/val của det_C_neg chỉ có 11 epoch, và det_finetune dừng sớm ở epoch 21 (tối đa 30), nên các đường này chỉ phản ánh giai đoạn fine-tune.
 
-### 5.7 Bảng tổng hợp chỉ số đánh giá
+### 5.8 Bảng tổng hợp chỉ số đánh giá
 
 **Detector** (test 373 ảnh, trừ khi ghi khác)
 
 | Chỉ số | Kết quả | Ghi chú |
 |---|---|---|
 | IoU | Ngưỡng 0.5 (AP50) và 0.5-0.95 (mAP50-95); NMS IoU 0.6 khi chạy hệ thống | Định nghĩa ở mục 7 |
-| Precision / Recall (conf 0.25) | A: 0.848 / 0.879; B: 0.879 / 0.866; C: chưa lưu | B theo lớp: chuối 0.61/0.89, táo 0.89/0.94, cam 0.79/0.96 (precision/recall) |
+| Precision / Recall (conf 0.25) | A: 0.848 / 0.879; B: 0.879 / 0.866; C: chưa lưu; C': 0.881 / 0.824; D1: 0.862 / 0.850 | B theo lớp: chuối 0.61/0.89, táo 0.89/0.94, cam 0.79/0.96 (precision/recall) |
 | Precision / Recall / F1 (conf 0.40) | C: 0.80 / 0.84 / **0.82** | F1 theo lớp: chuối 0.73, táo 0.89, cam 0.90 |
 | AP50 | Hình 1 (A, B, C theo từng loại quả) | |
 | mAP50 / mAP50-95 | A 0.903 / 0.758; B 0.910 / 0.759; C 0.889 / 0.732 | |
-| FPR trên ảnh nền (số ảnh nền có ít nhất một box, trên 71 ảnh giữ riêng) | B 34/71 = 47.9%; C 3/71 = 4.2% (conf 0.25); C 1/71 = 1.4% (conf 0.40) | Đây là tỷ lệ theo ảnh, không phải theo box |
-| Độ trễ detector (FP16, GPU) | Trung vị 16.5 ms/ảnh (bản B) | Chưa đo riêng cho bản C |
+| FPR trên ảnh nền (số ảnh nền có ít nhất một box, trên 71 ảnh giữ riêng) | B 34/71 = 47.9%; C 3/71 = 4.2% (conf 0.25); C 1/71 = 1.4%, C' 0/71, OBB 3/71, OBB + CLIP L-14 0/71, cấu hình mặc định 1/71 (conf 0.40) | Đây là tỷ lệ theo ảnh, không phải theo box |
+| Độ trễ detector (FP16, GPU) | Trung vị 16.5 ms/ảnh (B), 16.6 ms/ảnh (C') | Chưa đo riêng cho OBB; CLIP L-14 thêm ~9 ms/crop |
+| Ảnh vật khác báo có quả (1054 ảnh) | OBB 318 (30.2%); OBB + CLIP L-14 69 (6.5%); cấu hình mặc định 79 (7.5%) | Mục 5.5 |
+| Đếm quả: ảnh đếm đúng hoàn toàn (test, conf 0.40) | C' 82.3%; OBB 76.9% (75.6% khi đo bằng `eval_gate.py`); OBB + CLIP L-14 77.5%; cấu hình mặc định **79.9%** | Nhãn chuối test là box nải, chỉ so tương đối |
 
 **Classifier**
 
@@ -250,12 +320,14 @@ ROC-AUC **không được tính**: đây là chỉ số tùy chọn, cần xác 
 | Độ trễ cả pipeline | 46 ms/ảnh (baseline 32 ms/ảnh) | Trung vị theo ảnh, gồm detector và classifier |
 | Throughput (suy ra) | khoảng 22 ảnh/giây | = 1000 / 46; **suy ra từ độ trễ**, chưa đo thông lượng thực khi chạy liên tục hay qua HTTP |
 
-Chỉ số nào chưa có số liệu thì được ghi rõ ở trên (Precision/Recall của C ở conf 0.25, độ trễ bản C, throughput đo thực, ROC-AUC) thay vì để trống hoặc ước lượng.
+Chỉ số nào chưa có số liệu thì được ghi rõ ở trên (Precision/Recall của C ở conf 0.25, độ trễ bản OBB, mAP của OBB trên test, throughput đo thực, ROC-AUC) thay vì để trống hoặc ước lượng.
 
-### 5.8 Hạn chế
+### 5.9 Hạn chế
 
-- Chuối là lớp yếu nhất (F1 0.73).
-- Cảnh nhiều loại quả chung khung chưa được xử lý: trên ảnh stock chuối + táo xanh + cam, cả A, B, C đều không ra box táo nào (táo xanh bị gán thành cam với độ tin cậy 0.14-0.18). Không phải lỗi ngưỡng, NMS hay ánh xạ nhãn mà do thiếu dữ liệu.
+- Chuối là lớp yếu nhất (F1 0.73 ở bản C). Nải chuối xòe ~20 quả: mọi bản kể cả OBB chỉ ra 12 box.
+- Cảnh nhiều loại quả chung khung chưa được xử lý: trên ảnh stock chuối + táo xanh + cam, A, B, C, C' đều không ra box táo nào (táo xanh bị gán thành cam với độ tin cậy 0.14-0.18); OBB ra 2/3, D1 ra 3/3 nhưng D1 báo nhầm nền nhiều. Nguyên nhân là thiếu dữ liệu, không phải ngưỡng hay NMS.
+- Nho chưa có trong ảnh nền: app nhận nho thành táo (91-93%).
+- CLIP xoá nhầm một ít quả thật (test: táo sót 13 → 16, cam 8 → 13), và không sửa được quả detector không ra box.
 - Khoảng 30 ảnh trong test bị nghi nhãn sai (`work/audit/det_label_audit.csv`), chưa được duyệt tay.
 - Test gốc không có ảnh nền; riêng tỷ lệ báo sai được đo trên 71 ảnh nền giữ riêng.
 
@@ -264,9 +336,9 @@ Chỉ số nào chưa có số liệu thì được ghi rõ ở trên (Precision
 | Hạn chế | Hướng cải thiện |
 |---|---|
 | Chuối F1 thấp (0.73) | Chuẩn hóa annotation, duyệt lại nhãn, bổ sung ảnh chuối |
-| Thiếu ảnh nhiều loại quả; táo xanh nhận thành cam | Thu thập ảnh nhiều loại quả cùng khung và ảnh táo xanh (hard cases); đánh giá D1 (ảnh ghép) |
+| Thiếu ảnh nhiều loại quả; táo xanh nhận thành cam | Thu thập ảnh thật nhiều loại quả cùng khung và ảnh táo xanh (hard cases); ảnh ghép (D1) đã thử, tăng báo nhầm nền nên không nhận |
 | Test tự chụp chỉ 28 ảnh, không có táo/cam tươi | Xây test set lớn, độc lập, đủ cả fresh và rotten |
-| End-to-end mới đo ở bản cũ, 60.7% trên 28 ảnh | Đo lại cho bản C, thêm đo trên ảnh công khai có nhãn đủ loại quả và trạng thái |
+| End-to-end mới đo ở bản cũ, 60.7% trên 28 ảnh | Đo lại cho bản OBB + CLIP, thêm đo trên ảnh công khai có nhãn đủ loại quả và trạng thái |
 | Validation không có ảnh nền | Thêm ảnh nền vào validation để chọn checkpoint đúng phương pháp |
 | Ảnh nền còn ít, đơn điệu | Thu thêm negative samples đa dạng (bàn, tay, cốc, ớt chuông...) |
 | Chưa có ablation (cỡ model, làm sạch nhãn, ảnh nền) | Chạy từng thay đổi riêng với cùng seed và cùng test |
@@ -325,33 +397,34 @@ YOLO là bộ phát hiện **một giai đoạn**: chạy ảnh qua mạng một
 - **Vì sao C giảm báo nhầm nền**: trước đó detector chưa từng thấy ảnh nhãn rỗng, nên không có tín hiệu phạt khi báo quả trên nền; thêm 287 ảnh nền (nhãn rỗng) làm loss phạt các box ở những vùng này.
 - **Vì sao F1 chuối chỉ 0.73**: chuối là lớp nhiều box nhất nhưng phần lớn box thừa đến từ nhãn nải/từng quả không thống nhất (mục 5.1), cộng thêm hình dạng đa dạng (nải, chuối cong, bóc vỏ) và nhiều quả sát nhau. Táo và cam gần hình tròn, ít nhập nhằng nên F1 cao hơn (0.89, 0.90). Đây là giải thích có bằng chứng từ phân tích lỗi của B, nhưng chưa kiểm tra lại sau khi sửa toàn bộ nhãn.
 - **Accuracy classifier 99.91% nhưng ảnh tự chụp 96.4%, e2e 60.7%**: test public cùng phân phối với train (cùng nguồn, cùng kiểu chụp), còn ảnh tự chụp khác ánh sáng, nền, góc, và một số mẫu khó (táo xanh thối). Ảnh tự chụp chỉ 28 ảnh nên một ảnh sai đã làm accuracy giảm 3.6 điểm; con số này chỉ mang tính tham khảo. Số ảnh còn ít vì chụp và gán nhãn thủ công tốn thời gian.
-- **Táo xanh có bị nhận thành cam không**: có. Trên ảnh stock chuối + táo xanh + cam, cả A, B, C không ra box táo nào, táo xanh bị gán là cam với confidence 0.14-0.18 (thấp hơn ngưỡng 0.40 nên bị loại). Nguyên nhân là thiếu dữ liệu táo xanh và cảnh nhiều loại quả. Ngoài ra, một ảnh táo xanh đang thối bị classifier đoán thành tươi.
+- **Táo xanh có bị nhận thành cam không**: có. Trên ảnh stock chuối + táo xanh + cam, A, B, C không ra box táo nào, táo xanh bị gán là cam với confidence 0.14-0.18 (thấp hơn ngưỡng 0.40 nên bị loại). Bản OBB đang dùng ra được 2/3 quả. Nguyên nhân là thiếu dữ liệu táo xanh và cảnh nhiều loại quả. Ngoài ra, một ảnh táo xanh đang thối bị classifier đoán thành tươi.
 
 ## 9. Hệ thống và luồng xử lý
 
 1. Người dùng thả ảnh hoặc bật webcam; React gửi ảnh qua HTTP `POST /api/predict` tới FastAPI.
 2. Backend kiểm tra loại file (jpg/png/webp), kích thước ≤ 10MB, ≤ 40 triệu pixel, rồi giải mã bằng OpenCV.
-3. Detector (FP16 trên GPU, conf 0.40, NMS IoU 0.6, `agnostic_nms`) tìm các quả.
-4. Backend cắt từng box (pad 10%) và đưa **tất cả crop vào classifier trong một batch**.
-5. Gộp thành danh sách `{label, confidence, state, state_confidence, bbox}` cùng thời gian xử lý.
-6. Frontend vẽ box, loại quả, trạng thái, confidence; thống kê tươi/hỏng; xuất CSV.
+3. Detector OBB (FP16 trên GPU, conf 0.40, NMS IoU 0.6, `agnostic_nms`) tìm các quả.
+4. Backend cắt từng box (pad 10%); CLIP chấm từng crop để bỏ vật khác và sửa nhãn loại quả (`backend/clip_check.py`, `detection.refine_types`). Box điểm 0.25-0.40 chỉ được giữ khi CLIP chắc ≥ 0.9 là quả; box bị coi là vật khác được nhìn lại phần giữa trước khi bỏ.
+5. Đưa **tất cả crop còn lại vào classifier trong một batch**.
+6. Gộp thành danh sách `{label, confidence, state, state_confidence, bbox}` cùng thời gian xử lý.
+7. Frontend vẽ box, loại quả, trạng thái, confidence; thống kê tươi/hỏng; xuất CSV.
 
 Quyết định thiết kế:
 
 - **FastAPI** nhẹ, bất đồng bộ, sinh tài liệu API; model chạy trong thread pool và có **khóa** vì model Ultralytics không an toàn khi nhiều luồng gọi cùng lúc (nên nhiều người dùng đồng thời sẽ xếp hàng). **Tách frontend và backend** để model nằm một nơi (GPU), giao diện chạy ở trình duyệt, đổi giao diện không cần động đến model.
 - **Video và webcam** được xử lý như chuỗi ảnh tĩnh: frontend lấy từng khung hình và gửi lên server liên tục, hiển thị số khung/giây. Không có theo dõi đối tượng (tracker) giữa các khung, nên cùng một quả ở hai khung liên tiếp là hai kết quả độc lập.
 - **Ảnh không có quả hoặc detector không tìm thấy gì**: backend trả danh sách rỗng, classifier không chạy. Nhiều quả trong ảnh: mỗi box được phân loại riêng; code không đặt giới hạn riêng, số box tối đa là mặc định của Ultralytics (300).
-- **Giảm độ trễ**: FP16, chạy thử một lượt khi khởi động, batch crop, ảnh 640. **Không có GPU**: chạy CPU (đặt `HALF=0`), chậm hơn. Bản B đo trên GPU: 16.5 ms/ảnh cho detector, ~10.7 ms/crop cho classifier. Chưa đo độ trễ cho bản C với server hoàn chỉnh.
+- **Giảm độ trễ**: FP16, chạy thử một lượt khi khởi động, batch crop, ảnh 640. **Không có GPU**: chạy CPU (đặt `HALF=0`), chậm hơn. Đo trên GPU: detector 16.5 ms/ảnh (B), 16.6 ms/ảnh (C'); CLIP L-14 ~9 ms/crop; classifier ~10.7 ms/crop. Chưa đo độ trễ cho bản OBB + CLIP với server hoàn chỉnh.
 - **Hai confidence khác nhau**: `confidence` là độ tin cậy detector (có quả, đúng loại), `state_confidence` là độ tin cậy classifier (tươi hay hỏng). Hệ thống **không nhân hai giá trị** thành một xác suất tổng vì chưa hiệu chuẩn xác suất; giao diện ghi "chưa chắc" khi `state_confidence` dưới 60%.
 
 ## 10. Trả lời trực tiếp các câu hỏi thường gặp
 
 - **Hệ thống có đánh giá được độ tươi thực tế không?** Chỉ trong giới hạn: nó phân loại ảnh thành tươi/hỏng dựa trên **đặc trưng hình ảnh bề mặt**; không đánh giá chất lượng bên trong, dinh dưỡng, an toàn thực phẩm hay độ chín theo tiêu chuẩn kiểm định. Kết quả phụ thuộc ánh sáng, góc chụp, chất lượng ảnh và dữ liệu huấn luyện.
-- **Nếu detector sai thì classifier xử lý ra sao?** Classifier **luôn trả về fresh hoặc rotten** cho mọi crop, kể cả khi crop là vật không phải quả (nó không có lớp "không phải quả"), nên lỗi detector truyền thẳng vào kết quả. Giảm bằng cách giảm báo nhầm nền ở detector (bản C) và ngưỡng confidence 0.40.
+- **Nếu detector sai thì classifier xử lý ra sao?** Classifier **luôn trả về fresh hoặc rotten** cho mọi crop, kể cả khi crop là vật không phải quả (nó không có lớp "không phải quả"), nên lỗi detector truyền thẳng vào kết quả. Giảm bằng ba lớp: ảnh nền khi train detector (từ bản C), ngưỡng confidence 0.40, và CLIP lọc vật khác (ảnh vật khác báo có quả 30.2% → 7.5%).
 - **Vì sao dùng YOLO thay vì Faster R-CNN/SSD?** Cần tốc độ cho webcam/video trên GPU 6GB; chưa so sánh thực nghiệm nên chỉ nêu là lựa chọn thiết kế.
 - **Tại sao cần ảnh nền?** Để model học "không có quả" là một đáp án đúng; không có ảnh nền, detector báo quả trên khoảng 42% ảnh không có quả.
 - **Triển khai hàng nghìn ảnh thì cải tiến gì?** Xử lý theo lô và hàng đợi thay vì khóa một luồng, xuất ONNX/TensorRT, nhiều worker, theo dõi đối tượng cho video, đo lại độ chính xác trên tập lớn độc lập.
-- **Chưa làm được** (cần nói thẳng khi bảo vệ): chưa có ablation tách riêng ảnh hưởng của cỡ model và làm sạch nhãn; chưa so sánh với kiến trúc 6 lớp hay Faster R-CNN/SSD; chưa đo end-to-end cho bản C; chưa có validation có ảnh nền; test tự chụp chỉ 28 ảnh; chưa hiệu chuẩn độ tin cậy.
+- **Chưa làm được** (cần nói thẳng khi bảo vệ): chưa có ablation tách riêng ảnh hưởng của cỡ model và làm sạch nhãn; chưa so sánh với kiến trúc 6 lớp hay Faster R-CNN/SSD; chưa đo end-to-end cho bản OBB + CLIP; chưa tính mAP của OBB trên test; chưa có validation có ảnh nền; test tự chụp chỉ 28 ảnh; chưa hiệu chuẩn độ tin cậy.
 
 ## 11. Cài đặt và chạy
 
@@ -365,7 +438,7 @@ python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\
 pip install -r backend/requirements.txt opencv-python-headless
 ```
 
-Repo kèm sẵn 3 model trong `exports/`: hai detector `det_finetune_best.pt`, `det_C_candidate.pt` và classifier `cls_finetune_best.pt`. Bản khuyến nghị cho backend là `det_C_candidate.pt` qua biến `MODEL_PATH`. Có GPU NVIDIA thì cài PyTorch bản CUDA trước; không có GPU vẫn chạy được trên CPU (đặt `HALF=0` khi chạy backend).
+Model trong `exports/`: detector `det_obb_s.pt` (**mặc định của backend**), `det_C_candidate.pt` (bản box thẳng tốt nhất, đổi qua biến `MODEL_PATH`), `det_finetune_best.pt` (C), và classifier `cls_finetune_best.pt`. CLIP ViT-L-14 tự tải lần đầu vào `work/weights/hf/` (~1.7 GB); cài `pip install --no-deps open_clip_torch==2.30.0 timm` để không kéo bản torch khác. Có GPU NVIDIA thì cài PyTorch bản CUDA trước; không có GPU vẫn chạy được trên CPU (đặt `HALF=0` khi chạy backend).
 
 ### Dòng lệnh
 
@@ -388,7 +461,7 @@ uvicorn main:app --reload --port 8000
 | `POST /api/predict` | Form-data trường `file` (jpg/png/webp, ≤ 10MB, ≤ 40 triệu điểm ảnh); trả về kích thước ảnh, danh sách quả (nhãn, độ tin cậy, trạng thái, độ tin cậy trạng thái, bbox) và thời gian xử lý |
 | `POST /api/collect`, `GET /api/collect/stats` | Lưu khung hình thu thập để làm dữ liệu sau này |
 
-Biến môi trường: `CONF` (0.40), `NMS_IOU` (0.6), `HALF` (1), `MODEL_PATH`, `CLS_MODEL_PATH`, `COLLECT_DIR`, `CORS_ORIGINS`.
+Biến môi trường: `CONF` (0.40), `NMS_IOU` (0.6), `HALF` (1), `MODEL_PATH`, `CLS_MODEL_PATH`, `COLLECT_DIR`, `CORS_ORIGINS`; CLIP: `CLIP_CHECK` (1, đặt 0 để tắt), `CLIP_ARCH` (ViT-L-14; máy yếu dùng ViT-B-32), `CLIP_T_OTHER` (0.8), `CLIP_T_SWAP` (0.9), `RESCUE_CONF` (0.25), `CLIP_T_RESCUE` (0.9), `CLIP_T_INNER` (0.9).
 
 ### Frontend (React + Ant Design)
 

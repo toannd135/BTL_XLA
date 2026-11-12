@@ -25,3 +25,6 @@ export function count(objects) {
   const rotten = objects.filter((o) => stateOf(o) === 'rotten').length
   return { total: objects.length, fresh, rotten, unsure: objects.length - fresh - rotten }
 }
+
+// Box "rescued": điểm detector dưới ngưỡng server nhưng CLIP đã xác nhận là quả -> tính như vừa đạt ngưỡng mặc định 0.4
+export const passConf = (o, minConf) => (o.rescued ? Math.max(o.confidence, 0.4) : o.confidence) >= minConf

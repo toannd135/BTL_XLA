@@ -22,13 +22,13 @@ from PIL import Image
 from ultralytics import YOLO
 
 import collect
-from detection import crop_rotated, detect, detect_obb
+from detection import crop_rotated, detect, detect_obb, refine_types
 
 # Pillow tự cảnh báo/chặn ảnh lớn; giới hạn đã kiểm tra riêng bằng MAX_PIXELS
 Image.MAX_IMAGE_PIXELS = None
 
 ROOT = Path(__file__).resolve().parent.parent
-DET_PATH = os.getenv("MODEL_PATH", str(ROOT / "exports/det_C_candidate.pt"))   # đếm chuối nhiều quả tốt hơn (docs/handoff/dem-chuoi.md)
+DET_PATH = os.getenv("MODEL_PATH", str(ROOT / "exports/det_obb_s.pt"))   # OBB Colab 60 epoch (2026-11-12); bản cũ: exports/det_C_candidate.pt
 CLS_PATH = os.getenv("CLS_MODEL_PATH", str(ROOT / "exports/cls_finetune_best.pt"))
 
 # giống notebook: CONF_PRED, IMGSZ, CLS_IMGSZ, CROP_PAD
@@ -39,6 +39,14 @@ NMS_IOU = float(os.getenv("NMS_IOU", "0.6"))   # NMS chặt hơn mặc định 0
 QUANT = 16 if os.getenv("HALF", "1") == "1" else None   # FP16 trên GPU (ultralytics tự tắt khi chạy CPU); đặt HALF=0 để tắt
 CLS_IMGSZ = 224
 CROP_PAD = 0.10
+# CLIP kiểm tra loại quả từng crop (zero-shot): bỏ vật không phải chuối/táo/cam (dâu, nho...), sửa nhầm táo/cam.
+# Ngưỡng chọn trên val (work/fruitcls/eval_gate.py): test 373 ảnh đếm đúng 75.6% -> 78.8%, ảnh "vật khác" báo sai 318 -> 110/1054.
+CLIP_CHECK = os.getenv("CLIP_CHECK", "1") == "1"
+CLIP_T_OTHER = float(os.getenv("CLIP_T_OTHER", "0.8"))
+CLIP_T_SWAP = float(os.getenv("CLIP_T_SWAP", "0.8"))   # val: 0.8 = 0.9 (cùng lỗi), 0.7 sai thêm; 0.8 sửa thêm táo bị gọi cam
+# Có CLIP: chạy detector ở ngưỡng thấp hơn, box điểm < CONF chỉ giữ khi CLIP chắc >= CLIP_T_RESCUE là quả (bớt bỏ sót)
+RESCUE_CONF = float(os.getenv("RESCUE_CONF", "0.25"))
+CLIP_T_RESCUE = float(os.getenv("CLIP_T_RESCUE", "0.9"))
 
 MAX_SIZE = 10 * 1024 * 1024
 # file nén nhỏ vẫn có thể bung ra rất lớn sau khi giải mã, nên chặn theo số pixel
@@ -58,6 +66,12 @@ async def lifespan(app):
     cv2.setNumThreads(CPU_THREADS)
     models["det"] = YOLO(DET_PATH)
     models["cls"] = YOLO(CLS_PATH)
+    if CLIP_CHECK:
+        try:
+            from clip_check import ClipChecker
+            models["clip"] = ClipChecker()
+        except Exception as e:   # thiếu open_clip/model: chạy tiếp không có bước kiểm tra
+            print("CLIP_CHECK tắt:", e)
     # chạy thử 1 lượt để request đầu tiên không bị chậm
     blank = np.zeros((IMGSZ, IMGSZ, 3), np.uint8)
     models["det"].predict(blank, imgsz=IMGSZ, quantize=QUANT, verbose=False)
@@ -96,12 +110,21 @@ def predict(img, mode="careful"):
     with lock:
         torch.set_num_threads(CPU_THREADS)
         polys = None
+        conf = min(CONF, RESCUE_CONF) if "clip" in models else CONF
         if det.task == "obb":   # khung xoay: một lượt, không cần xoay ảnh (model đã học góc bất kỳ)
-            polys, boxes, scores, classes = detect_obb(det, img, conf=CONF, imgsz=IMGSZ, iou=NMS_IOU, quantize=QUANT)
+            polys, boxes, scores, classes = detect_obb(det, img, conf=conf, imgsz=IMGSZ, iou=NMS_IOU, quantize=QUANT)
         else:
-            boxes, scores, classes = detect(det, img, conf=CONF,
+            boxes, scores, classes = detect(det, img, conf=conf,
                 imgsz=QUALITY_IMGSZ if mode == "careful" else IMGSZ,
                 iou=NMS_IOU, quantize=QUANT, rotated=mode == "careful")
+        if len(boxes) and "clip" in models:
+            clip = models["clip"]
+            keep, classes = refine_types(det.names, classes, clip.names,
+                                         clip.probs_boxes(img, boxes, CROP_PAD, t_other=CLIP_T_OTHER), CLIP_T_OTHER, CLIP_T_SWAP,
+                                         scores=scores, conf=CONF, t_rescue=CLIP_T_RESCUE)
+            boxes, scores, classes = boxes[keep], scores[keep], classes[keep]
+            if polys is not None:
+                polys = polys[keep]
         if not len(boxes):
             return []
         crops = [crop_rotated(img, q, CROP_PAD) for q in polys] if polys is not None else [crop_box(img, b) for b in boxes]
@@ -117,6 +140,7 @@ def predict(img, mode="careful"):
             "state": cls.names[int(p.probs.top1)],
             "state_confidence": round(float(p.probs.top1conf), 4),
             "bbox": [round(float(v), 1) for v in b],
+            "rescued": bool(float(conf) < CONF),   # điểm detector < CONF nhưng CLIP xác nhận là quả
         }
         if polys is not None:
             item["polygon"] = [[round(float(x), 1), round(float(y), 1)] for x, y in polys[k]]
@@ -136,6 +160,7 @@ def health():
         "conf": CONF,
         "default_mode": "careful",
         "careful_imgsz": QUALITY_IMGSZ,
+        "clip_check": "clip" in models,
     }
 
 
