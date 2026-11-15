@@ -3,7 +3,7 @@
 import unittest
 import numpy as np
 from detection import (refine_types, merge_detections, restore_clockwise_boxes, restore_counterclockwise_boxes,
-                       remove_group_boxes, refine_group_detections, detect)
+                       remove_group_boxes, refine_group_detections, detect, deduplicate_boxes, fuse_teacher_boxes)
 
 
 class CoordinateTests(unittest.TestCase):
@@ -148,6 +148,61 @@ class RefineTypeTests(unittest.TestCase):
         keep, cls = refine_types(self.DET, [1, 1, 1], self.TYPE, probs, 0.8, 0.9, scores=[0.3, 0.3, 0.5], conf=0.4)
         self.assertEqual(keep.tolist(), [True, False, True])
         self.assertEqual(cls.tolist()[0], 2)
+
+    def test_confident_banana_survives_occluded_clip_crop(self):
+        probs = [[0.01, 0.01, 0.01, 0.97]]
+        keep, cls = refine_types(
+            self.DET, [0], self.TYPE, probs, scores=[0.49], conf=0.4,
+        )
+        self.assertEqual(keep.tolist(), [True])
+        self.assertEqual(cls.tolist(), [0])
+
+
+class TeacherFusionTests(unittest.TestCase):
+    def test_removes_duplicate_apple_boxes_but_keeps_bananas(self):
+        polygons = np.asarray([
+            [[0, 0], [100, 0], [100, 100], [0, 100]],
+            [[2, 2], [98, 2], [98, 98], [2, 98]],
+            [[70, 0], [170, 0], [170, 100], [70, 100]],
+        ], dtype=np.float32)
+        p, boxes, scores, classes = deduplicate_boxes(
+            polygons,
+            [[0, 0, 100, 100], [2, 2, 98, 98], [70, 0, 170, 100]],
+            [.8, .6, .7],
+            [1, 1, 0],
+        )
+        self.assertEqual(len(boxes), 2)
+        self.assertEqual(classes.tolist(), [1, 0])
+
+    def test_adds_uncovered_high_confidence_box(self):
+        polygons = np.asarray([[[0, 0], [10, 0], [10, 10], [0, 10]]], dtype=np.float32)
+        _, boxes, scores, classes = fuse_teacher_boxes(
+            polygons, [[0, 0, 10, 10]], [.8], [0],
+            [[20, 20, 40, 40]], [.8], [47], {46: 0, 47: 1, 49: 2},
+            {0: .6, 1: .38, 2: .8},
+        )
+        self.assertEqual(len(boxes), 2)
+        self.assertEqual(classes.tolist(), [0, 1])
+
+    def test_does_not_duplicate_covered_box(self):
+        polygons = np.asarray([[[0, 0], [10, 0], [10, 10], [0, 10]]], dtype=np.float32)
+        _, boxes, scores, classes = fuse_teacher_boxes(
+            polygons, [[0, 0, 10, 10]], [.8], [0],
+            [[1, 1, 9, 9]], [.9], [46], {46: 0, 47: 1, 49: 2},
+            {0: .6, 1: .38, 2: .8},
+        )
+        self.assertEqual(len(boxes), 1)
+        self.assertEqual(classes.tolist(), [0])
+
+    def test_keeps_occluded_same_class_object_with_separate_center(self):
+        polygons = np.asarray([[[0, 0], [100, 0], [100, 100], [0, 100]]], dtype=np.float32)
+        _, boxes, _, classes = fuse_teacher_boxes(
+            polygons, [[0, 0, 100, 100]], [.8], [1],
+            [[70, -20, 170, 80]], [.8], [47], {46: 0, 47: 1, 49: 2},
+            {0: .6, 1: .38, 2: .8},
+        )
+        self.assertEqual(len(boxes), 2)
+        self.assertEqual(classes.tolist(), [1, 1])
 
 
 if __name__ == "__main__":

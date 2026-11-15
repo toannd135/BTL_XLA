@@ -13,6 +13,15 @@ export async function predict(file, signal, mode = 'careful') {
   return res.data
 }
 
+export async function submitFeedback(file, verdict, result) {
+  const form = new FormData()
+  form.append('file', file)
+  form.append('verdict', verdict)
+  form.append('result', JSON.stringify(result))
+  const res = await api.post('/api/feedback', form)
+  return res.data
+}
+
 export const isCanceled = (err) => axios.isCancel(err)
 
 export function errorText(err) {

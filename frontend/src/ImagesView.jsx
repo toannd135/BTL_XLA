@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Alert, App as AntApp, Button, Card, Col, Empty, Progress, Row, Space, Spin, Tag, Typography, Upload,
 } from 'antd'
-import { predict, errorText } from './api'
+import { predict, submitFeedback, errorText } from './api'
 import ImageBoxes from './ImageBoxes'
 import ResultTable from './ResultTable'
 import SummaryBar from './SummaryBar'
@@ -76,6 +76,7 @@ export default function ImagesView({ minConf, onVideo }) {
   const [selectedBox, setSelectedBox] = useState(null)
   const [running, setRunning] = useState(false)
   const [stopping, setStopping] = useState(false)
+  const [feedback, setFeedback] = useState(null)
   const canvas = useRef(null)
   const box = useRef(null)
   const stopRef = useRef(false)
@@ -259,6 +260,25 @@ export default function ImagesView({ minConf, onVideo }) {
     downloadCanvas(canvas.current, name)
   }
 
+  const review = async (verdict) => {
+    if (!sel?.file || !selResult || feedback) return
+    setFeedback(verdict)
+    try {
+      await submitFeedback(sel.file, verdict, {
+        ...selResult,
+        objects: selObjects,
+        excluded: sel.excluded || [],
+      })
+      message.success(verdict === 'correct'
+        ? 'Đã lưu kết quả đúng'
+        : 'Đã lưu ảnh cần kiểm tra để duyệt nhãn')
+    } catch (err) {
+      message.error(errorText(err))
+    } finally {
+      setFeedback(null)
+    }
+  }
+
   if (items.length === 0) {
     return (
       <div ref={box}>
@@ -303,6 +323,13 @@ export default function ImagesView({ minConf, onVideo }) {
         <Typography.Paragraph type="secondary" className="box-hint">
           Số và màu khớp với khung trên ảnh. Bấm một dòng để làm nổi khung hoặc loại khung sai.
         </Typography.Paragraph>
+        <Space wrap className="mb16">
+          <Typography.Text strong>Đánh giá kết quả:</Typography.Text>
+          <Button size="small" loading={feedback === 'correct'} disabled={!!feedback}
+            onClick={() => review('correct')}>Đúng</Button>
+          <Button size="small" danger loading={feedback === 'needs_review'} disabled={!!feedback}
+            onClick={() => review('needs_review')}>Cần sửa / đưa vào tập duyệt</Button>
+        </Space>
         {selectedBox !== null && (
           <Space wrap className="mb16">
             <Button size="small" onClick={() => setSelectedBox(null)}>Hiện tất cả khung</Button>
