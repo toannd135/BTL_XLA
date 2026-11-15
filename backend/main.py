@@ -1,4 +1,5 @@
 import io
+import json
 import os
 
 # Bound CPU work before torch/BLAS initializes; the user can override this explicitly.
@@ -7,6 +8,7 @@ os.environ.setdefault("OMP_NUM_THREADS", str(CPU_THREADS))
 os.environ.setdefault("MKL_NUM_THREADS", str(CPU_THREADS))
 import threading
 import time
+import uuid
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Literal
@@ -22,7 +24,7 @@ from PIL import Image
 from ultralytics import YOLO
 
 import collect
-from detection import crop_rotated, detect, detect_obb, refine_types
+from detection import crop_rotated, deduplicate_boxes, detect, detect_obb, fuse_teacher_boxes, refine_types
 
 # Pillow tự cảnh báo/chặn ảnh lớn; giới hạn đã kiểm tra riêng bằng MAX_PIXELS
 Image.MAX_IMAGE_PIXELS = None
@@ -30,12 +32,16 @@ Image.MAX_IMAGE_PIXELS = None
 ROOT = Path(__file__).resolve().parent.parent
 DET_PATH = os.getenv("MODEL_PATH", str(ROOT / "exports/det_obb_s.pt"))   # OBB Colab 60 epoch (2026-11-12); bản cũ: exports/det_C_candidate.pt
 CLS_PATH = os.getenv("CLS_MODEL_PATH", str(ROOT / "exports/cls_finetune_best.pt"))
+FEEDBACK_DIR = Path(os.getenv("FEEDBACK_DIR", str(ROOT / "work" / "feedback")))
+TEACHER_CHECK = os.getenv("TEACHER_CHECK", "1") == "1"
+TEACHER_PATH = os.getenv("TEACHER_MODEL_PATH", str(ROOT / "yolo11s.pt"))
 
 # giống notebook: CONF_PRED, IMGSZ, CLS_IMGSZ, CROP_PAD
 CONF = float(os.getenv("CONF", "0.4"))   # chốt 0.40 cho model C (F1 tổng 0.82, nền sai 1/71); hạ xuống 0.25-0.35 nếu hay bỏ sót chuối
 IMGSZ = 640
 QUALITY_IMGSZ = 640   # 960 đếm chuối thừa ~2.4x, nền sai 3/71 (docs/handoff/dem-chuoi.md)
-NMS_IOU = float(os.getenv("NMS_IOU", "0.6"))   # NMS chặt hơn mặc định 0.7: bớt box trùng trên cùng một quả (xem work/audit)
+OBB_IMGSZ = int(os.getenv("OBB_IMGSZ", "1280"))
+NMS_IOU = float(os.getenv("NMS_IOU", "0.7"))   # giữ các quả chuối sát nhau; đặt 0.6 nếu tăng box trùng
 QUANT = 16 if os.getenv("HALF", "1") == "1" else None   # FP16 trên GPU (ultralytics tự tắt khi chạy CPU); đặt HALF=0 để tắt
 CLS_IMGSZ = 224
 CROP_PAD = 0.10
@@ -66,6 +72,8 @@ async def lifespan(app):
     cv2.setNumThreads(CPU_THREADS)
     models["det"] = YOLO(DET_PATH)
     models["cls"] = YOLO(CLS_PATH)
+    if TEACHER_CHECK:
+        models["teacher"] = YOLO(TEACHER_PATH)
     if CLIP_CHECK:
         try:
             from clip_check import ClipChecker
@@ -76,6 +84,8 @@ async def lifespan(app):
     blank = np.zeros((IMGSZ, IMGSZ, 3), np.uint8)
     models["det"].predict(blank, imgsz=IMGSZ, quantize=QUANT, verbose=False)
     models["cls"].predict(blank, imgsz=CLS_IMGSZ, quantize=QUANT, verbose=False)
+    if "teacher" in models:
+        models["teacher"].predict(blank, imgsz=IMGSZ, quantize=QUANT, classes=[46, 47, 49], verbose=False)
     # Some Ultralytics device setup paths reset torch's thread count.
     torch.set_num_threads(CPU_THREADS)
     yield
@@ -112,7 +122,28 @@ def predict(img, mode="careful"):
         polys = None
         conf = min(CONF, RESCUE_CONF) if "clip" in models else CONF
         if det.task == "obb":   # khung xoay: một lượt, không cần xoay ảnh (model đã học góc bất kỳ)
-            polys, boxes, scores, classes = detect_obb(det, img, conf=conf, imgsz=IMGSZ, iou=NMS_IOU, quantize=QUANT)
+            polys, boxes, scores, classes = detect_obb(
+                det, img, conf=conf, imgsz=OBB_IMGSZ, iou=NMS_IOU, quantize=QUANT,
+            )
+            if "teacher" in models:
+                teacher_result = models["teacher"].predict(
+                    img, conf=0.20, imgsz=IMGSZ, quantize=QUANT,
+                    classes=[46, 47, 49], verbose=False,
+                )[0]
+                detector_ids = {name: idx for idx, name in det.names.items()}
+                teacher_map = {46: detector_ids["banana"], 47: detector_ids["apple"], 49: detector_ids["orange"]}
+                teacher_thresholds = {
+                    teacher_map[46]: 0.60,
+                    teacher_map[47]: 0.38,
+                    teacher_map[49]: 0.80,
+                }
+                polys, boxes, scores, classes = fuse_teacher_boxes(
+                    polys, boxes, scores, classes,
+                    teacher_result.boxes.xyxy.cpu().numpy(),
+                    np.asarray(teacher_result.boxes.conf.tolist(), dtype=np.float32),
+                    np.asarray(teacher_result.boxes.cls.tolist(), dtype=np.int64),
+                    teacher_map, teacher_thresholds,
+                )
         else:
             boxes, scores, classes = detect(det, img, conf=conf,
                 imgsz=QUALITY_IMGSZ if mode == "careful" else IMGSZ,
@@ -121,10 +152,13 @@ def predict(img, mode="careful"):
             clip = models["clip"]
             keep, classes = refine_types(det.names, classes, clip.names,
                                          clip.probs_boxes(img, boxes, CROP_PAD, t_other=CLIP_T_OTHER), CLIP_T_OTHER, CLIP_T_SWAP,
-                                         scores=scores, conf=CONF, t_rescue=CLIP_T_RESCUE)
+                                         scores=scores, conf=CONF, t_rescue=CLIP_T_RESCUE,
+                                         protected_min_conf=0.30)
             boxes, scores, classes = boxes[keep], scores[keep], classes[keep]
             if polys is not None:
                 polys = polys[keep]
+        if polys is not None and len(boxes):
+            polys, boxes, scores, classes = deduplicate_boxes(polys, boxes, scores, classes)
         if not len(boxes):
             return []
         crops = [crop_rotated(img, q, CROP_PAD) for q in polys] if polys is not None else [crop_box(img, b) for b in boxes]
@@ -158,9 +192,13 @@ def health():
         "cls_model": Path(CLS_PATH).name,
         "cpu_threads": torch.get_num_threads(),
         "conf": CONF,
+        "nms_iou": NMS_IOU,
         "default_mode": "careful",
         "careful_imgsz": QUALITY_IMGSZ,
+        "obb_imgsz": OBB_IMGSZ,
         "clip_check": "clip" in models,
+        "teacher_check": "teacher" in models,
+        "teacher_model": Path(TEACHER_PATH).name if "teacher" in models else None,
     }
 
 
@@ -205,6 +243,51 @@ async def predict_api(file: UploadFile = File(...), mode: Literal["fast", "caref
         "mode": mode,
         "objects": objects,
     }
+
+
+@app.post("/api/feedback")
+async def feedback_api(
+    file: UploadFile = File(...),
+    verdict: Literal["correct", "needs_review"] = Form(...),
+    result: str = Form(...),
+):
+    """Store a reviewed prediction as a candidate for later annotation/training."""
+    try:
+        payload = json.loads(result)
+    except (TypeError, json.JSONDecodeError):
+        raise HTTPException(400, "Kết quả phản hồi không hợp lệ")
+    if not isinstance(payload, dict) or not isinstance(payload.get("objects"), list):
+        raise HTTPException(400, "Kết quả phản hồi phải chứa danh sách objects")
+
+    _, img = await read_image(file)
+    FEEDBACK_DIR.mkdir(parents=True, exist_ok=True)
+    feedback_id = uuid.uuid4().hex
+    ok, encoded = cv2.imencode(".jpg", img, [cv2.IMWRITE_JPEG_QUALITY, 95])
+    if not ok:
+        raise HTTPException(500, "Không thể lưu ảnh phản hồi")
+    (FEEDBACK_DIR / f"{feedback_id}.jpg").write_bytes(encoded.tobytes())
+    (FEEDBACK_DIR / f"{feedback_id}.json").write_text(json.dumps({
+        "id": feedback_id,
+        "verdict": verdict,
+        "source_name": file.filename or "upload",
+        "result": payload,
+        "created_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+    }, ensure_ascii=False, indent=2) + "\n")
+    return {"id": feedback_id, "verdict": verdict, "status": "saved"}
+
+
+@app.get("/api/feedback/stats")
+def feedback_stats():
+    files = list(FEEDBACK_DIR.glob("*.json")) if FEEDBACK_DIR.exists() else []
+    counts = {"correct": 0, "needs_review": 0}
+    for path in files:
+        try:
+            verdict = json.loads(path.read_text()).get("verdict")
+        except (OSError, json.JSONDecodeError):
+            continue
+        if verdict in counts:
+            counts[verdict] += 1
+    return {"total": sum(counts.values()), **counts}
 
 
 @app.post("/api/collect")

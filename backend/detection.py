@@ -168,6 +168,79 @@ def detect_obb(model, image, conf=0.4, imgsz=640, iou=0.6, quantize=None):
             np.asarray(o.conf.tolist(), dtype=np.float32), np.asarray(o.cls.tolist(), dtype=np.int64))
 
 
+def fuse_teacher_boxes(polygons, boxes, scores, classes, teacher_boxes, teacher_scores,
+                       teacher_classes, class_map, thresholds, overlap=0.3):
+    """Add only independent high-confidence teacher boxes not covered by the detector."""
+    boxes = np.asarray(boxes, dtype=np.float32).reshape(-1, 4)
+    polygons = np.asarray(polygons, dtype=np.float32).reshape(-1, 4, 2)
+    scores = np.asarray(scores, dtype=np.float32)
+    classes = np.asarray(classes, dtype=np.int64)
+    added_boxes, added_scores, added_classes = [], [], []
+    for box, score, teacher_class in zip(teacher_boxes, teacher_scores, teacher_classes):
+        if int(teacher_class) not in class_map:
+            continue
+        cls = class_map[int(teacher_class)]
+        if float(score) < thresholds.get(cls, 1.0):
+            continue
+        same_class = classes == cls
+        if len(boxes) and np.any(same_class):
+            same = boxes[same_class]
+            cx, cy = (box[0] + box[2]) / 2, (box[1] + box[3]) / 2
+            center_inside = (
+                (same[:, 0] <= cx) & (cx <= same[:, 2]) &
+                (same[:, 1] <= cy) & (cy <= same[:, 3])
+            )
+            if np.any(center_inside):
+                continue
+        added_boxes.append(box)
+        added_scores.append(score)
+        added_classes.append(cls)
+    if not added_boxes:
+        return polygons, boxes, scores, classes
+    added_boxes = np.asarray(added_boxes, dtype=np.float32)
+    added_polygons = np.asarray([
+        [[b[0], b[1]], [b[2], b[1]], [b[2], b[3]], [b[0], b[3]]]
+        for b in added_boxes
+    ], dtype=np.float32)
+    return (
+        np.concatenate((polygons, added_polygons)),
+        np.concatenate((boxes, added_boxes)),
+        np.concatenate((scores, np.asarray(added_scores, dtype=np.float32))),
+        np.concatenate((classes, np.asarray(added_classes, dtype=np.int64))),
+    )
+
+
+def deduplicate_boxes(polygons, boxes, scores, classes, iou_threshold=0.65):
+    """Remove near-identical same-class boxes while preserving crowded bananas."""
+    boxes = np.asarray(boxes, dtype=np.float32).reshape(-1, 4)
+    polygons = np.asarray(polygons, dtype=np.float32).reshape(-1, 4, 2)
+    scores = np.asarray(scores, dtype=np.float32)
+    classes = np.asarray(classes, dtype=np.int64)
+    order = np.argsort(-scores, kind="stable")
+    keep = []
+    for index in order:
+        if classes[index] == 0:
+            keep.append(index)
+            continue
+        duplicate = False
+        for kept in keep:
+            if classes[kept] != classes[index]:
+                continue
+            a, b = boxes[kept], boxes[index]
+            inter = np.maximum(0, np.minimum(a[2:], b[2:]) - np.maximum(a[:2], b[:2])).prod()
+            area_a = max((a[2] - a[0]) * (a[3] - a[1]), 1e-9)
+            area_b = max((b[2] - b[0]) * (b[3] - b[1]), 1e-9)
+            iou = inter / max(area_a + area_b - inter, 1e-9)
+            covered = inter / min(area_a, area_b)
+            if iou >= iou_threshold or covered >= 0.85:
+                duplicate = True
+                break
+        if not duplicate:
+            keep.append(index)
+    keep = np.asarray(keep, dtype=np.int64)
+    return polygons[keep], boxes[keep], scores[keep], classes[keep]
+
+
 def crop_rotated(img, poly, pad=0.10):
     """Cắt vùng khung xoay và xoay thẳng (cạnh dài nằm ngang), nới mỗi chiều pad."""
     rect = cv2.minAreaRect(np.asarray(poly, dtype=np.float32))
@@ -181,7 +254,8 @@ def crop_rotated(img, poly, pad=0.10):
     return cv2.warpAffine(img, M, (int(round(w)), int(round(h))), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
 
 
-def refine_types(det_names, classes, type_names, type_probs, t_other=0.6, t_swap=0.7, scores=None, conf=None, t_rescue=0.9):
+def refine_types(det_names, classes, type_names, type_probs, t_other=0.6, t_swap=0.7,
+                 scores=None, conf=None, t_rescue=0.9, protected_min_conf=0.30):
     """Kiểm tra lại loại quả bằng bộ phân loại crop (banana/apple/orange/other).
     - p(other) >= t_other: bỏ box (vật không phải chuối/táo/cam, vd. dâu, nho).
     - loại quả khác detector và p >= t_swap: đổi nhãn theo bộ phân loại.
@@ -200,7 +274,12 @@ def refine_types(det_names, classes, type_names, type_probs, t_other=0.6, t_swap
         top = int(p.argmax())
         name = type_names[top]
         if name == "other":
-            if p[top] >= t_other:
+            banana_id = det_idx.get("banana")
+            protected_banana = (
+                scores is not None and banana_id is not None and out[k] == banana_id
+                and scores[k] >= protected_min_conf
+            )
+            if p[top] >= t_other and not protected_banana:
                 keep[k] = False
         elif name in det_idx and det_idx[name] != out[k] and p[top] >= t_swap:
             out[k] = det_idx[name]

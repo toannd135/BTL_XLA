@@ -7,8 +7,8 @@ Báo cáo đồ án môn Xử lý ảnh. Hệ thống tìm từng quả **chuố
 Hai tầng YOLO11 nối tiếp, thêm một bước CLIP kiểm tra loại quả (từ 2026-11-12):
 
 ```
-Ảnh ─► Detector YOLO11s-OBB (640×640) ─► box xoay: banana | apple | orange
-         conf ≥ 0.40, NMS IoU 0.6
+Ảnh ─► Detector YOLO11s-OBB (1280×1280) ─► box xoay: banana | apple | orange
+         conf ≥ 0.40, NMS IoU 0.7
                       ▼
           cắt từng box (đệm 10%) ─► CLIP ViT-L-14 (zero-shot) ─► bỏ vật khác / sửa nhãn loại quả
                       ▼
@@ -460,8 +460,18 @@ uvicorn main:app --reload --port 8000
 | `GET /api/health` | Trạng thái, thiết bị (cpu/cuda), tên model |
 | `POST /api/predict` | Form-data trường `file` (jpg/png/webp, ≤ 10MB, ≤ 40 triệu điểm ảnh); trả về kích thước ảnh, danh sách quả (nhãn, độ tin cậy, trạng thái, độ tin cậy trạng thái, bbox) và thời gian xử lý |
 | `POST /api/collect`, `GET /api/collect/stats` | Lưu khung hình thu thập để làm dữ liệu sau này |
+| `POST /api/feedback` | Lưu ảnh và kết quả đã được người dùng duyệt (`verdict=correct` hoặc `needs_review`) vào `work/feedback/` |
+| `GET /api/feedback/stats` | Thống kê số kết quả đúng và số ảnh cần duyệt lại |
 
-Biến môi trường: `CONF` (0.40), `NMS_IOU` (0.6), `HALF` (1), `MODEL_PATH`, `CLS_MODEL_PATH`, `COLLECT_DIR`, `CORS_ORIGINS`; CLIP: `CLIP_CHECK` (1, đặt 0 để tắt), `CLIP_ARCH` (ViT-L-14; máy yếu dùng ViT-B-32), `CLIP_T_OTHER` (0.8), `CLIP_T_SWAP` (0.9), `RESCUE_CONF` (0.25), `CLIP_T_RESCUE` (0.9), `CLIP_T_INNER` (0.9).
+### Duyệt kết quả và active learning
+
+Ở tab **Ảnh**, sau khi đối chiếu bounding box, người dùng có thể chọn **Đúng**
+hoặc **Cần sửa / đưa vào tập duyệt**. Backend lưu ảnh gốc cùng JSON kết quả vào
+`work/feedback/`; các ảnh `needs_review` là ứng viên để sửa nhãn thủ công trước
+khi đưa vào lần huấn luyện tiếp theo. Kết quả có confidence trạng thái dưới
+ngưỡng được hiển thị là **Chưa chắc**, không tự động ép thành tươi hoặc hỏng.
+
+Biến môi trường: `CONF` (0.40), `NMS_IOU` (0.70; thử 0.60 nếu xuất hiện box trùng), `OBB_IMGSZ` (1280 cho cảnh chuối chồng lấn; 960 nhanh hơn), `HALF` (1), `MODEL_PATH`, `CLS_MODEL_PATH`, `COLLECT_DIR`, `CORS_ORIGINS`; CLIP: `CLIP_CHECK` (1, đặt 0 để tắt), `CLIP_ARCH` (ViT-L-14; máy yếu dùng ViT-B-32), `CLIP_T_OTHER` (0.8), `CLIP_T_SWAP` (0.9), `RESCUE_CONF` (0.25), `CLIP_T_RESCUE` (0.9), `CLIP_T_INNER` (0.9). `TEACHER_CHECK` (1) bật YOLO11s COCO độc lập để cứu box táo/loại quả bị detector chính bỏ sót; đặt 0 để tắt, hoặc đổi `TEACHER_MODEL_PATH`.
 
 ### Frontend (React + Ant Design)
 
