@@ -1,0 +1,458 @@
+{
+  "schema": 1,
+  "parent_dataset_id": "8fec5f1bf0519b66671ac9422b0040707bf97d84f77c5d127bd810ba14513dd0",
+  "model_sha256": "e2ae26714bdcb883d4650fdc39d4843b221fdb29b2829681cbcddc8b2af2643e",
+  "counts": {
+    "train": 15,
+    "val": 8
+  },
+  "conf": 0.25,
+  "iou": 0.7,
+  "imgsz": 640,
+  "device": "cpu",
+  "threads": 2,
+  "policy": "Unverified model drafts only. Empty predictions are NOT confirmed negatives. All target fruits must be checked. Diagnostics/test are excluded. Do not train this draft archive.",
+  "items": [
+    {
+      "id": "17a36f468da148ec5025cd3b",
+      "role": "train",
+      "source_image": "local_dataset/det/train/images/mbk__mixed_15.jpg",
+      "source_group": "mbk__mixed_15",
+      "display_image_sha256": "b381c6fc34284cde12b4fbf4a530dde50777df956074555d766353b7df828509",
+      "image": "images/train/17a36f468da148ec5025cd3b.jpg",
+      "label": "labels/train/17a36f468da148ec5025cd3b.txt",
+      "status": "pending",
+      "expected_count": null,
+      "verified": false,
+      "draft_counts": {
+        "2": 2,
+        "0": 1,
+        "1": 1
+      },
+      "scores": [
+        0.8987460732460022,
+        0.8821065425872803,
+        0.460472047328949,
+        0.39157405495643616
+      ]
+    },
+    {
+      "id": "02d6ac9804270d28bb5005c0",
+      "role": "train",
+      "source_image": "local_dataset/det/train/images/mbk__orange_19.jpg",
+      "source_group": "mbk__orange_19",
+      "display_image_sha256": "236f924a254c464915eb71b97fc57b22f39bda6da09f3688533c85c75d0c0ca0",
+      "image": "images/train/02d6ac9804270d28bb5005c0.jpg",
+      "label": "labels/train/02d6ac9804270d28bb5005c0.txt",
+      "status": "pending",
+      "expected_count": null,
+      "verified": false,
+      "draft_counts": {
+        "2": 10
+      },
+      "scores": [
+        0.8944042921066284,
+        0.8888615965843201,
+        0.8031532764434814,
+        0.7980780005455017,
+        0.7657148241996765,
+        0.7069780230522156,
+        0.6836065053939819,
+        0.6539337635040283,
+        0.640841007232666,
+        0.5974586009979248
+      ]
+    },
+    {
+      "id": "93001c727e3585364b30af77",
+      "role": "train",
+      "source_image": "local_dataset/det/train/images/rf_v7__Screen-Shot-2018-06-12-at-11_31_24-PM_png.rf.050badf80f72736627e30be7399784b2.jpg",
+      "source_group": "rf_v7__Screen-Shot-2018-06-12-at-11_31_24-PM",
+      "display_image_sha256": "e31dd58f6960b0fd7cd01be4adfe514feedb1f22f4f96f68db0ac4a9e4df3206",
+      "image": "images/train/93001c727e3585364b30af77.jpg",
+      "label": "labels/train/93001c727e3585364b30af77.txt",
+      "status": "pending",
+      "expected_count": null,
+      "verified": false,
+      "draft_counts": {
+        "2": 1
+      },
+      "scores": [
+        0.8630950450897217
+      ]
+    },
+    {
+      "id": "87971f7b972b6cee23e58e96",
+      "role": "train",
+      "source_image": "local_dataset/det/train/images/rf_v7__Screen-Shot-2018-06-12-at-11_31_24-PM_png.rf.9bc00fc165c567c1f5cbd4d252b5b6c3.jpg",
+      "source_group": "rf_v7__Screen-Shot-2018-06-12-at-11_31_24-PM",
+      "display_image_sha256": "ac0eec47762448787bcacb74f74d30468367b9926039f20d5ba5f78a33329e0d",
+      "image": "images/train/87971f7b972b6cee23e58e96.jpg",
+      "label": "labels/train/87971f7b972b6cee23e58e96.txt",
+      "status": "pending",
+      "expected_count": null,
+      "verified": false,
+      "draft_counts": {
+        "2": 3
+      },
+      "scores": [
+        0.8811757564544678,
+        0.42646855115890503,
+        0.3756413459777832
+      ]
+    },
+    {
+      "id": "c576295b981e3b6304d43e8f",
+      "role": "train",
+      "source_image": "local_dataset/det/train/images/rf_v7__Screen-Shot-2018-06-12-at-11_53_33-PM_png.rf.70f3b65e6f7c01c90ce184a5b0f8f4d8.jpg",
+      "source_group": "rf_v7__Screen-Shot-2018-06-12-at-11_53_33-PM",
+      "display_image_sha256": "2d6d840e3f7c38fe7f7893e0ad1b6b58a1a362a75e250c5eef6cbeae292a88c6",
+      "image": "images/train/c576295b981e3b6304d43e8f.jpg",
+      "label": "labels/train/c576295b981e3b6304d43e8f.txt",
+      "status": "pending",
+      "expected_count": null,
+      "verified": false,
+      "draft_counts": {
+        "2": 2
+      },
+      "scores": [
+        0.8507874608039856,
+        0.3934289216995239
+      ]
+    },
+    {
+      "id": "8a778c3a1800d3029414ce30",
+      "role": "train",
+      "source_image": "local_dataset/det/train/images/rf_v7__Screen-Shot-2018-06-12-at-11_58_18-PM_png.rf.f14d7c164283c8c11aa960d4157798e9.jpg",
+      "source_group": "rf_v7__Screen-Shot-2018-06-12-at-11_58_18-PM",
+      "display_image_sha256": "3d4b840b1a8b7e8f1ab51b2f1c710750d3c73f31b74e48e6a9d1f5ac01aa8c38",
+      "image": "images/train/8a778c3a1800d3029414ce30.jpg",
+      "label": "labels/train/8a778c3a1800d3029414ce30.txt",
+      "status": "pending",
+      "expected_count": null,
+      "verified": false,
+      "draft_counts": {
+        "2": 1
+      },
+      "scores": [
+        0.7959521412849426
+      ]
+    },
+    {
+      "id": "7455ab3232d1c4df0c074a2d",
+      "role": "train",
+      "source_image": "local_dataset/det/train/images/rf_v7__Screen-Shot-2018-06-13-at-12_07_32-AM_png.rf.8ea54233ca583d9b527095cc76435c04.jpg",
+      "source_group": "rf_v7__Screen-Shot-2018-06-13-at-12_07_32-AM",
+      "display_image_sha256": "e384cc5672f0e9157da1889929f776323c2d0575ff49fb712081af9b30359507",
+      "image": "images/train/7455ab3232d1c4df0c074a2d.jpg",
+      "label": "labels/train/7455ab3232d1c4df0c074a2d.txt",
+      "status": "pending",
+      "expected_count": null,
+      "verified": false,
+      "draft_counts": {
+        "2": 6
+      },
+      "scores": [
+        0.7653277516365051,
+        0.7232705950737,
+        0.6991422176361084,
+        0.5728093385696411,
+        0.44829902052879333,
+        0.41444480419158936
+      ]
+    },
+    {
+      "id": "6dd0b92fbdd066944bd6bb23",
+      "role": "train",
+      "source_image": "local_dataset/det/train/images/rf_v7__Screen-Shot-2018-06-13-at-12_07_39-AM_png.rf.9766f45a18458fe2ce078c16aa89c5cd.jpg",
+      "source_group": "rf_v7__Screen-Shot-2018-06-13-at-12_07_39-AM",
+      "display_image_sha256": "35e073d2acbcf03d6781cfa2c6c9645d3da70bf6860da0728bee2d0d037214d9",
+      "image": "images/train/6dd0b92fbdd066944bd6bb23.jpg",
+      "label": "labels/train/6dd0b92fbdd066944bd6bb23.txt",
+      "status": "pending",
+      "expected_count": null,
+      "verified": false,
+      "draft_counts": {
+        "2": 2
+      },
+      "scores": [
+        0.6605675220489502,
+        0.28093481063842773
+      ]
+    },
+    {
+      "id": "4581b51a077e900885a8b1bf",
+      "role": "train",
+      "source_image": "local_dataset/det/train/images/rf_v7__b_f010_png.rf.4c6df05fc33d27baa8f6725c23d7d7be.jpg",
+      "source_group": "rf_v7__b_f010",
+      "display_image_sha256": "7a2fe9143bb3a89bf0824ed497ad0e930315c022ca9cc97f820f9c8c0a98c88e",
+      "image": "images/train/4581b51a077e900885a8b1bf.jpg",
+      "label": "labels/train/4581b51a077e900885a8b1bf.txt",
+      "status": "pending",
+      "expected_count": null,
+      "verified": false,
+      "draft_counts": {},
+      "scores": []
+    },
+    {
+      "id": "de7f935561667542be434c35",
+      "role": "train",
+      "source_image": "local_dataset/det/train/images/rf_v7__b_f010_png.rf.f740cfa975ca32fb96c1acb535c8cc0c.jpg",
+      "source_group": "rf_v7__b_f010",
+      "display_image_sha256": "a2e79bdb1318ae436fce238a4176353fc813c2af6b9819ec7b72a83c7000698c",
+      "image": "images/train/de7f935561667542be434c35.jpg",
+      "label": "labels/train/de7f935561667542be434c35.txt",
+      "status": "pending",
+      "expected_count": null,
+      "verified": false,
+      "draft_counts": {
+        "0": 1
+      },
+      "scores": [
+        0.5283885598182678
+      ]
+    },
+    {
+      "id": "03b2a00aff7f6a0619dd64a7",
+      "role": "train",
+      "source_image": "local_dataset/det/train/images/rf_v7__b_f013_png.rf.930f7d4a53c54e124e9d3c3a81fd67d7.jpg",
+      "source_group": "rf_v7__b_f013",
+      "display_image_sha256": "3c95638b5be42954460b1d61cb46ce536ac2bcb879289cad6ddef81da75bbae7",
+      "image": "images/train/03b2a00aff7f6a0619dd64a7.jpg",
+      "label": "labels/train/03b2a00aff7f6a0619dd64a7.txt",
+      "status": "pending",
+      "expected_count": null,
+      "verified": false,
+      "draft_counts": {
+        "0": 4
+      },
+      "scores": [
+        0.7897383570671082,
+        0.5215058922767639,
+        0.4030705690383911,
+        0.3602064847946167
+      ]
+    },
+    {
+      "id": "3c686fe5d1583f743f333cec",
+      "role": "train",
+      "source_image": "local_dataset/det/train/images/rf_v7__b_f013_png.rf.e41ac0b3a48a2c8a98f38e5c49178b46.jpg",
+      "source_group": "rf_v7__b_f013",
+      "display_image_sha256": "1c3cf48d0d92b49087c992cadbc2b1acd1eb2db6e08fe215422f10ce67fd4df2",
+      "image": "images/train/3c686fe5d1583f743f333cec.jpg",
+      "label": "labels/train/3c686fe5d1583f743f333cec.txt",
+      "status": "pending",
+      "expected_count": null,
+      "verified": false,
+      "draft_counts": {},
+      "scores": []
+    },
+    {
+      "id": "d7841690e35e7dc450a28d44",
+      "role": "train",
+      "source_image": "local_dataset/det/train/images/rf_v7__b_f013_png.rf.ffa1945be6451429d8e6d7b986f08137.jpg",
+      "source_group": "rf_v7__b_f013",
+      "display_image_sha256": "3b04ffbef825f7a6f23951e31d285cbe8e7f32970627e37416e08ddf5e41a013",
+      "image": "images/train/d7841690e35e7dc450a28d44.jpg",
+      "label": "labels/train/d7841690e35e7dc450a28d44.txt",
+      "status": "pending",
+      "expected_count": null,
+      "verified": false,
+      "draft_counts": {
+        "0": 4
+      },
+      "scores": [
+        0.8382716774940491,
+        0.7880085706710815,
+        0.7003211379051208,
+        0.5238353610038757
+      ]
+    },
+    {
+      "id": "95369e3dc95bb75bb39d7499",
+      "role": "train",
+      "source_image": "local_dataset/det/train/images/rf_v7__b_f027_png.rf.0f1ad4e75fb6243bdbff7f5df94ef168.jpg",
+      "source_group": "rf_v7__b_f027",
+      "display_image_sha256": "bca68dd913c39d15c06060859a00c9ee948f6af3362e91603257e06d38e2485e",
+      "image": "images/train/95369e3dc95bb75bb39d7499.jpg",
+      "label": "labels/train/95369e3dc95bb75bb39d7499.txt",
+      "status": "pending",
+      "expected_count": null,
+      "verified": false,
+      "draft_counts": {
+        "2": 1
+      },
+      "scores": [
+        0.41879919171333313
+      ]
+    },
+    {
+      "id": "cb4eec6be01d42b3ebb633ba",
+      "role": "train",
+      "source_image": "local_dataset/det/train/images/rf_v7__b_f027_png.rf.6cd37ac95dff305239a8257d565c2a53.jpg",
+      "source_group": "rf_v7__b_f027",
+      "display_image_sha256": "6baf1f57ee3aa681858007a196fdb16644b275c254053c2848851f478cc1abf8",
+      "image": "images/train/cb4eec6be01d42b3ebb633ba.jpg",
+      "label": "labels/train/cb4eec6be01d42b3ebb633ba.txt",
+      "status": "pending",
+      "expected_count": null,
+      "verified": false,
+      "draft_counts": {
+        "2": 1
+      },
+      "scores": [
+        0.4074435830116272
+      ]
+    },
+    {
+      "id": "13c5007f50908d926f1ec82f",
+      "role": "val",
+      "source_image": "local_dataset/det/val/images/mbk__banana_42.jpg",
+      "source_group": "mbk__banana_42",
+      "display_image_sha256": "7958bd73f7cb90db26dccf65c280208aeebfbfce0c30c652ffaef732edc9932c",
+      "image": "images/val/13c5007f50908d926f1ec82f.jpg",
+      "label": "labels/val/13c5007f50908d926f1ec82f.txt",
+      "status": "pending",
+      "expected_count": null,
+      "verified": false,
+      "draft_counts": {
+        "0": 3
+      },
+      "scores": [
+        0.5917420983314514,
+        0.5383313894271851,
+        0.38437896966934204
+      ]
+    },
+    {
+      "id": "85caa7b72160f48981c54944",
+      "role": "val",
+      "source_image": "local_dataset/det/val/images/rf_v7__Screen-Shot-2018-06-13-at-12_06_28-AM_png.rf.115aa98024460d531265b520970ed8a9.jpg",
+      "source_group": "rf_v7__Screen-Shot-2018-06-13-at-12_06_28-AM",
+      "display_image_sha256": "e2daf42275d39626a0f78af44b122138158f6d8a2e000841627caca9aa2cdedf",
+      "image": "images/val/85caa7b72160f48981c54944.jpg",
+      "label": "labels/val/85caa7b72160f48981c54944.txt",
+      "status": "pending",
+      "expected_count": null,
+      "verified": false,
+      "draft_counts": {},
+      "scores": []
+    },
+    {
+      "id": "81d5f64b7d06b9ac1ccea6f0",
+      "role": "val",
+      "source_image": "local_dataset/det/val/images/rf_v7__Screen-Shot-2018-06-13-at-12_06_28-AM_png.rf.32e19a98d89fb84e9e68d5764600ff6e.jpg",
+      "source_group": "rf_v7__Screen-Shot-2018-06-13-at-12_06_28-AM",
+      "display_image_sha256": "3c716dfdb6a3d7b78f0e4675fa052179c944002fbf89b3ea579293c9495c0efc",
+      "image": "images/val/81d5f64b7d06b9ac1ccea6f0.jpg",
+      "label": "labels/val/81d5f64b7d06b9ac1ccea6f0.txt",
+      "status": "pending",
+      "expected_count": null,
+      "verified": false,
+      "draft_counts": {
+        "2": 6
+      },
+      "scores": [
+        0.5776289105415344,
+        0.35118892788887024,
+        0.3228987753391266,
+        0.2850430905818939,
+        0.2658858895301819,
+        0.2540324628353119
+      ]
+    },
+    {
+      "id": "7fc208b0975b8a85053b0559",
+      "role": "val",
+      "source_image": "local_dataset/det/val/images/rf_v7__Screen-Shot-2018-06-13-at-12_06_28-AM_png.rf.7fd4b62f70ba08673bdba08e9c8c7e93.jpg",
+      "source_group": "rf_v7__Screen-Shot-2018-06-13-at-12_06_28-AM",
+      "display_image_sha256": "1b9e9aaf1aebca0b74ca3afc7dc6f3b3c701b85bc6f0441274dc2d0f7a9e626b",
+      "image": "images/val/7fc208b0975b8a85053b0559.jpg",
+      "label": "labels/val/7fc208b0975b8a85053b0559.txt",
+      "status": "pending",
+      "expected_count": null,
+      "verified": false,
+      "draft_counts": {},
+      "scores": []
+    },
+    {
+      "id": "7bc1ac8bae9310bae2443627",
+      "role": "val",
+      "source_image": "local_dataset/det/val/images/rf_v7__b_f054_png.rf.dd3b00a143d21f830a6341b1be59442d.jpg",
+      "source_group": "rf_v7__b_f054",
+      "display_image_sha256": "7251dde2d13b54ecda36449dd73d20e4f3039c522c6c8cebb05017f63935c1b1",
+      "image": "images/val/7bc1ac8bae9310bae2443627.jpg",
+      "label": "labels/val/7bc1ac8bae9310bae2443627.txt",
+      "status": "pending",
+      "expected_count": null,
+      "verified": false,
+      "draft_counts": {
+        "0": 2
+      },
+      "scores": [
+        0.543226420879364,
+        0.3859267830848694
+      ]
+    },
+    {
+      "id": "7749ab399aa45bb683072a50",
+      "role": "val",
+      "source_image": "local_dataset/det/val/images/rf_v7__b_f064_png.rf.24eb8c1b3a23ac9dcb1c13a03f37eb8a.jpg",
+      "source_group": "rf_v7__b_f064",
+      "display_image_sha256": "066616be74c26bbcf7e39a1549919b04536b3b5021a9201d78c0d695609d81c5",
+      "image": "images/val/7749ab399aa45bb683072a50.jpg",
+      "label": "labels/val/7749ab399aa45bb683072a50.txt",
+      "status": "pending",
+      "expected_count": null,
+      "verified": false,
+      "draft_counts": {
+        "0": 1
+      },
+      "scores": [
+        0.4699401259422302
+      ]
+    },
+    {
+      "id": "f5240101cd81d98d6ce59ef7",
+      "role": "val",
+      "source_image": "local_dataset/det/val/images/rf_v7__b_f072_png.rf.9b6a490c7e9a9316471decc7ae9de4e0.jpg",
+      "source_group": "rf_v7__b_f072",
+      "display_image_sha256": "a06e386cd0e6a7d82762bd1fce5cea2dad593aeea5b1ab882404b38b01fb8841",
+      "image": "images/val/f5240101cd81d98d6ce59ef7.jpg",
+      "label": "labels/val/f5240101cd81d98d6ce59ef7.txt",
+      "status": "pending",
+      "expected_count": null,
+      "verified": false,
+      "draft_counts": {
+        "0": 1
+      },
+      "scores": [
+        0.6928335428237915
+      ]
+    },
+    {
+      "id": "fd1fb0e99efd248fdd05be40",
+      "role": "val",
+      "source_image": "local_dataset/det/val/images/mbk__apple_64.jpg",
+      "source_group": "mbk__apple_64",
+      "display_image_sha256": "2704c53d3d122d0073aa5658cbd7a87b9eb55b483841447cf79f5b710ad672d0",
+      "image": "images/val/fd1fb0e99efd248fdd05be40.jpg",
+      "label": "labels/val/fd1fb0e99efd248fdd05be40.txt",
+      "status": "pending",
+      "expected_count": null,
+      "verified": false,
+      "draft_counts": {
+        "1": 7
+      },
+      "scores": [
+        0.8987374901771545,
+        0.8623207807540894,
+        0.782764732837677,
+        0.3901939392089844,
+        0.31770166754722595,
+        0.30709677934646606,
+        0.2726166248321533
+      ]
+    }
+  ]
+}

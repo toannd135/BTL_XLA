@@ -1,0 +1,9 @@
+{
+  "verified_images": 21,
+  "original_pixels_preserved": true,
+  "classes_and_box_counts_unchanged": true,
+  "obb_pixel_coordinates_preserved_within": 0.001,
+  "all_new_coordinates_normalized": true,
+  "source_zip_unchanged": true,
+  "training_ready": false
+}

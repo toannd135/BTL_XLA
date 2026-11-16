@@ -1,0 +1,8 @@
+{
+  "submitted_zip_rows_match_report": true,
+  "all_three_models_count_metrics_recomputed": true,
+  "resolution_notebook_syntax": true,
+  "resolution_runner_CPU_guard": true,
+  "no_test_or_train_execution": true,
+  "Colab_GPU_execution_not_yet_verified": true
+}

@@ -1,0 +1,6 @@
+train: train.txt
+val: val.txt
+names:
+  0: banana
+  1: apple
+  2: orange

@@ -1,0 +1,11 @@
+{
+  "archive_crc": "passed",
+  "file_hashes": "passed",
+  "image_label_paths": "passed",
+  "no_diagnostic_or_test_in_train": "passed",
+  "notebook_and_scripts_syntax": "passed",
+  "excluded_reviews": 2,
+  "quarantined_reviews": 3,
+  "baseline_model_unchanged": true,
+  "gpu_training_executed_locally": false
+}

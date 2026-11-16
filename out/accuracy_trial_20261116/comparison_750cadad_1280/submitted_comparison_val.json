@@ -1,0 +1,136 @@
+{
+  "results": [
+    {
+      "model": "baseline",
+      "sha256": "e2ae26714bdcb883d4650fdc39d4843b221fdb29b2829681cbcddc8b2af2643e",
+      "mAP50": 0.8956933755871473,
+      "mAP50_95": 0.7417949657297361,
+      "AP50": {
+        "banana": 0.7364302765327946,
+        "apple": 0.9887437489752419,
+        "orange": 0.9619061012534055
+      },
+      "reviewed_banana_val": {
+        "images": 4,
+        "mae": 1.5,
+        "exact_rate": 0.25,
+        "rows": [
+          {
+            "source": "local_dataset/det/val/images/mbk__banana_42.jpg",
+            "truth": {
+              "0": 1
+            },
+            "predicted": {
+              "0": 2
+            },
+            "absolute_error": 1,
+            "exact_all_classes": false
+          },
+          {
+            "source": "local_dataset/det/val/images/rf_v7__b_f054_png.rf.dd3b00a143d21f830a6341b1be59442d.jpg",
+            "truth": {
+              "0": 4
+            },
+            "predicted": {
+              "0": 2
+            },
+            "absolute_error": 2,
+            "exact_all_classes": false
+          },
+          {
+            "source": "local_dataset/det/val/images/rf_v7__b_f064_png.rf.24eb8c1b3a23ac9dcb1c13a03f37eb8a.jpg",
+            "truth": {
+              "0": 4
+            },
+            "predicted": {
+              "0": 1
+            },
+            "absolute_error": 3,
+            "exact_all_classes": false
+          },
+          {
+            "source": "local_dataset/det/val/images/rf_v7__b_f072_png.rf.9b6a490c7e9a9316471decc7ae9de4e0.jpg",
+            "truth": {
+              "0": 1
+            },
+            "predicted": {
+              "0": 1
+            },
+            "absolute_error": 0,
+            "exact_all_classes": true
+          }
+        ]
+      }
+    },
+    {
+      "model": "candidate",
+      "sha256": "750cadadaf9b8c80354d7c22aba332794300f75b54d295bc71a02faf79a83095",
+      "mAP50": 0.8989571260040551,
+      "mAP50_95": 0.7497754149144779,
+      "AP50": {
+        "banana": 0.7472922491617868,
+        "apple": 0.9833545717767482,
+        "orange": 0.9662245570736303
+      },
+      "reviewed_banana_val": {
+        "images": 4,
+        "mae": 1.75,
+        "exact_rate": 0.25,
+        "rows": [
+          {
+            "source": "local_dataset/det/val/images/mbk__banana_42.jpg",
+            "truth": {
+              "0": 1
+            },
+            "predicted": {
+              "0": 3
+            },
+            "absolute_error": 2,
+            "exact_all_classes": false
+          },
+          {
+            "source": "local_dataset/det/val/images/rf_v7__b_f054_png.rf.dd3b00a143d21f830a6341b1be59442d.jpg",
+            "truth": {
+              "0": 4
+            },
+            "predicted": {
+              "0": 2
+            },
+            "absolute_error": 2,
+            "exact_all_classes": false
+          },
+          {
+            "source": "local_dataset/det/val/images/rf_v7__b_f064_png.rf.24eb8c1b3a23ac9dcb1c13a03f37eb8a.jpg",
+            "truth": {
+              "0": 4
+            },
+            "predicted": {
+              "0": 1
+            },
+            "absolute_error": 3,
+            "exact_all_classes": false
+          },
+          {
+            "source": "local_dataset/det/val/images/rf_v7__b_f072_png.rf.9b6a490c7e9a9316471decc7ae9de4e0.jpg",
+            "truth": {
+              "0": 1
+            },
+            "predicted": {
+              "0": 1
+            },
+            "absolute_error": 0,
+            "exact_all_classes": true
+          }
+        ]
+      }
+    }
+  ],
+  "limitations": [
+    "Legacy validation still includes historical bunch labels; aggregate AP/count metrics are relative checks.",
+    "Reviewed supplemental validation contains bananas only; it is not an independent three-class test.",
+    "No diagnostic or test images used for training. No original val/test files changed.",
+    "Known semantic annotation errors are quarantined, not silently accepted or auto-corrected.",
+    "New review data is small; training does not guarantee improvement and must not replace the app automatically."
+  ],
+  "protocol": "Raw OBB detector only; no CLIP/teacher/classifier. Same derived legacy val for both models. Reviewed banana count scenes are development checks, not a final independent test. Do not accept/promote automatically."
+}

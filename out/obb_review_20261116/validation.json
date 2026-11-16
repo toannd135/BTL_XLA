@@ -1,0 +1,19 @@
+{
+  "images": {
+    "train": 15,
+    "val": 8
+  },
+  "draft_boxes_by_class": {
+    "2": 35,
+    "0": 17,
+    "1": 8
+  },
+  "empty_predictions_not_verified_negatives": {
+    "train": 2,
+    "val": 2
+  },
+  "all_annotations_pending": true,
+  "zip_bytes": 696761,
+  "checks": "hashes, archive CRC, normalized OBB geometry, roles and pending statuses passed",
+  "limitation": "CVAT UI import has not been executed; archive follows documented Ultralytics OBB structure."
+}

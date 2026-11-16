@@ -5,12 +5,12 @@
 Repo được bố trí để không phụ thuộc các thư mục nằm cạnh `BTL_XLA` trên máy bàn giao:
 
 - Code backend/frontend, `tools/`, notebook, `docs/`, file cấu hình mẫu và khóa phiên bản frontend `package-lock.json`.
-- `exports/det_C_candidate.pt`, `exports/det_finetune_best.pt`, `exports/cls_finetune_best.pt`: ba model thực, không phải đường dẫn tới file máy khác. Bản được khuyến nghị cho app là `det_C_candidate.pt`; rotation_v1 không được nhận.
+- `exports/det_obb_s.pt` (mặc định backend), các model đối chứng và `exports/cls_finetune_best.pt`: trọng số thực để chạy app. Kết quả hai lượt mới nằm ở [reports/detection_trials](../reports/detection_trials/README.md); chưa tự thay model mặc định.
 - `local_dataset/det/`: ảnh và nhãn detection, gồm train/val/test/train_ft và các phần dữ liệu đang có.
 - `own_cam/`, `own_neg/` và các thư mục nguồn ảnh đã có trong repo.
 - `work/**/*.py`, metadata CSV/JSON audit và `work/audit/quarantine_train.txt`. Script tự sinh lại danh sách train/YAML theo đường dẫn trên máy mới.
 
-`.gitignore` loại `.venv`, `node_modules`, cache, `.env`, Kaggle credential, `out`, `runs`, file ZIP và các file trung gian sinh ra trong `work`. Không chặn `.pt`, `.onnx` hoặc dataset nữa. Các thư mục nguồn ngoài repo trên máy bàn giao vẫn được giữ; repo có bản sao riêng.
+`.gitignore` chỉ giữ bỏ qua môi trường, cache, credential và bản sao khôi phục Git. Model, dataset, `out/`, `runs/`, ZIP và tài nguyên trong `work/` được phép commit. ZIP dùng Git LFS qua `.gitattributes`. Xem [push và bàn giao](push-va-ban-giao.md) để tải đúng tài nguyên lớn.
 
 Phạm vi dữ liệu đang có là detection. Máy bàn giao không có `local_dataset/cls`, nên repo không kèm trọn bộ dữ liệu để train lại classifier; model classifier đã có để chạy suy luận. Các bàn giao thí nghiệm lịch sử có thể nhắc tới backup weights/ảnh ghép không còn trên máy này. Không tuyên bố tái lập mọi thí nghiệm cũ từ repo hiện tại.
 
@@ -24,20 +24,20 @@ python -m venv .venv
 .\.venv\Scripts\python.exe tools\check_repo_resources.py
 ```
 
-Lệnh kiểm tra chỉ đọc file, không train và không cần GPU. Nếu thiếu model/dataset, kiểm tra người push đã commit cả các file đó chưa; chỉ sửa `.gitignore` không tự đưa file vào commit. Nếu model là Git LFS pointer thì cần `git lfs pull` trước khi chạy app. Cấu hình bàn giao hiện tại dùng file model thông thường, chưa chuyển lịch sử sang LFS.
+Lệnh kiểm tra chỉ đọc file, không train và không cần GPU. Nếu thiếu model/dataset, kiểm tra người push đã commit cả các file đó chưa; chỉ sửa `.gitignore` không tự đưa file vào commit. Chạy `git lfs pull` để tải các ZIP lớn. Trọng số model hiện tại vẫn là file Git thông thường; chưa chuyển lịch sử sang LFS.
 
 ## Chạy backend trên CPU
 
 Tại thư mục repo:
 
 ```powershell
-$env:MODEL_PATH = "$PWD\exports\det_C_candidate.pt"
+$env:MODEL_PATH = "$PWD\exports\det_obb_s.pt"
 $env:HALF = "0"
 $env:CPU_THREADS = "2"
 .\.venv\Scripts\python.exe -m uvicorn main:app --app-dir backend --host 127.0.0.1 --port 8000
 ```
 
-Kiểm tra `http://127.0.0.1:8000/api/health`: model detector phải là `det_C_candidate.pt`. App vẫn có giới hạn nhận diện nhiều quả/chồng nhau như mô tả trong tài liệu tối ưu; đủ tài nguyên chạy không có nghĩa model đã đếm đúng mọi ảnh.
+Kiểm tra `http://127.0.0.1:8000/api/health`: model detector phải là `det_obb_s.pt`. App vẫn có giới hạn nhận diện nhiều quả/chồng nhau như mô tả trong tài liệu tối ưu; đủ tài nguyên chạy không có nghĩa model đã đếm đúng mọi ảnh.
 
 ## Chạy frontend
 
@@ -84,4 +84,4 @@ git commit -m "Include runnable app, models, detection data and handoff docs"
 git push -u origin HEAD
 ```
 
-Các lệnh này do người bàn giao thực hiện; chưa được chạy thay trong quá trình sửa ignore. Không cần force-push hoặc xóa lịch sử. File ZIP sinh ra bị ignore để tránh đưa thêm bản sao dữ liệu nặng vào Git. Với tài nguyên mới lớn hơn giới hạn file thông thường của dịch vụ Git, cần chọn Git LFS hoặc phân phối riêng thay vì bỏ ignore ZIP rồi push trực tiếp.
+Các lệnh này do người bàn giao thực hiện; chưa được chạy thay trong quá trình sửa ignore. Không cần force-push hoặc xóa lịch sử. ZIP không còn bị ignore và được cấu hình Git LFS. Xem [hướng dẫn push](push-va-ban-giao.md) và commit cả `.gitattributes`.

@@ -1,0 +1,85 @@
+{
+  "method": "Unsharp mask, Gaussian sigma=1.2, applied at source resolution",
+  "results": [
+    {
+      "unsharp_amount": 0,
+      "imgsz": 640,
+      "counts": {
+        "0.1": 0,
+        "0.25": 0,
+        "0.4": 0
+      },
+      "max_confidence": null
+    },
+    {
+      "unsharp_amount": 0,
+      "imgsz": 960,
+      "counts": {
+        "0.1": 14,
+        "0.25": 5,
+        "0.4": 2
+      },
+      "max_confidence": 0.46724560856819153
+    },
+    {
+      "unsharp_amount": 0.5,
+      "imgsz": 640,
+      "counts": {
+        "0.1": 0,
+        "0.25": 0,
+        "0.4": 0
+      },
+      "max_confidence": null
+    },
+    {
+      "unsharp_amount": 0.5,
+      "imgsz": 960,
+      "counts": {
+        "0.1": 13,
+        "0.25": 4,
+        "0.4": 2
+      },
+      "max_confidence": 0.47603440284729004
+    },
+    {
+      "unsharp_amount": 1.0,
+      "imgsz": 640,
+      "counts": {
+        "0.1": 0,
+        "0.25": 0,
+        "0.4": 0
+      },
+      "max_confidence": null
+    },
+    {
+      "unsharp_amount": 1.0,
+      "imgsz": 960,
+      "counts": {
+        "0.1": 10,
+        "0.25": 2,
+        "0.4": 1
+      },
+      "max_confidence": 0.46696048974990845
+    },
+    {
+      "unsharp_amount": 1.5,
+      "imgsz": 640,
+      "counts": {
+        "0.1": 0,
+        "0.25": 0,
+        "0.4": 0
+      },
+      "max_confidence": null
+    },
+    {
+      "unsharp_amount": 1.5,
+      "imgsz": 960,
+      "counts": {
+        "0.1": 8,
+        "0.25": 3,
+        "0.4": 1
+      },
+      "max_confidence": 0.43187078833580017
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "bananas.webp": {
+    "image_width": 1199,
+    "image_height": 807,
+    "inference_ms": 52.3,
+    "objects": []
+  },
+  "bananas_rotate90_input.png": {
+    "image_width": 807,
+    "image_height": 1199,
+    "inference_ms": 104.1,
+    "objects": [
+      {
+        "label": "banana",
+        "confidence": 0.7407,
+        "state": "fresh",
+        "state_confidence": 0.683,
+        "bbox": [
+          24.3,
+          56.0,
+          807.0,
+          380.0
+        ]
+      },
+      {
+        "label": "banana",
+        "confidence": 0.6693,
+        "state": "fresh",
+        "state_confidence": 0.9997,
+        "bbox": [
+          13.1,
+          595.9,
+          800.3,
+          918.6
+        ]
+      },
+      {
+        "label": "banana",
+        "confidence": 0.6059,
+        "state": "fresh",
+        "state_confidence": 0.9992,
+        "bbox": [
+          66.4,
+          0.0,
+          788.0,
+          182.2
+        ]
+      },
+      {
+        "label": "banana",
+        "confidence": 0.5221,
+        "state": "fresh",
+        "state_confidence": 1.0,
+        "bbox": [
+          18.4,
+          143.0,
+          805.9,
+          617.1
+        ]
+      },
+      {
+        "label": "banana",
+        "confidence": 0.4456,
+        "state": "fresh",
+        "state_confidence": 0.9632,
+        "bbox": [
+          20.1,
+          774.9,
+          807.0,
+          1196.1
+        ]
+      }
+    ]
+  }
+}

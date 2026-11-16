@@ -1,0 +1,15 @@
+{
+  "unique_training_images_by_origin": {
+    "legacy_real": 2580,
+    "synthetic": 2000,
+    "reviewed_real": 14
+  },
+  "unique_banana_annotations_by_origin": {
+    "legacy_real": 204,
+    "synthetic": 9999,
+    "reviewed_real": 26
+  },
+  "synthetic_fraction_of_unique_banana_annotations": 0.9775149085932153,
+  "reviewed_training_entries_fraction": 0.010486891385767791,
+  "interpretation": "Strong synthetic annotation dominance suggests real/synthetic balance as an ablation hypothesis; not proof of causal performance loss. Counts are unique image annotations, not all repeated training exposures. Original files and splits unchanged."
+}

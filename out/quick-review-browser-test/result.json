@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "checks": [
+    "three-image queue",
+    "existing manual draft preserved",
+    "explicit proposal remains unverified",
+    "undo restores user annotations",
+    "new image starts with proposal, no approval",
+    "drag moves selected box",
+    "one undo restores whole drag",
+    "corner resize works",
+    "browser Ctrl+1 does not relabel fruit",
+    "Ctrl+Enter reads current count input",
+    "approval advances without approving next image"
+  ]
+}

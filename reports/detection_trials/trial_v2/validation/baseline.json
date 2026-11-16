@@ -1,0 +1,70 @@
+{
+  "model": "baseline",
+  "sha256": "e2ae26714bdcb883d4650fdc39d4843b221fdb29b2829681cbcddc8b2af2643e",
+  "protocol": {
+    "split": "val",
+    "imgsz": 1280,
+    "AP_conf": 0.001,
+    "count_conf": 0.4,
+    "iou": 0.7,
+    "agnostic_nms": true,
+    "probIoU_matching_threshold": 0.5,
+    "models": {
+      "baseline": "e2ae26714bdcb883d4650fdc39d4843b221fdb29b2829681cbcddc8b2af2643e",
+      "trial_v1": "750cadadaf9b8c80354d7c22aba332794300f75b54d295bc71a02faf79a83095",
+      "trial_v2": "d0abaa79cc3784849dc3bf7c178033c56df2990b71a2f69397dfb94fc463796d"
+    },
+    "manifest_sha256": "9ad0ff75d327a8127863277ae2de5e93f4af0bf42138fbc3aed4a9b09e7202ba"
+  },
+  "mAP50": 0.6320614826930044,
+  "mAP50_95": 0.30136885951547665,
+  "AP50": {
+    "banana": 0.3626353295703262,
+    "apple": 0.7817361261961264,
+    "orange": 0.7518129923125607
+  },
+  "operating_point": {
+    "images": 297,
+    "per_class": {
+      "banana": {
+        "TP": 46,
+        "FP": 56,
+        "FN": 112,
+        "precision": 0.45098039215686275,
+        "recall": 0.2911392405063291,
+        "F1": 0.3538461538461539,
+        "count_MAE_all_images": 0.32996632996632996,
+        "count_MAE_when_present": 0.8909090909090909,
+        "exact_count_rate_all_images": 0.7441077441077442,
+        "images_with_truth": 110
+      },
+      "apple": {
+        "TP": 101,
+        "FP": 167,
+        "FN": 6,
+        "precision": 0.376865671641791,
+        "recall": 0.9439252336448598,
+        "F1": 0.5386666666666666,
+        "count_MAE_all_images": 0.5757575757575758,
+        "count_MAE_when_present": 1.4807692307692308,
+        "exact_count_rate_all_images": 0.7407407407407407,
+        "images_with_truth": 104
+      },
+      "orange": {
+        "TP": 80,
+        "FP": 108,
+        "FN": 19,
+        "precision": 0.425531914893617,
+        "recall": 0.8080808080808081,
+        "F1": 0.5574912891986062,
+        "count_MAE_all_images": 0.4074074074074074,
+        "count_MAE_when_present": 1.2,
+        "exact_count_rate_all_images": 0.7946127946127947,
+        "images_with_truth": 85
+      }
+    },
+    "macro_F1": 0.4833347032371423,
+    "count_MAE_all_classes": 1.3131313131313131,
+    "exact_all_classes": 0.32996632996632996
+  }
+}

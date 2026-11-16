@@ -1,0 +1,797 @@
+{
+  "summary": {
+    "fast": {
+      "false_positive_images": 0,
+      "images": 71,
+      "mean_ms": 103.2
+    },
+    "careful": {
+      "false_positive_images": 3,
+      "images": 71,
+      "mean_ms": 307.8
+    }
+  },
+  "rows": [
+    {
+      "image": "ball/_2014_netball_mural_geograph_org_uk_6136479_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 1326.7
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 295.4
+      }
+    },
+    {
+      "image": "ball/Ball_JPG.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 47.7
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 190.8
+      }
+    },
+    {
+      "image": "ball/Cardiff_Dragons_Netball_Colours_2024_png.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 88.4
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 285.1
+      }
+    },
+    {
+      "image": "ball/Daniel_Sou_ek_U21_Czech_Republic_vs_Greece_10_10_2019_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 88.2
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 261.0
+      }
+    },
+    {
+      "image": "ball/Netball_League_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 57.0
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 224.9
+      }
+    },
+    {
+      "image": "ball/Nikiszowiec_courtyard_with_chimneys_2024_08_09_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 85.2
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 373.0
+      }
+    },
+    {
+      "image": "bellpepper/Bent_red_bell_pepper_2017_1A_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 132.2
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 410.9
+      }
+    },
+    {
+      "image": "bellpepper/Bent_red_bell_pepper_2017_1B_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 97.0
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 327.9
+      }
+    },
+    {
+      "image": "bellpepper/Bent_red_bell_pepper_2017_2B_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 132.8
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 403.9
+      }
+    },
+    {
+      "image": "bellpepper/Capsicum_annuum_fruits_IMGP0049_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 78.5
+      },
+      "careful": {
+        "boxes": 1,
+        "ms": 349.7
+      }
+    },
+    {
+      "image": "bellpepper/Colorful_Bell_Peppers_Unsplash_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 79.4
+      },
+      "careful": {
+        "boxes": 2,
+        "ms": 272.8
+      }
+    },
+    {
+      "image": "bellpepper/Red_Bell_pepper_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 80.1
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 299.9
+      }
+    },
+    {
+      "image": "bellpepper/Red_bell_pepper_on_a_plate_2017_A_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 121.9
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 246.3
+      }
+    },
+    {
+      "image": "bellpepper/Three_colors_of_peppers_at_Giant_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 63.8
+      },
+      "careful": {
+        "boxes": 2,
+        "ms": 248.6
+      }
+    },
+    {
+      "image": "bottle/German_plastic_bottle_with_sign_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 53.2
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 236.5
+      }
+    },
+    {
+      "image": "bottle/Petrol_station_in_B_nin_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 77.4
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 245.6
+      }
+    },
+    {
+      "image": "cucumber/2012_08_05_038_Gurkenranke_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 76.5
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 289.6
+      }
+    },
+    {
+      "image": "cucumber/ARS_cucumber_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 106.3
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 348.9
+      }
+    },
+    {
+      "image": "cucumber/Cucumis_sativus_Corynespora_cassiicola_1_Hinrichs_Berger_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 61.6
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 317.8
+      }
+    },
+    {
+      "image": "cucumber/Cucumis_sativus_mit_Wanze_Josef_Schlaghecken_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 61.6
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 272.3
+      }
+    },
+    {
+      "image": "cucumber/Cucumis_sativus_Olimp_F1_2023_05_21_5677_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 72.7
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 325.5
+      }
+    },
+    {
+      "image": "cucumber/Cucumis_sativus_var_carosello_in_seedbed_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 61.3
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 207.2
+      }
+    },
+    {
+      "image": "cup/Mark_Streit_2017_06_11_1_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 119.5
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 435.5
+      }
+    },
+    {
+      "image": "cup/Mug_of_Tea_Starmugs_Cafe_on_Lordship_Lane_Tottenham_London_E.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 80.6
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 305.9
+      }
+    },
+    {
+      "image": "cup/Stanley_Cup_Parade_42853177231_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 113.5
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 368.4
+      }
+    },
+    {
+      "image": "cup/Stanley_Cup_Parade_42853179361_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 75.4
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 269.0
+      }
+    },
+    {
+      "image": "face/John_F_Kennedy_Official_Portrait_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 75.7
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 299.4
+      }
+    },
+    {
+      "image": "face/Portrait_Christian_Bolt_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 80.4
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 343.8
+      }
+    },
+    {
+      "image": "face/Portrait_of_a_Woman_MET_DP162139_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 83.5
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 332.5
+      }
+    },
+    {
+      "image": "face/Portrait_of_Djuna_Barnes_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 124.7
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 420.5
+      }
+    },
+    {
+      "image": "face/Portrait_Suzanne_Schiffman_par_Laurence_Sudre_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 154.3
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 493.0
+      }
+    },
+    {
+      "image": "hand/Backlit_keyboard_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 123.3
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 364.8
+      }
+    },
+    {
+      "image": "hand/Bergelut_dengan_asap_nan_beracun_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 81.8
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 312.5
+      }
+    },
+    {
+      "image": "hand/Hand_skin_close_up_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 149.5
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 508.4
+      }
+    },
+    {
+      "image": "hand/Hand_surgery_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 127.1
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 441.2
+      }
+    },
+    {
+      "image": "hand/Human_hand_holding_onion_in_Madagascar_181095487_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 83.7
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 337.1
+      }
+    },
+    {
+      "image": "hand/Human_Hands_Back_Front_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 117.5
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 272.3
+      }
+    },
+    {
+      "image": "hand/India_Varanasi_green_peas_2714_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 74.5
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 267.0
+      }
+    },
+    {
+      "image": "hand/Left_Hand_of_a_Female_Human_png.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 106.7
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 290.6
+      }
+    },
+    {
+      "image": "hand/Marcosticks_Human_hand_curled_in_prep_for_holding_chopsticks.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 85.1
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 443.8
+      }
+    },
+    {
+      "image": "hand/Open_Palm_of_the_Left_Hand_Fingers_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 68.2
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 301.9
+      }
+    },
+    {
+      "image": "keyboard/Computer_keyboard_placed_on_a_black_desk_in_a_modern_workspa.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 65.3
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 340.4
+      }
+    },
+    {
+      "image": "keyboard/Desk_Setup_Unsplash_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 64.1
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 250.2
+      }
+    },
+    {
+      "image": "keyboard/EFTA00000884_Computer_workstation_featuring_a_laptop_keyboar.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 68.4
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 239.3
+      }
+    },
+    {
+      "image": "keyboard/EFTA00001348_Wooden_desk_with_a_computer_phone_keyboard_mat_.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 61.2
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 231.0
+      }
+    },
+    {
+      "image": "keyboard/Hands_woman_apple_desk_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 58.1
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 251.1
+      }
+    },
+    {
+      "image": "keyboard/Video_editing_color_keyboard_with_Yamaha_AW4416_Recording_Wo.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 57.1
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 248.5
+      }
+    },
+    {
+      "image": "lemon/Don_Lemon_at_the_2018_Pulitzer_Prizes_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 63.2
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 249.5
+      }
+    },
+    {
+      "image": "lemon/Spiralling_roots_of_a_Citrus_limon_seedling_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 116.1
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 321.7
+      }
+    },
+    {
+      "image": "pear/African_Pear_Being_Plucked_From_a_Pear_Tree_to_a_Purple_Plat.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 109.6
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 409.8
+      }
+    },
+    {
+      "image": "pear/Bufford_s_fruit_cards_no_779_1_pear_Bufford_LCCN2013646760_j.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 62.5
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 241.7
+      }
+    },
+    {
+      "image": "pear/Fruit_Trees_pear_GN10588_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 65.2
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 292.3
+      }
+    },
+    {
+      "image": "potato/20261105_Solanum_tuberosum_foliage_image_2_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 80.0
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 258.5
+      }
+    },
+    {
+      "image": "potato/Ipomoea_batatas_Sweet_Potato_Flower_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 69.4
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 269.6
+      }
+    },
+    {
+      "image": "potato/Papa_Solanum_tuberosum_Flickr_Alejandro_Bayer_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 72.1
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 273.7
+      }
+    },
+    {
+      "image": "potato/Potato_masher_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 98.8
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 391.9
+      }
+    },
+    {
+      "image": "potato/Potato_plant_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 84.7
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 305.5
+      }
+    },
+    {
+      "image": "potato/Small_section_of_a_potato_Solanum_tuberosum_plant_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 72.2
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 284.6
+      }
+    },
+    {
+      "image": "potato/Solanum_tuberosum_potato_flowers_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 117.8
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 379.0
+      }
+    },
+    {
+      "image": "potato/Solanum_tuberosum_Puca_Quitish_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 67.8
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 277.3
+      }
+    },
+    {
+      "image": "potato/Sweet_Potato_Curry_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 72.7
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 298.8
+      }
+    },
+    {
+      "image": "potato/Sweet_potato_plants_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 101.8
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 349.1
+      }
+    },
+    {
+      "image": "potato/Sweet_Potato_Sauteed_With_Honey_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 81.7
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 276.7
+      }
+    },
+    {
+      "image": "table/A_laptop_on_the_wooden_table_2_Pixabay_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 84.1
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 311.3
+      }
+    },
+    {
+      "image": "table/Detail_of_an_exterior_wooden_table_Rosendals_tr_dg_rd_Stockh.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 108.8
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 239.3
+      }
+    },
+    {
+      "image": "table/Handcraft_Vintage_Wooden_Table_46307576835_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 61.5
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 270.5
+      }
+    },
+    {
+      "image": "table/Long_wooden_table_at_Loddebo_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 117.9
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 293.0
+      }
+    },
+    {
+      "image": "table/Outdoor_Wooden_Picnic_Table_Winter_Newton_Massachusetts_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 69.2
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 294.6
+      }
+    },
+    {
+      "image": "table/Wooden_table_and_chairs_over_the_Mekong_at_sunrise_in_Don_De.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 71.7
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 255.1
+      }
+    },
+    {
+      "image": "table/Wooden_Table_Part_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 65.2
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 269.8
+      }
+    },
+    {
+      "image": "tomato/Salad_platter_jpg.jpg",
+      "fast": {
+        "boxes": 0,
+        "ms": 63.1
+      },
+      "careful": {
+        "boxes": 0,
+        "ms": 240.6
+      }
+    }
+  ]
+}

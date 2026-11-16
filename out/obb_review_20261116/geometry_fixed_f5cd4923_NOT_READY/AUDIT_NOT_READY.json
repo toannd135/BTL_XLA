@@ -1,0 +1,728 @@
+{
+  "source_zip_sha256": "f5cd492323a1121b70292b4ede11c695a05e3d2234a04c97932b061a726dfd22",
+  "output": "D:\\privateProject\\xuLyAnh\\BTL_XLA\\out\\obb_review_20261116\\geometry_fixed_f5cd4923_NOT_READY",
+  "training_ready": false,
+  "counts": {
+    "train": 15,
+    "val": 6
+  },
+  "boxes": 84,
+  "boxes_by_class": {
+    "train": {
+      "1": 1,
+      "0": 28,
+      "2": 32
+    },
+    "val": {
+      "0": 10,
+      "2": 6,
+      "1": 7
+    }
+  },
+  "out_of_bounds_boxes": 36,
+  "out_of_bounds_images": 17,
+  "coordinate_issues": [
+    {
+      "id": "17a36f468da148ec5025cd3b",
+      "role": "train",
+      "line": 2,
+      "minimum": 0.240633,
+      "maximum": 1.033076
+    },
+    {
+      "id": "02d6ac9804270d28bb5005c0",
+      "role": "train",
+      "line": 1,
+      "minimum": -0.004038,
+      "maximum": 1.002653
+    },
+    {
+      "id": "02d6ac9804270d28bb5005c0",
+      "role": "train",
+      "line": 2,
+      "minimum": 0.203361,
+      "maximum": 1.031438
+    },
+    {
+      "id": "02d6ac9804270d28bb5005c0",
+      "role": "train",
+      "line": 3,
+      "minimum": 0.314305,
+      "maximum": 1.001765
+    },
+    {
+      "id": "02d6ac9804270d28bb5005c0",
+      "role": "train",
+      "line": 6,
+      "minimum": -0.00015,
+      "maximum": 0.695162
+    },
+    {
+      "id": "02d6ac9804270d28bb5005c0",
+      "role": "train",
+      "line": 7,
+      "minimum": -0.004671,
+      "maximum": 0.416271
+    },
+    {
+      "id": "02d6ac9804270d28bb5005c0",
+      "role": "train",
+      "line": 8,
+      "minimum": -0.010643,
+      "maximum": 0.972072
+    },
+    {
+      "id": "02d6ac9804270d28bb5005c0",
+      "role": "train",
+      "line": 9,
+      "minimum": 0.721613,
+      "maximum": 1.01724
+    },
+    {
+      "id": "93001c727e3585364b30af77",
+      "role": "train",
+      "line": 1,
+      "minimum": -0.068555,
+      "maximum": 1.098369
+    },
+    {
+      "id": "93001c727e3585364b30af77",
+      "role": "train",
+      "line": 3,
+      "minimum": -0.038892,
+      "maximum": 1.061355
+    },
+    {
+      "id": "87971f7b972b6cee23e58e96",
+      "role": "train",
+      "line": 1,
+      "minimum": -0.058539,
+      "maximum": 0.710162
+    },
+    {
+      "id": "87971f7b972b6cee23e58e96",
+      "role": "train",
+      "line": 2,
+      "minimum": -0.031359,
+      "maximum": 0.999108
+    },
+    {
+      "id": "87971f7b972b6cee23e58e96",
+      "role": "train",
+      "line": 3,
+      "minimum": -0.008337,
+      "maximum": 1.047269
+    },
+    {
+      "id": "7455ab3232d1c4df0c074a2d",
+      "role": "train",
+      "line": 1,
+      "minimum": -0.082181,
+      "maximum": 0.919523
+    },
+    {
+      "id": "7455ab3232d1c4df0c074a2d",
+      "role": "train",
+      "line": 5,
+      "minimum": -0.106494,
+      "maximum": 0.886797
+    },
+    {
+      "id": "6dd0b92fbdd066944bd6bb23",
+      "role": "train",
+      "line": 1,
+      "minimum": 0.01807,
+      "maximum": 1.034888
+    },
+    {
+      "id": "6dd0b92fbdd066944bd6bb23",
+      "role": "train",
+      "line": 2,
+      "minimum": -0.137863,
+      "maximum": 0.724687
+    },
+    {
+      "id": "6dd0b92fbdd066944bd6bb23",
+      "role": "train",
+      "line": 3,
+      "minimum": 0.229956,
+      "maximum": 1.005569
+    },
+    {
+      "id": "4581b51a077e900885a8b1bf",
+      "role": "train",
+      "line": 1,
+      "minimum": -0.043376,
+      "maximum": 0.853798
+    },
+    {
+      "id": "de7f935561667542be434c35",
+      "role": "train",
+      "line": 1,
+      "minimum": 0.007694,
+      "maximum": 1.088343
+    },
+    {
+      "id": "de7f935561667542be434c35",
+      "role": "train",
+      "line": 2,
+      "minimum": 0.112584,
+      "maximum": 1.029853
+    },
+    {
+      "id": "de7f935561667542be434c35",
+      "role": "train",
+      "line": 3,
+      "minimum": -0.049386,
+      "maximum": 1.029795
+    },
+    {
+      "id": "03b2a00aff7f6a0619dd64a7",
+      "role": "train",
+      "line": 2,
+      "minimum": -0.01797,
+      "maximum": 0.764267
+    },
+    {
+      "id": "03b2a00aff7f6a0619dd64a7",
+      "role": "train",
+      "line": 4,
+      "minimum": -0.024091,
+      "maximum": 0.722591
+    },
+    {
+      "id": "3c686fe5d1583f743f333cec",
+      "role": "train",
+      "line": 2,
+      "minimum": -0.044547,
+      "maximum": 1.073066
+    },
+    {
+      "id": "3c686fe5d1583f743f333cec",
+      "role": "train",
+      "line": 3,
+      "minimum": -0.05229,
+      "maximum": 0.870593
+    },
+    {
+      "id": "d7841690e35e7dc450a28d44",
+      "role": "train",
+      "line": 4,
+      "minimum": 0.183154,
+      "maximum": 1.014164
+    },
+    {
+      "id": "95369e3dc95bb75bb39d7499",
+      "role": "train",
+      "line": 1,
+      "minimum": -0.085368,
+      "maximum": 1.095421
+    },
+    {
+      "id": "cb4eec6be01d42b3ebb633ba",
+      "role": "train",
+      "line": 1,
+      "minimum": 0.013068,
+      "maximum": 1.111551
+    },
+    {
+      "id": "7bc1ac8bae9310bae2443627",
+      "role": "val",
+      "line": 3,
+      "minimum": 0.245538,
+      "maximum": 1.119429
+    },
+    {
+      "id": "7749ab399aa45bb683072a50",
+      "role": "val",
+      "line": 1,
+      "minimum": -0.11193,
+      "maximum": 1.143358
+    },
+    {
+      "id": "f5240101cd81d98d6ce59ef7",
+      "role": "val",
+      "line": 1,
+      "minimum": 0.010807,
+      "maximum": 1.033006
+    },
+    {
+      "id": "fd1fb0e99efd248fdd05be40",
+      "role": "val",
+      "line": 1,
+      "minimum": -0.045046,
+      "maximum": 0.53429
+    },
+    {
+      "id": "fd1fb0e99efd248fdd05be40",
+      "role": "val",
+      "line": 2,
+      "minimum": 0.2906,
+      "maximum": 1.055735
+    },
+    {
+      "id": "fd1fb0e99efd248fdd05be40",
+      "role": "val",
+      "line": 3,
+      "minimum": 0.374259,
+      "maximum": 1.025944
+    },
+    {
+      "id": "fd1fb0e99efd248fdd05be40",
+      "role": "val",
+      "line": 6,
+      "minimum": 0.102781,
+      "maximum": 1.044068
+    }
+  ],
+  "user_confirmed_exclusions": [
+    {
+      "id": "7fc208b0975b8a85053b0559",
+      "reason": "User requested exclusion of the two difficult unlabelled validation images on 2026-11-16"
+    },
+    {
+      "id": "85caa7b72160f48981c54944",
+      "reason": "User requested exclusion of the two difficult unlabelled validation images on 2026-11-16"
+    }
+  ],
+  "pending_semantic_corrections": [
+    {
+      "id": "95369e3dc95bb75bb39d7499",
+      "role": "train",
+      "issue": "train frame10: object1 is a banana but its class is orange (2)."
+    },
+    {
+      "id": "81d5f64b7d06b9ac1ccea6f0",
+      "role": "val",
+      "issue": "val frame4: only 6 boxes for a scene with many visible target fruits; incomplete annotation."
+    },
+    {
+      "id": "fd1fb0e99efd248fdd05be40",
+      "role": "val",
+      "issue": "val frame7: boxes on foliage/background and overlapping parts of apples need per-instance review."
+    }
+  ],
+  "items": [
+    {
+      "id": "17a36f468da148ec5025cd3b",
+      "role": "train",
+      "source": "local_dataset/det/train/images/mbk__mixed_15.jpg",
+      "image": "images/train/17a36f468da148ec5025cd3b.png",
+      "label": "labels/train/17a36f468da148ec5025cd3b.txt",
+      "source_image_sha256": "b381c6fc34284cde12b4fbf4a530dde50777df956074555d766353b7df828509",
+      "padding_ltrb": [
+        0,
+        0,
+        0,
+        28
+      ],
+      "size": [
+        1200,
+        826
+      ],
+      "boxes": 3,
+      "semantic_review": "submitted_by_user"
+    },
+    {
+      "id": "02d6ac9804270d28bb5005c0",
+      "role": "train",
+      "source": "local_dataset/det/train/images/mbk__orange_19.jpg",
+      "image": "images/train/02d6ac9804270d28bb5005c0.png",
+      "label": "labels/train/02d6ac9804270d28bb5005c0.txt",
+      "source_image_sha256": "236f924a254c464915eb71b97fc57b22f39bda6da09f3688533c85c75d0c0ca0",
+      "padding_ltrb": [
+        7,
+        3,
+        17,
+        8
+      ],
+      "size": [
+        524,
+        386
+      ],
+      "boxes": 10,
+      "semantic_review": "submitted_by_user"
+    },
+    {
+      "id": "93001c727e3585364b30af77",
+      "role": "train",
+      "source": "local_dataset/det/train/images/rf_v7__Screen-Shot-2018-06-12-at-11_31_24-PM_png.rf.050badf80f72736627e30be7399784b2.jpg",
+      "image": "images/train/93001c727e3585364b30af77.png",
+      "label": "labels/train/93001c727e3585364b30af77.txt",
+      "source_image_sha256": "e31dd58f6960b0fd7cd01be4adfe514feedb1f22f4f96f68db0ac4a9e4df3206",
+      "padding_ltrb": [
+        11,
+        45,
+        64,
+        37
+      ],
+      "size": [
+        715,
+        722
+      ],
+      "boxes": 3,
+      "semantic_review": "submitted_by_user"
+    },
+    {
+      "id": "87971f7b972b6cee23e58e96",
+      "role": "train",
+      "source": "local_dataset/det/train/images/rf_v7__Screen-Shot-2018-06-12-at-11_31_24-PM_png.rf.9bc00fc165c567c1f5cbd4d252b5b6c3.jpg",
+      "image": "images/train/87971f7b972b6cee23e58e96.png",
+      "label": "labels/train/87971f7b972b6cee23e58e96.txt",
+      "source_image_sha256": "ac0eec47762448787bcacb74f74d30468367b9926039f20d5ba5f78a33329e0d",
+      "padding_ltrb": [
+        0,
+        39,
+        32,
+        0
+      ],
+      "size": [
+        672,
+        679
+      ],
+      "boxes": 3,
+      "semantic_review": "submitted_by_user"
+    },
+    {
+      "id": "c576295b981e3b6304d43e8f",
+      "role": "train",
+      "source": "local_dataset/det/train/images/rf_v7__Screen-Shot-2018-06-12-at-11_53_33-PM_png.rf.70f3b65e6f7c01c90ce184a5b0f8f4d8.jpg",
+      "image": "images/train/c576295b981e3b6304d43e8f.png",
+      "label": "labels/train/c576295b981e3b6304d43e8f.txt",
+      "source_image_sha256": "2d6d840e3f7c38fe7f7893e0ad1b6b58a1a362a75e250c5eef6cbeae292a88c6",
+      "padding_ltrb": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "size": [
+        640,
+        640
+      ],
+      "boxes": 3,
+      "semantic_review": "submitted_by_user"
+    },
+    {
+      "id": "8a778c3a1800d3029414ce30",
+      "role": "train",
+      "source": "local_dataset/det/train/images/rf_v7__Screen-Shot-2018-06-12-at-11_58_18-PM_png.rf.f14d7c164283c8c11aa960d4157798e9.jpg",
+      "image": "images/train/8a778c3a1800d3029414ce30.png",
+      "label": "labels/train/8a778c3a1800d3029414ce30.txt",
+      "source_image_sha256": "3d4b840b1a8b7e8f1ab51b2f1c710750d3c73f31b74e48e6a9d1f5ac01aa8c38",
+      "padding_ltrb": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "size": [
+        640,
+        640
+      ],
+      "boxes": 3,
+      "semantic_review": "submitted_by_user"
+    },
+    {
+      "id": "7455ab3232d1c4df0c074a2d",
+      "role": "train",
+      "source": "local_dataset/det/train/images/rf_v7__Screen-Shot-2018-06-13-at-12_07_32-AM_png.rf.8ea54233ca583d9b527095cc76435c04.jpg",
+      "image": "images/train/7455ab3232d1c4df0c074a2d.png",
+      "label": "labels/train/7455ab3232d1c4df0c074a2d.txt",
+      "source_image_sha256": "e384cc5672f0e9157da1889929f776323c2d0575ff49fb712081af9b30359507",
+      "padding_ltrb": [
+        54,
+        70,
+        0,
+        0
+      ],
+      "size": [
+        694,
+        710
+      ],
+      "boxes": 5,
+      "semantic_review": "submitted_by_user"
+    },
+    {
+      "id": "6dd0b92fbdd066944bd6bb23",
+      "role": "train",
+      "source": "local_dataset/det/train/images/rf_v7__Screen-Shot-2018-06-13-at-12_07_39-AM_png.rf.9766f45a18458fe2ce078c16aa89c5cd.jpg",
+      "image": "images/train/6dd0b92fbdd066944bd6bb23.png",
+      "label": "labels/train/6dd0b92fbdd066944bd6bb23.txt",
+      "source_image_sha256": "35e073d2acbcf03d6781cfa2c6c9645d3da70bf6860da0728bee2d0d037214d9",
+      "padding_ltrb": [
+        20,
+        90,
+        5,
+        24
+      ],
+      "size": [
+        665,
+        754
+      ],
+      "boxes": 3,
+      "semantic_review": "submitted_by_user"
+    },
+    {
+      "id": "4581b51a077e900885a8b1bf",
+      "role": "train",
+      "source": "local_dataset/det/train/images/rf_v7__b_f010_png.rf.4c6df05fc33d27baa8f6725c23d7d7be.jpg",
+      "image": "images/train/4581b51a077e900885a8b1bf.png",
+      "label": "labels/train/4581b51a077e900885a8b1bf.txt",
+      "source_image_sha256": "7a2fe9143bb3a89bf0824ed497ad0e930315c022ca9cc97f820f9c8c0a98c88e",
+      "padding_ltrb": [
+        3,
+        29,
+        0,
+        0
+      ],
+      "size": [
+        643,
+        669
+      ],
+      "boxes": 3,
+      "semantic_review": "submitted_by_user"
+    },
+    {
+      "id": "de7f935561667542be434c35",
+      "role": "train",
+      "source": "local_dataset/det/train/images/rf_v7__b_f010_png.rf.f740cfa975ca32fb96c1acb535c8cc0c.jpg",
+      "image": "images/train/de7f935561667542be434c35.png",
+      "label": "labels/train/de7f935561667542be434c35.txt",
+      "source_image_sha256": "a2e79bdb1318ae436fce238a4176353fc813c2af6b9819ec7b72a83c7000698c",
+      "padding_ltrb": [
+        33,
+        0,
+        21,
+        58
+      ],
+      "size": [
+        694,
+        698
+      ],
+      "boxes": 3,
+      "semantic_review": "submitted_by_user"
+    },
+    {
+      "id": "03b2a00aff7f6a0619dd64a7",
+      "role": "train",
+      "source": "local_dataset/det/train/images/rf_v7__b_f013_png.rf.930f7d4a53c54e124e9d3c3a81fd67d7.jpg",
+      "image": "images/train/03b2a00aff7f6a0619dd64a7.png",
+      "label": "labels/train/03b2a00aff7f6a0619dd64a7.txt",
+      "source_image_sha256": "3c95638b5be42954460b1d61cb46ce536ac2bcb879289cad6ddef81da75bbae7",
+      "padding_ltrb": [
+        0,
+        17,
+        0,
+        0
+      ],
+      "size": [
+        640,
+        657
+      ],
+      "boxes": 4,
+      "semantic_review": "submitted_by_user"
+    },
+    {
+      "id": "3c686fe5d1583f743f333cec",
+      "role": "train",
+      "source": "local_dataset/det/train/images/rf_v7__b_f013_png.rf.e41ac0b3a48a2c8a98f38e5c49178b46.jpg",
+      "image": "images/train/3c686fe5d1583f743f333cec.png",
+      "label": "labels/train/3c686fe5d1583f743f333cec.txt",
+      "source_image_sha256": "1c3cf48d0d92b49087c992cadbc2b1acd1eb2db6e08fe215422f10ce67fd4df2",
+      "padding_ltrb": [
+        35,
+        0,
+        0,
+        48
+      ],
+      "size": [
+        675,
+        688
+      ],
+      "boxes": 6,
+      "semantic_review": "submitted_by_user"
+    },
+    {
+      "id": "d7841690e35e7dc450a28d44",
+      "role": "train",
+      "source": "local_dataset/det/train/images/rf_v7__b_f013_png.rf.ffa1945be6451429d8e6d7b986f08137.jpg",
+      "image": "images/train/d7841690e35e7dc450a28d44.png",
+      "label": "labels/train/d7841690e35e7dc450a28d44.txt",
+      "source_image_sha256": "3b04ffbef825f7a6f23951e31d285cbe8e7f32970627e37416e08ddf5e41a013",
+      "padding_ltrb": [
+        0,
+        0,
+        11,
+        0
+      ],
+      "size": [
+        651,
+        640
+      ],
+      "boxes": 6,
+      "semantic_review": "submitted_by_user"
+    },
+    {
+      "id": "95369e3dc95bb75bb39d7499",
+      "role": "train",
+      "source": "local_dataset/det/train/images/rf_v7__b_f027_png.rf.0f1ad4e75fb6243bdbff7f5df94ef168.jpg",
+      "image": "images/train/95369e3dc95bb75bb39d7499.png",
+      "label": "labels/train/95369e3dc95bb75bb39d7499.txt",
+      "source_image_sha256": "bca68dd913c39d15c06060859a00c9ee948f6af3362e91603257e06d38e2485e",
+      "padding_ltrb": [
+        56,
+        0,
+        0,
+        63
+      ],
+      "size": [
+        696,
+        703
+      ],
+      "boxes": 3,
+      "semantic_review": "needs_correction"
+    },
+    {
+      "id": "cb4eec6be01d42b3ebb633ba",
+      "role": "train",
+      "source": "local_dataset/det/train/images/rf_v7__b_f027_png.rf.6cd37ac95dff305239a8257d565c2a53.jpg",
+      "image": "images/train/cb4eec6be01d42b3ebb633ba.png",
+      "label": "labels/train/cb4eec6be01d42b3ebb633ba.txt",
+      "source_image_sha256": "6baf1f57ee3aa681858007a196fdb16644b275c254053c2848851f478cc1abf8",
+      "padding_ltrb": [
+        0,
+        0,
+        0,
+        73
+      ],
+      "size": [
+        640,
+        713
+      ],
+      "boxes": 3,
+      "semantic_review": "submitted_by_user"
+    },
+    {
+      "id": "13c5007f50908d926f1ec82f",
+      "role": "val",
+      "source": "local_dataset/det/val/images/mbk__banana_42.jpg",
+      "image": "images/val/13c5007f50908d926f1ec82f.png",
+      "label": "labels/val/13c5007f50908d926f1ec82f.txt",
+      "source_image_sha256": "7958bd73f7cb90db26dccf65c280208aeebfbfce0c30c652ffaef732edc9932c",
+      "padding_ltrb": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "size": [
+        1200,
+        630
+      ],
+      "boxes": 1,
+      "semantic_review": "submitted_by_user"
+    },
+    {
+      "id": "81d5f64b7d06b9ac1ccea6f0",
+      "role": "val",
+      "source": "local_dataset/det/val/images/rf_v7__Screen-Shot-2018-06-13-at-12_06_28-AM_png.rf.32e19a98d89fb84e9e68d5764600ff6e.jpg",
+      "image": "images/val/81d5f64b7d06b9ac1ccea6f0.png",
+      "label": "labels/val/81d5f64b7d06b9ac1ccea6f0.txt",
+      "source_image_sha256": "3c716dfdb6a3d7b78f0e4675fa052179c944002fbf89b3ea579293c9495c0efc",
+      "padding_ltrb": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "size": [
+        640,
+        640
+      ],
+      "boxes": 6,
+      "semantic_review": "needs_correction"
+    },
+    {
+      "id": "7bc1ac8bae9310bae2443627",
+      "role": "val",
+      "source": "local_dataset/det/val/images/rf_v7__b_f054_png.rf.dd3b00a143d21f830a6341b1be59442d.jpg",
+      "image": "images/val/7bc1ac8bae9310bae2443627.png",
+      "label": "labels/val/7bc1ac8bae9310bae2443627.txt",
+      "source_image_sha256": "7251dde2d13b54ecda36449dd73d20e4f3039c522c6c8cebb05017f63935c1b1",
+      "padding_ltrb": [
+        0,
+        0,
+        78,
+        18
+      ],
+      "size": [
+        718,
+        658
+      ],
+      "boxes": 4,
+      "semantic_review": "submitted_by_user"
+    },
+    {
+      "id": "7749ab399aa45bb683072a50",
+      "role": "val",
+      "source": "local_dataset/det/val/images/rf_v7__b_f064_png.rf.24eb8c1b3a23ac9dcb1c13a03f37eb8a.jpg",
+      "image": "images/val/7749ab399aa45bb683072a50.png",
+      "label": "labels/val/7749ab399aa45bb683072a50.txt",
+      "source_image_sha256": "066616be74c26bbcf7e39a1549919b04536b3b5021a9201d78c0d695609d81c5",
+      "padding_ltrb": [
+        73,
+        0,
+        0,
+        93
+      ],
+      "size": [
+        713,
+        733
+      ],
+      "boxes": 4,
+      "semantic_review": "submitted_by_user"
+    },
+    {
+      "id": "f5240101cd81d98d6ce59ef7",
+      "role": "val",
+      "source": "local_dataset/det/val/images/rf_v7__b_f072_png.rf.9b6a490c7e9a9316471decc7ae9de4e0.jpg",
+      "image": "images/val/f5240101cd81d98d6ce59ef7.png",
+      "label": "labels/val/f5240101cd81d98d6ce59ef7.txt",
+      "source_image_sha256": "a06e386cd0e6a7d82762bd1fce5cea2dad593aeea5b1ab882404b38b01fb8841",
+      "padding_ltrb": [
+        0,
+        0,
+        23,
+        0
+      ],
+      "size": [
+        663,
+        640
+      ],
+      "boxes": 1,
+      "semantic_review": "submitted_by_user"
+    },
+    {
+      "id": "fd1fb0e99efd248fdd05be40",
+      "role": "val",
+      "source": "local_dataset/det/val/images/mbk__apple_64.jpg",
+      "image": "images/val/fd1fb0e99efd248fdd05be40.png",
+      "label": "labels/val/fd1fb0e99efd248fdd05be40.txt",
+      "source_image_sha256": "2704c53d3d122d0073aa5658cbd7a87b9eb55b483841447cf79f5b710ad672d0",
+      "padding_ltrb": [
+        30,
+        0,
+        37,
+        0
+      ],
+      "size": [
+        707,
+        640
+      ],
+      "boxes": 7,
+      "semantic_review": "needs_correction"
+    }
+  ],
+  "policy": "Original ZIP, images and labels unchanged. Copies padded with black border to contain OBBs; all corners preserve original pixel geometry within .001px. No class or fruit counts automatically corrected. No data.yaml provided because semantic annotation errors remain. Pilot set only, not the complete fine-tuning dataset."
+}

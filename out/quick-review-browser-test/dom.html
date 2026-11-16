@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Duyệt nhãn từng quả</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6fa;color:#172334;font:15px system-ui,sans-serif}
+header{padding:16px 22px;background:white;border-bottom:1px solid #d4dce7}h1{font-size:22px;margin:0 0 6px}p{line-height:1.5;margin:8px 0}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}button,select,input{font:inherit;padding:8px;border:1px solid #bdcbdc;border-radius:6px;background:white}button{cursor:pointer}button:hover{background:#e7efff}button:disabled{opacity:.45;cursor:default}.primary{background:#176543;color:white}.danger{color:#ae2434}
+main{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;padding:16px}section,aside{background:white;padding:14px;border-radius:10px;min-width:0}.viewer{background:#e9edf3;min-height:200px;display:flex;justify-content:center;align-items:center}canvas{display:block;max-width:100%;max-height:72vh;object-fit:contain;touch-action:none}#filename{overflow-wrap:anywhere;font-weight:600}#warnings{color:#8f4907;font-size:13px}#message{white-space:pre-wrap;color:#175b41;min-height:24px}.box-row{display:flex;gap:6px;padding:5px;border-bottom:1px solid #e5eaf1;align-items:center}.box-row.active{background:#e7efff}.badge{min-width:32px;padding:4px;border-radius:4px;color:white;text-align:center}#boxes{max-height:48vh;overflow:auto}.small{color:#5d6b7c;font-size:13px}#expected{width:80px}.hidden{display:none}#empty{padding:30px}label{display:inline-flex;align-items:center;gap:6px}.summary{font-weight:600}code{background:#eef2f6;padding:2px 4px}@media(max-width:850px){main{grid-template-columns:1fr}canvas{max-height:65vh}}
+</style>
+</head><body><header>
+<h1>Duyệt nhãn: mỗi quả nhìn thấy là một đối tượng</h1>
+<p>Đây là công cụ sửa dữ liệu train, không phải kết quả đếm tự động. Nhãn ban đầu chưa được xác minh. Khung chuối cong có thể chồng lên quả bên cạnh; hãy theo đúng một quả từ cuống tới đầu. Không gán cuống chung hoặc cả nải thành một quả.</p>
+<div class="toolbar">
+<label>Tập <select id="role"><option value="">Tất cả</option><option value="diagnostic">Ảnh bạn đang thử</option><option value="train">Train</option><option value="val">Validation</option><option value="test">Test riêng</option></select></label>
+<label>Trạng thái <select id="status"><option value="">Tất cả</option><option value="pending">Chưa duyệt</option><option value="approved">Đã duyệt</option><option value="excluded">Loại ảnh</option></select></label>
+<label><input id="flagged" type="checkbox">Chỉ ảnh có cờ</label>
+<label>Loại <select id="fruit"><option value="">Tất cả</option><option value="0">Chuối</option><option value="1">Táo</option><option value="2">Cam</option></select></label>
+<input id="search" placeholder="Tìm tên ảnh" aria-label="Tìm tên ảnh">
+<label id="quickLabel" class=""><input id="quick" type="checkbox">Lượt ngắn: 3 ảnh ưu tiên</label>
+<button id="import">Nạp bản duyệt JSON</button><input id="importFile" type="file" accept=".json" class="hidden">
+<button id="export" class="primary">Tải bản duyệt JSON</button>
+</div>
+<div id="progress" class="summary">Lượt ngắn: 1/3 ảnh đã duyệt. Toàn bộ: đã duyệt 1 · loại 0 · chưa duyệt 2 / 3 ảnh</div><div id="message" role="status" style="color: rgb(23, 91, 65);">Đã xác nhận ảnh này. Tải JSON để sao lưu.</div>
+</header>
+<main>
+<section>
+<div class="toolbar"><button id="previous">← Ảnh trước</button><span id="position">3/3</span><button id="next" disabled="">Ảnh sau →</button></div>
+<div id="filename">[diagnostic] c.png</div><p id="warnings">Chưa có cờ tự động. Vẫn cần kiểm tra từng quả. Có 0 khung nháp chưa xác minh. Nút “Điền khung nháp” thay khung đang sửa, có thể Hoàn tác.</p>
+<div class="toolbar">
+<label>Thao tác <select id="mode"><option value="select">Chọn khung</option><option value="draw">Vẽ box mới</option></select></label>
+<label>Quả mới <select id="newClass"><option value="0">Chuối</option><option value="1">Táo</option><option value="2">Cam</option></select></label>
+<button id="delete" class="danger" disabled="">Xóa box chọn</button><button id="undo" disabled="">Hoàn tác</button>
+<button id="proposal">Điền khung nháp</button>
+<label><input id="all" type="checkbox" checked="">Hiện mọi khung</label>
+</div>
+<div class="viewer"><canvas id="canvas" width="200" height="160"></canvas><div id="empty" class="hidden">Không có ảnh phù hợp.</div></div>
+<p class="small">Chọn khung rồi kéo bên trong để di chuyển, kéo ô vuông ở góc để đổi kích thước. Phím D: vẽ thêm; V: chọn; Delete: xóa; 1/2/3: đổi thành Chuối/Táo/Cam. Khung nháp chỉ là gợi ý, có thể gộp hoặc bỏ sót quả. Ảnh quá khó có thể để chưa duyệt rồi chuyển tiếp.</p>
+</section>
+<aside>
+<h2 style="font-size:18px;margin:0 0 12px">Nhãn từng quả</h2>
+<p id="boxCount">0 box đang gán</p><div id="boxes"></div>
+<p><label>Số quả đếm bằng mắt <input id="expected" type="number" min="0" step="1" placeholder="…"></label></p>
+<p class="small">Chỉ xác nhận sau khi kiểm tra từng khung. Số 0 chỉ dành cho ảnh thật sự không có quả.</p>
+<div class="toolbar"><button id="approve" class="primary">Đã kiểm tra từng quả</button><button id="exclude" class="danger">Loại ảnh</button></div>
+<p><label><input id="autoNext" type="checkbox" checked="">Xác nhận xong tự sang ảnh chưa duyệt</label></p>
+<p class="small">Ctrl+Enter để xác nhận sau khi đã nhập số đếm bằng mắt. Không cần hoàn tất toàn bộ 30 ảnh trong một lượt.</p>
+<div class="toolbar"><button id="pending">Chưa duyệt</button><button id="reset">Lấy lại nhãn ban đầu</button></div>
+<p id="state" class="summary">Chưa duyệt</p>
+<p class="small">Thay đổi được lưu tạm trong trình duyệt. Hãy tải JSON để sao lưu. Công cụ không sửa nhãn gốc. Ảnh bạn đang thử luôn là diagnostic và không được đưa vào train khi xuất dataset.</p>
+</aside>
+</main>
+<script>localStorage.setItem('instance-review:isolated-browser-interaction-fixture',JSON.stringify({a:{id:'a',status:'pending',expected_count:null,boxes:[[0,.4,.5,.3,.4]]}}));</script><script src="manifest.js"></script>
+<script src="instance_geometry.js"></script>
+<script>
+'use strict';
+const data=window.INSTANCE_DATA;
+const $=id=>document.getElementById(id), names=['Chuối','Táo','Cam'];
+const colors=['#2563eb','#9333ea','#c2410c','#087f8c','#db2777','#047857','#4f46e5'];
+const key='instance-review:'+data.dataset_id;
+let drafts={}, filtered=[], position=0, selected=null, image=null, drag=null, history=[];
+try{drafts=JSON.parse(localStorage.getItem(key)||'{}')}catch(e){drafts={}}
+const copy=x=>JSON.parse(JSON.stringify(x));
+const item=()=>filtered[position];
+const initialBoxes=x=>x.boxes.length?x.boxes:(x.proposal?.boxes||[]);
+const current=()=>{const x=item();return x&&(drafts[x.id]||(drafts[x.id]={id:x.id,status:'pending',expected_count:null,boxes:copy(initialBoxes(x))}))};
+function message(text,error=false){$('message').textContent=text;$('message').style.color=error?'#ae2434':'#175b41'}
+function persist(){try{localStorage.setItem(key,JSON.stringify(drafts))}catch(e){message('Bộ nhớ trình duyệt đầy. Tải JSON ngay để giữ bản sửa.',true)}}
+function validBoxes(boxes){
+ if(!Array.isArray(boxes))return false;
+ return boxes.every((b,i)=>Array.isArray(b)&&b.length===5&&Number.isInteger(b[0])&&b[0]>=0&&b[0]<3&&b.slice(1).every(Number.isFinite)&&b[3]>0&&b[4]>0&&b[1]-b[3]/2>=-1e-6&&b[2]-b[4]/2>=-1e-6&&b[1]+b[3]/2<=1+1e-6&&b[2]+b[4]/2<=1+1e-6&&!boxes.slice(0,i).some(a=>a[0]===b[0]&&a.slice(1).every((v,j)=>Math.abs(v-b[j+1])<1e-6)));
+}
+function change(mutator){history.push(copy(current()));mutator(current());current().status='pending';persist();renderLabels();draw()}
+function progress(){const counts={pending:0,approved:0,excluded:0};for(const x of data.items)counts[drafts[x.id]?.status||'pending']++;const short=$('quick').checked?`Lượt ngắn: ${filtered.filter(x=>drafts[x.id]?.status==='approved').length}/${filtered.length} ảnh đã duyệt. `:'';$('progress').textContent=short+`Toàn bộ: đã duyệt ${counts.approved} · loại ${counts.excluded} · chưa duyệt ${counts.pending} / ${data.items.length} ảnh`}
+function applyFilters(){
+ const role=$('role').value,status=$('status').value,fruit=$('fruit').value,search=$('search').value.toLowerCase();
+ filtered=data.items.filter(x=>(!role||x.role===role)&&(!status||(drafts[x.id]?.status||'pending')===status)&&(!$('flagged').checked||x.warnings.length)&&(!$('quick').checked||(data.quick_review_ids||[]).includes(x.id))&&(!fruit||(drafts[x.id]?.boxes||initialBoxes(x)).some(b=>b[0]===Number(fruit)))&&x.source_image.toLowerCase().includes(search));position=0;load();
+}
+function load(){
+ selected=null;history=[];drag=null;image=null;const x=item();
+ $('canvas').classList.toggle('hidden',!x);$('empty').classList.toggle('hidden',!!x);
+ $('previous').disabled=!x||position===0;$('next').disabled=!x||position===filtered.length-1;
+ $('position').textContent=x?`${position+1}/${filtered.length}`:'0/0';
+ for(const id of ['approve','exclude','pending','reset','expected','delete','undo','proposal'])$(id).disabled=!x;
+ if(!x){$('filename').textContent='';$('warnings').textContent='';$('boxes').replaceChildren();$('boxCount').textContent='';$('state').textContent='';progress();return}
+ $('filename').textContent=`[${x.role}] ${x.source_image}`;
+ $('warnings').textContent=x.warnings.length?'Cờ cần duyệt (chưa phải lỗi đã xác minh): '+x.warnings.join('; '):'Chưa có cờ tự động. Vẫn cần kiểm tra từng quả.';
+ if(x.proposal)$('warnings').textContent+=` Có ${x.proposal.boxes.length} khung nháp chưa xác minh. Nút “Điền khung nháp” thay khung đang sửa, có thể Hoàn tác.`;
+ $('proposal').disabled=!x.proposal;
+ const nextImage=new Image();nextImage.onload=()=>{if(item()?.id!==x.id)return;image=nextImage;const scale=Math.min(1,1600/Math.max(image.naturalWidth,image.naturalHeight));$('canvas').width=Math.round(image.naturalWidth*scale);$('canvas').height=Math.round(image.naturalHeight*scale);draw()};nextImage.onerror=()=>message('Không đọc được ảnh trong bộ duyệt.',true);nextImage.src=x.image;
+ renderLabels();progress();
+}
+function draw(){
+ if(!image||!item())return;const canvas=$('canvas'),ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height,s=w/(canvas.getBoundingClientRect().width||w);
+ ctx.clearRect(0,0,w,h);ctx.drawImage(image,0,0,w,h);
+ current().boxes.forEach((original,i)=>{if(!$('all').checked&&selected!==null&&i!==selected)return;const b=drag?.index===i&&drag.preview?drag.preview:original;const[x,y,bw,bh]=[b[1]*w,b[2]*h,b[3]*w,b[4]*h];ctx.globalAlpha=(selected!==null&&i!==selected)?0.25:1;ctx.strokeStyle=colors[i%colors.length];ctx.lineWidth=(selected===i?3:1.5)*s;ctx.strokeRect(x-bw/2,y-bh/2,bw,bh);ctx.fillStyle=colors[i%colors.length];ctx.fillRect(x-bw/2,y-bh/2,32*s,22*s);ctx.font=`bold ${13*s}px system-ui`;ctx.fillStyle='white';ctx.fillText('#'+(i+1),x-bw/2+3*s,y-bh/2+16*s);if(selected===i){for(const p of Object.values(InstanceGeometry.corners(b))){ctx.fillStyle='white';ctx.fillRect(p.x*w-4*s,p.y*h-4*s,8*s,8*s);ctx.strokeRect(p.x*w-4*s,p.y*h-4*s,8*s,8*s)}}});
+ ctx.globalAlpha=1;if(drag?.kind==='draw'){ctx.strokeStyle='#e11d48';ctx.lineWidth=2*s;ctx.strokeRect(drag.x*w,drag.y*h,(drag.endX-drag.x)*w,(drag.endY-drag.y)*h)}
+}
+function renderLabels(){
+ const r=current();if(!r)return;$('boxes').replaceChildren();$('boxCount').textContent=`${r.boxes.length} box đang gán`;$('expected').value=r.expected_count??'';
+ $('state').textContent={pending:'Chưa duyệt',approved:'Đã kiểm tra từng quả',excluded:'Đã loại khỏi dữ liệu'}[r.status];
+ r.boxes.forEach((b,i)=>{const row=document.createElement('div');row.className='box-row'+(selected===i?' active':'');const badge=document.createElement('button');badge.className='badge';badge.style.background=colors[i%colors.length];badge.textContent='#'+(i+1);badge.onclick=()=>{selected=selected===i?null:i;renderLabels();draw()};const type=document.createElement('select');names.forEach((n,c)=>{const option=document.createElement('option');option.value=c;option.textContent=n;type.append(option)});type.value=b[0];type.onchange=()=>change(r=>{r.boxes[i][0]=Number(type.value)});const del=document.createElement('button');del.textContent='Xóa';del.className='danger';del.onclick=()=>{selected=i;deleteSelected()};row.append(badge,type,del);$('boxes').append(row)});$('delete').disabled=selected===null;$('undo').disabled=!history.length;progress();
+}
+function deleteSelected(){if(selected===null)return;drag=null;change(r=>r.boxes.splice(selected,1));selected=null;renderLabels();draw()}
+function point(event){const r=$('canvas').getBoundingClientRect();return{x:Math.max(0,Math.min(1,(event.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(event.clientY-r.top)/r.height))}}
+$('canvas').onpointerdown=event=>{
+ if(!image)return;const p=point(event),rect=$('canvas').getBoundingClientRect();
+ if($('mode').value==='draw')drag={kind:'draw',...p,endX:p.x,endY:p.y};
+ else{
+  const boxes=current().boxes, chosen=selected===null?null:boxes[selected];
+  const handle=chosen?InstanceGeometry.handle(chosen,p,9/rect.width,9/rect.height):null;
+  if(handle)drag={kind:'resize',index:selected,corner:handle,before:copy(chosen),preview:copy(chosen)};
+  else{
+   const contains=b=>p.x>=b[1]-b[3]/2&&p.x<=b[1]+b[3]/2&&p.y>=b[2]-b[4]/2&&p.y<=b[2]+b[4]/2;
+   if(!chosen||!contains(chosen)){const hits=boxes.map((b,i)=>({b,i})).filter(({b})=>contains(b)).sort((a,b)=>a.b[3]*a.b[4]-b.b[3]*b.b[4]);selected=hits[0]?.i??null}
+   if(selected!==null)drag={kind:'move',index:selected,origin:p,before:copy(boxes[selected]),preview:copy(boxes[selected])};
+  }
+  renderLabels();
+ }
+ if(drag)$('canvas').setPointerCapture(event.pointerId);draw();
+};
+$('canvas').onpointermove=event=>{if(!drag)return;const p=point(event);if(drag.kind==='draw'){drag.endX=p.x;drag.endY=p.y}else drag.preview=drag.kind==='move'?InstanceGeometry.move(drag.before,drag.origin,p):InstanceGeometry.resize(drag.before,drag.corner,p);draw()};
+$('canvas').onpointerup=event=>{
+ if(!drag)return;const edit=drag,p=point(event);drag=null;
+ if(edit.kind==='draw'){const w=Math.abs(p.x-edit.x),h=Math.abs(p.y-edit.y),x=(p.x+edit.x)/2,y=(p.y+edit.y)/2;if(w>.002&&h>.002){change(r=>r.boxes.push([Number($('newClass').value),x,y,w,h]));selected=current().boxes.length-1}}
+ else{const box=edit.kind==='move'?InstanceGeometry.move(edit.before,edit.origin,p):InstanceGeometry.resize(edit.before,edit.corner,p);if(box.some((v,i)=>Math.abs(v-edit.before[i])>1e-8))change(r=>{r.boxes[edit.index]=box})}
+ renderLabels();draw();
+};
+$('canvas').onpointercancel=()=>{drag=null;draw()};
+$('delete').onclick=deleteSelected;$('undo').onclick=()=>{if(!history.length)return;drafts[item().id]=history.pop();selected=null;persist();renderLabels();draw()};
+$('expected').onchange=()=>{const value=$('expected').value;change(r=>r.expected_count=value===''?null:Number(value))};
+$('approve').onclick=()=>{const r=current();if(!r)return;r.expected_count=$('expected').value===''?null:Number($('expected').value);if(!validBoxes(r.boxes)||!Number.isInteger(r.expected_count)||r.expected_count<0||r.expected_count!==r.boxes.length){message('Cần box hợp lệ cho từng quả và số đếm bằng mắt bằng đúng số box. Nếu không có quả, nhập 0.',true);return}r.status='approved';persist();renderLabels();message('Đã xác nhận ảnh này. Tải JSON để sao lưu.');if($('autoNext').checked){const next=filtered.map((_,i)=>(position+1+i)%filtered.length).find(i=>(drafts[filtered[i].id]?.status||'pending')==='pending');if(next!==undefined){position=next;load()}else message('Đã hết ảnh chưa duyệt trong lượt này. Bấm Tải bản duyệt JSON để lưu.')}};
+$('exclude').onclick=()=>{current().status='excluded';persist();renderLabels();message('Ảnh này sẽ không được dùng để train; không biến thành ảnh nền.')};
+$('pending').onclick=()=>{current().status='pending';persist();renderLabels()};
+$('reset').onclick=()=>change(r=>{r.boxes=copy(item().boxes);r.expected_count=null;selected=null});
+$('proposal').onclick=()=>{if(!item()?.proposal)return;drag=null;change(r=>{r.boxes=copy(item().proposal.boxes);r.expected_count=null});selected=null;renderLabels();draw();message('Đã điền khung nháp, chưa xác nhận đúng. Hãy sửa chỗ sai và nhập số đếm bằng mắt.')};
+$('all').onchange=draw;$('previous').onclick=()=>{if(position>0){position--;load()}};$('next').onclick=()=>{if(position<filtered.length-1){position++;load()}};
+for(const id of ['status','fruit','flagged','quick'])$(id).onchange=applyFilters;$('role').onchange=()=>{if($('role').value!=='diagnostic')$('quick').checked=false;applyFilters()};$('search').oninput=applyFilters;
+$('export').onclick=()=>{const payload={schema:1,dataset_id:data.dataset_id,reviews:Object.values(drafts)};const url=URL.createObjectURL(new Blob([JSON.stringify(payload,null,2)],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download='instance_reviews.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);message('Đã tạo file JSON. Lưu file này để tiếp tục duyệt hoặc tạo dataset sạch.')};
+$('import').onclick=()=>$('importFile').click();$('importFile').onchange=async event=>{try{const file=event.target.files[0];if(!file)return;const payload=JSON.parse(await file.text());if(payload.schema!==1||payload.dataset_id!==data.dataset_id||!Array.isArray(payload.reviews))throw Error('Bản duyệt thuộc dataset khác');const ids=new Set(data.items.map(x=>x.id)),incoming={};for(const r of payload.reviews){if(!ids.has(r.id)||incoming[r.id]||!['pending','approved','excluded'].includes(r.status)||!validBoxes(r.boxes))throw Error('Bản duyệt có ảnh hoặc box không hợp lệ');if(r.status==='approved'&&(!Number.isInteger(r.expected_count)||r.expected_count!==r.boxes.length))throw Error('Số quả duyệt không khớp');incoming[r.id]=r}drafts={...drafts,...incoming};persist();applyFilters();message('Đã nạp bản duyệt.')}catch(error){message(error.message,true)}event.target.value=''};
+document.onkeydown=event=>{if((event.ctrlKey||event.metaKey)&&event.key==='Enter'){event.preventDefault();$('approve').click();return}if(['INPUT','SELECT','TEXTAREA'].includes(event.target.tagName))return;if((event.ctrlKey||event.metaKey)&&event.key==='z'){event.preventDefault();$('undo').click();return}if(event.altKey||event.ctrlKey||event.metaKey)return;if(event.key==='Escape'){drag=null;selected=null;renderLabels();draw()}if(event.key==='Delete'){event.preventDefault();deleteSelected()}if(event.key.toLowerCase()==='d')$('mode').value='draw';if(event.key.toLowerCase()==='v')$('mode').value='select';if(['1','2','3'].includes(event.key)){const cls=Number(event.key)-1;$('newClass').value=cls;if(selected!==null)change(r=>{r.boxes[selected][0]=cls})}if(event.key==='ArrowRight')$('next').click();if(event.key==='ArrowLeft')$('previous').click()};
+if(data.quick_review_ids?.length){$('quickLabel').classList.remove('hidden');$('quick').checked=true;$('role').value='diagnostic'}
+applyFilters();
+</script>
+
+
+<script>
+(async()=>{
+ const checks=[];const check=(ok,name)=>{if(!ok)throw Error(name);checks.push(name)};
+ const wait=()=>new Promise(r=>setTimeout(r,150));
+ try{
+  await wait();
+  check(filtered.length===3 && $('quick').checked,'three-image queue');
+  check(current().boxes[0][0]===0 && current().boxes[0][1]===.4,'existing manual draft preserved');
+  $('proposal').click();check(current().boxes[0][0]===1 && current().status==='pending' && current().expected_count===null,'explicit proposal remains unverified');
+  $('undo').click();check(current().boxes[0][0]===0,'undo restores user annotations');
+  position=1;load();await wait();
+  check(current().boxes.length===1 && current().status==='pending' && current().expected_count===null,'new image starts with proposal, no approval');
+  const canvas=$('canvas');canvas.setPointerCapture=()=>{};
+  const event=(x,y)=>{const r=canvas.getBoundingClientRect();return{pointerId:1,clientX:r.left+x*r.width,clientY:r.top+y*r.height}};
+  canvas.onpointerdown(event(.5,.5));canvas.onpointermove(event(.6,.5));canvas.onpointerup(event(.6,.5));
+  check(Math.abs(current().boxes[0][1]-.6)<1e-6,'drag moves selected box');
+  $('undo').click();check(Math.abs(current().boxes[0][1]-.5)<1e-6,'one undo restores whole drag');
+  canvas.onpointerdown(event(.5,.5));canvas.onpointerup(event(.5,.5));
+  canvas.onpointerdown(event(.7,.7));canvas.onpointermove(event(.9,.8));canvas.onpointerup(event(.9,.8));
+  check(Math.abs(current().boxes[0][3]-.6)<1e-6 && Math.abs(current().boxes[0][4]-.5)<1e-6,'corner resize works');
+  $('undo').click();
+  selected=0;
+  document.onkeydown({key:'1',ctrlKey:true,metaKey:false,target:document.body,preventDefault(){}});
+  check(current().boxes[0][0]===1,'browser Ctrl+1 does not relabel fruit');
+  $('expected').value='1';
+  document.onkeydown({key:'Enter',ctrlKey:true,metaKey:false,target:$('expected'),preventDefault(){}});
+  check(drafts.b.status==='approved' && drafts.b.expected_count===1,'Ctrl+Enter reads current count input');
+  check(item().id==='c' && current().status==='pending','approval advances without approving next image');
+  const pre=document.createElement('pre');pre.id='browser-results';pre.textContent=JSON.stringify({ok:true,checks});document.body.append(pre);
+ }catch(error){const pre=document.createElement('pre');pre.id='browser-results';pre.textContent=JSON.stringify({ok:false,error:error.message,checks});document.body.append(pre)}
+})();
+</script>
+<pre id="browser-results">{"ok":true,"checks":["three-image queue","existing manual draft preserved","explicit proposal remains unverified","undo restores user annotations","new image starts with proposal, no approval","drag moves selected box","one undo restores whole drag","corner resize works","browser Ctrl+1 does not relabel fruit","Ctrl+Enter reads current count input","approval advances without approving next image"]}</pre></body></html>

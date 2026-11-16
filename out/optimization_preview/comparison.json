@@ -1,0 +1,86 @@
+[
+  {
+    "image": "bananaappleorange.jpg",
+    "mode": "fast",
+    "boxes": 3,
+    "ms": 161.9
+  },
+  {
+    "image": "bananaappleorange.jpg",
+    "mode": "careful",
+    "boxes": 3,
+    "ms": 243.6
+  },
+  {
+    "image": "bananas.webp",
+    "mode": "fast",
+    "boxes": 0,
+    "ms": 57.2
+  },
+  {
+    "image": "bananas.webp",
+    "mode": "careful",
+    "boxes": 5,
+    "ms": 204.0
+  },
+  {
+    "image": "bunchOfBanana.jpg",
+    "mode": "fast",
+    "boxes": 5,
+    "ms": 60.5
+  },
+  {
+    "image": "bunchOfBanana.jpg",
+    "mode": "careful",
+    "boxes": 8,
+    "ms": 229.2
+  },
+  {
+    "image": "cup.jpg",
+    "mode": "fast",
+    "boxes": 0,
+    "ms": 95.9
+  },
+  {
+    "image": "cup.jpg",
+    "mode": "careful",
+    "boxes": 0,
+    "ms": 226.5
+  },
+  {
+    "image": "manyBanana.webp",
+    "mode": "fast",
+    "boxes": 8,
+    "ms": 65.9
+  },
+  {
+    "image": "manyBanana.webp",
+    "mode": "careful",
+    "boxes": 10,
+    "ms": 175.1
+  },
+  {
+    "image": "singleBanana.jpg",
+    "mode": "fast",
+    "boxes": 1,
+    "ms": 76.0
+  },
+  {
+    "image": "singleBanana.jpg",
+    "mode": "careful",
+    "boxes": 1,
+    "ms": 255.6
+  },
+  {
+    "image": "test.webp",
+    "mode": "fast",
+    "boxes": 7,
+    "ms": 45.8
+  },
+  {
+    "image": "test.webp",
+    "mode": "careful",
+    "boxes": 9,
+    "ms": 229.2
+  }
+]

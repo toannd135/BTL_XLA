@@ -1,0 +1,18 @@
+{
+  "considered_files": 34678,
+  "total_bytes": 2746008759,
+  "over_100MiB": [
+    {
+      "path": "out/accuracy_trial_20261116/fruit_accuracy_trial_20261116.zip",
+      "bytes": 426877520
+    },
+    {
+      "path": "out/all_fruits_v2_20261116/fruit_all3_v2_20261116.zip",
+      "bytes": 175455419
+    },
+    {
+      "path": "out/rotation_v1/detector_rotation_colab_input.zip",
+      "bytes": 346790665
+    }
+  ]
+}

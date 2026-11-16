@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "registered_on": "2026-11-16",
+  "active_app_checkpoint": "exports/det_obb_s.pt",
+  "models": [
+    {
+      "id": "trial_v1",
+      "task": "obb",
+      "classes": {
+        "0": "banana",
+        "1": "apple",
+        "2": "orange"
+      },
+      "checkpoint_path": "exports/det_obb_trial_v1.pt",
+      "expected_sha256": "750cadadaf9b8c80354d7c22aba332794300f75b54d295bc71a02faf79a83095",
+      "checkpoint_present_at_registration": true,
+      "status": "experimental_not_promoted",
+      "validation_report": "reports/detection_trials/trial_v1/validation_640.json",
+      "validation_report_sha256": "6a435c02024e20d2aa047730bd96ccb6a8827efa63a61402dd9b00e0979b79d8",
+      "validation_imgsz": 640,
+      "mAP50": 0.8989571260040551,
+      "mAP50_95": 0.7497754149144779,
+      "AP50": {
+        "banana": 0.7472922491617868,
+        "apple": 0.9833545717767482,
+        "orange": 0.9662245570736303
+      },
+      "checkpoint_present_at_last_verification": true,
+      "last_verified_on": "2026-11-16"
+    },
+    {
+      "id": "trial_v2",
+      "task": "obb",
+      "classes": {
+        "0": "banana",
+        "1": "apple",
+        "2": "orange"
+      },
+      "checkpoint_path": "exports/det_obb_trial_v2.pt",
+      "expected_sha256": "d0abaa79cc3784849dc3bf7c178033c56df2990b71a2f69397dfb94fc463796d",
+      "checkpoint_present_at_registration": false,
+      "status": "experimental_not_promoted",
+      "validation_report": "reports/detection_trials/trial_v2/validation_1280.json",
+      "validation_report_sha256": "abc7a1bc46368225e2f0a496572b77ffa559b7b6faf047caf6610058d24c6c25",
+      "validation_imgsz": 1280,
+      "mAP50": 0.7908799534808005,
+      "mAP50_95": 0.5384624814953597,
+      "AP50": {
+        "banana": 0.5633811148472732,
+        "apple": 0.9236409977568365,
+        "orange": 0.8856177478382922
+      },
+      "checkpoint_present_at_last_verification": true,
+      "last_verified_on": "2026-11-16"
+    }
+  ],
+  "notes": [
+    "Results are measured under different input-size protocols; compare models within the same report.",
+    "Original datasets and default app model were not changed.",
+    "Both V1 and V2 weight files are present locally and SHA256-verified on 2026-11-16. Registration-time availability is historical; see last verification fields."
+  ]
+}

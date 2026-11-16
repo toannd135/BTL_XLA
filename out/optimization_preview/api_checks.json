@@ -1,0 +1,50 @@
+[
+  {
+    "image": "bananas.webp",
+    "mode": "fast",
+    "objects": 0,
+    "ms": 133.1
+  },
+  {
+    "image": "bananas.webp",
+    "mode": "careful",
+    "objects": 5,
+    "ms": 444.3
+  },
+  {
+    "image": "singleBanana.jpg",
+    "mode": "fast",
+    "objects": 1,
+    "ms": 123.5
+  },
+  {
+    "image": "singleBanana.jpg",
+    "mode": "careful",
+    "objects": 1,
+    "ms": 488.4
+  },
+  {
+    "image": "cup.jpg",
+    "mode": "fast",
+    "objects": 0,
+    "ms": 128.7
+  },
+  {
+    "image": "cup.jpg",
+    "mode": "careful",
+    "objects": 0,
+    "ms": 527.4
+  },
+  {
+    "image": "manyBanana.webp",
+    "mode": "fast",
+    "objects": 8,
+    "ms": 118.4
+  },
+  {
+    "image": "manyBanana.webp",
+    "mode": "careful",
+    "objects": 10,
+    "ms": 365.1
+  }
+]

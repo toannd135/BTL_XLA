@@ -1,0 +1,17 @@
+{
+  "archive_CRC_and_all_file_hashes": "passed",
+  "no_duplicate_archive_members": "passed",
+  "train_eval_exact_hash_and_source_group_checks": "passed",
+  "all_three_class_exposures": {
+    "0": 636,
+    "2": 713,
+    "1": 625
+  },
+  "matching_duplicate_and_wrong_class_checks": "passed (check_metrics.py)",
+  "float32_OBB_count_integration": "passed",
+  "notebook_code_and_package_hash": "passed",
+  "runner_CPU_training_guard": "passed",
+  "app_baseline_unchanged": true,
+  "training_executed_locally": false,
+  "GPU_Colab_execution_not_yet_tested": true
+}

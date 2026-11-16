@@ -1,0 +1,70 @@
+{
+  "model": "trial_v2",
+  "sha256": "d0abaa79cc3784849dc3bf7c178033c56df2990b71a2f69397dfb94fc463796d",
+  "protocol": {
+    "split": "val",
+    "imgsz": 1280,
+    "AP_conf": 0.001,
+    "count_conf": 0.4,
+    "iou": 0.7,
+    "agnostic_nms": true,
+    "probIoU_matching_threshold": 0.5,
+    "models": {
+      "baseline": "e2ae26714bdcb883d4650fdc39d4843b221fdb29b2829681cbcddc8b2af2643e",
+      "trial_v1": "750cadadaf9b8c80354d7c22aba332794300f75b54d295bc71a02faf79a83095",
+      "trial_v2": "d0abaa79cc3784849dc3bf7c178033c56df2990b71a2f69397dfb94fc463796d"
+    },
+    "manifest_sha256": "9ad0ff75d327a8127863277ae2de5e93f4af0bf42138fbc3aed4a9b09e7202ba"
+  },
+  "mAP50": 0.7908799534808005,
+  "mAP50_95": 0.5384624814953597,
+  "AP50": {
+    "banana": 0.5633811148472732,
+    "apple": 0.9236409977568365,
+    "orange": 0.8856177478382922
+  },
+  "operating_point": {
+    "images": 297,
+    "per_class": {
+      "banana": {
+        "TP": 97,
+        "FP": 128,
+        "FN": 61,
+        "precision": 0.4311111111111111,
+        "recall": 0.6139240506329114,
+        "F1": 0.5065274151436031,
+        "count_MAE_all_images": 0.3872053872053872,
+        "count_MAE_when_present": 0.9727272727272728,
+        "exact_count_rate_all_images": 0.7441077441077442,
+        "images_with_truth": 110
+      },
+      "apple": {
+        "TP": 95,
+        "FP": 7,
+        "FN": 12,
+        "precision": 0.9313725490196079,
+        "recall": 0.8878504672897196,
+        "F1": 0.9090909090909091,
+        "count_MAE_all_images": 0.06397306397306397,
+        "count_MAE_when_present": 0.18269230769230768,
+        "exact_count_rate_all_images": 0.9393939393939394,
+        "images_with_truth": 104
+      },
+      "orange": {
+        "TP": 91,
+        "FP": 25,
+        "FN": 8,
+        "precision": 0.7844827586206896,
+        "recall": 0.9191919191919192,
+        "F1": 0.8465116279069766,
+        "count_MAE_all_images": 0.10437710437710437,
+        "count_MAE_when_present": 0.18823529411764706,
+        "exact_count_rate_all_images": 0.9090909090909091,
+        "images_with_truth": 85
+      }
+    },
+    "macro_F1": 0.7540433173804963,
+    "count_MAE_all_classes": 0.5555555555555556,
+    "exact_all_classes": 0.632996632996633
+  }
+}

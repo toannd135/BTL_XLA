@@ -1,0 +1,36 @@
+{
+  "result_files_copied": 77,
+  "result_reports_and_V1_weights_verified": true,
+  "V2_weights_missing": false,
+  "all_required_new_resources_visible_to_git": true,
+  "untracked_files_now_visible": 13499,
+  "all_files_over_100MiB_use_LFS": [
+    {
+      "path": "out/accuracy_trial_20261116/fruit_accuracy_trial_20261116.zip",
+      "bytes": 426877520,
+      "filter": "lfs"
+    },
+    {
+      "path": "out/all_fruits_v2_20261116/fruit_all3_v2_20261116.zip",
+      "bytes": 175455419,
+      "filter": "lfs"
+    },
+    {
+      "path": "out/rotation_v1/detector_rotation_colab_input.zip",
+      "bytes": 346790665,
+      "filter": "lfs"
+    }
+  ],
+  "environments_credentials_and_git_recovery_stay_ignored": true,
+  "git_longpaths_local_enabled": true,
+  "LFS_local_pre_push_hook_installed": true,
+  "git_add_dry_run_exit_code": 0,
+  "original_app_model_unchanged": true,
+  "no_commit_or_push_performed": true,
+  "verified_on": "2026-11-16",
+  "both_trial_models_SHA256_verified": true,
+  "both_models_load_as_three_class_OBB": true,
+  "V2_duplicate_extension_fixed": true,
+  "detection_resource_check_passed": true,
+  "git_add_dry_run_entries": 13504
+}

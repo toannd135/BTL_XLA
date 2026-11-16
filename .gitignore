@@ -1,62 +1,43 @@
-# Tài nguyên cần bàn giao được phép track:
-# exports/ (*.pt, *.onnx), local_dataset/, own_cam/, own_neg/, own_mixed/,
-# docs/, tools/, notebooks và file cấu hình mẫu.
+# Code, models, datasets, notebooks, reports, ZIP inputs, out/ and runs/
+# are allowed in Git. Large ZIP files use Git LFS (.gitattributes).
 
-# Giữ script và metadata audit cần tái lập; các file sinh ra trong work bỏ qua.
-/work/**
-!/work/**/
-!/work/**/*.py
-!/work/audit/*.csv
-!/work/audit/*.json
-!/work/audit/quarantine_train.txt
-# Dữ liệu OBB đã dựng (để train trên Colab) + 71 ảnh nền giữ riêng dùng khi đo
-!/work/obb/data/**
-!/work/obb/*.ipynb
-!/work/exp/neg/test/**
-
-# Dữ liệu thô gốc (đã chuyển thành local_dataset/), video, trọng số pretrained tự tải: quá nặng cho GitHub (giới hạn 2GB/lần push)
-/raw/
-/raw_cls/
-/own/videos/
-/yolo*.pt
-# Dataset classifier (1.7GB): gửi riêng bằng zip, Colab train OBB không cần
-/local_dataset/cls/
-
-# Kết quả có thể tạo lại; không commit bản zip trùng dataset đã giải nén.
-out/
-runs/
-backup_*/
-*.zip
-*.cache
-*.log
-
-# Môi trường và cache mỗi máy tự tạo sau khi clone.
+# Per-machine environments and installed dependencies.
 .venv/
 venv/
 env/
 node_modules/
 dist/
 build/
+*.egg-info/
+/out/pdf_reader_tools/
+
+# Regenerable runtime caches, including downloaded CLIP cache.
 __pycache__/
 *.py[cod]
+*.cache
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
 .cache/
 .ipynb_checkpoints/
-*.egg-info/
+/work/weights/hf/
+/out/ultralytics_config/
 
-# Thông tin riêng của từng máy/tài khoản; giữ file cấu hình mẫu.
+# Machine/account credentials; keep configuration examples.
 .env
 .env.*
 !.env.example
 !.env.*.example
 kaggle.json
 
-# File của hệ điều hành.
+# Local Git recovery copies contain old indexes/configs and duplicate trees.
+# Keep them on this machine, outside the published project contents.
+/out/git-*
+/out/merge-main-*/
+/out/update-main-*/
+/out/latest-merge-backup-path.txt
+
+# Operating-system files.
 .DS_Store
 Thumbs.db
 Desktop.ini
-own_other/
-work/weights/hf/
-work/fruitcls/data/

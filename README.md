@@ -491,9 +491,9 @@ Thanh trượt ngưỡng tin cậy dùng chung cho cả hai tab (mặc định 0
 
 Backend chỉ nhận trang mở từ `http://localhost:5173` hoặc `http://127.0.0.1:5173`. Địa chỉ khác thì đặt `CORS_ORIGINS` và sửa `VITE_API_URL` trong `frontend/.env`. Webcam chỉ dùng được trên localhost hoặc https.
 
-### Train lại detector
+### Train lại detector C (quy trình cũ)
 
-Dữ liệu train (~270MB) không nằm trên git. Nhận `fruit_train_data.zip` từ người chia sẻ, giải nén vào gốc repo:
+Dữ liệu detection trong `local_dataset/det/` và bộ OBB trong `work/obb/data/` đã được Git theo dõi. Nếu dùng gói bàn giao C cũ thay vì dữ liệu trong repo, nhận `fruit_train_data.zip` rồi giải nén vào gốc repo:
 
 ```bash
 unzip fruit_train_data.zip       # tạo local_dataset/det, own_neg, own_cam, work/audit
@@ -507,3 +507,13 @@ Tùy chọn: `python train_detection.py <model.pt> <tên_run> <epochs> <batch> <
 - Dùng `last.pt`, không dùng `best.pt`. Áp dụng bản mới: copy `last.pt` đè `exports/det_finetune_best.pt` rồi khởi động lại backend.
 - Bị ngắt giữa chừng: `python -c "from ultralytics import YOLO; YOLO('runs/exp/<tên_run>/weights/last.pt').train(resume=True)"`.
 - Đánh giá một model: `python work/eval_det.py <weights> <tag>`; chẩn đoán một ảnh: `python work/diag_image.py <ảnh>`.
+
+### Kết quả detector mới và bàn giao tài nguyên (16/11/2026)
+
+- [Hai kết quả V1/V2, JSON và ảnh validation](reports/detection_trials/README.md).
+- Danh mục checkpoint, SHA256 và cấu hình đo: `exports/trial_models.json`.
+- Đã có đủ trọng số V1 tại `exports/det_obb_trial_v1.pt` và V2 tại `exports/det_obb_trial_v2.pt`; SHA256 được kiểm tra khớp báo cáo.
+- Notebook, script và ZIP hai lượt thử nằm tại `out/accuracy_trial_20261116/` và `out/all_fruits_v2_20261116/`; hiện được phép commit. ZIP lớn dùng Git LFS.
+- [Hướng dẫn push và bàn giao](docs/push-va-ban-giao.md): cấu hình LFS, giới hạn đường dẫn Windows và các tài nguyên còn thiếu.
+
+Model mặc định của app vẫn là `exports/det_obb_s.pt`. Hai lượt mới là thí nghiệm, không tự thay model đã dùng.

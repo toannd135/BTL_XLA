@@ -1,0 +1,2 @@
+# ZIP inputs can exceed GitHub's normal per-file limit. Commit this file too.
+*.zip filter=lfs diff=lfs merge=lfs -text

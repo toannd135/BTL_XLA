@@ -1,0 +1,40 @@
+{
+  "train": {
+    "images": 2365,
+    "positive_images": 886,
+    "empty_labels": 1479,
+    "multi_instance_images": 217,
+    "audit_flagged_images": 86,
+    "images_per_flag_type": {
+      "missing": 10,
+      "nested": 47,
+      "bunch": 27,
+      "empty-label": 31
+    }
+  },
+  "val": {
+    "images": 301,
+    "positive_images": 301,
+    "empty_labels": 0,
+    "multi_instance_images": 36,
+    "audit_flagged_images": 15,
+    "images_per_flag_type": {
+      "missing": 6,
+      "bunch": 8,
+      "nested": 3
+    }
+  },
+  "test": {
+    "images": 373,
+    "positive_images": 274,
+    "empty_labels": 99,
+    "multi_instance_images": 45,
+    "audit_flagged_images": 26,
+    "images_per_flag_type": {
+      "missing": 14,
+      "nested": 6,
+      "bunch": 6,
+      "empty-label": 8
+    }
+  }
+}

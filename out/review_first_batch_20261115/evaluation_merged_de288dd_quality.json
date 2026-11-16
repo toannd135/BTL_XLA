@@ -1,0 +1,1151 @@
+{
+  "model": "D:\\privateProject\\xuLyAnh\\BTL_XLA\\exports\\det_obb_s.pt",
+  "model_sha256": "e2ae26714bdcb883d4650fdc39d4843b221fdb29b2829681cbcddc8b2af2643e",
+  "dataset_id": "8fec5f1bf0519b66671ac9422b0040707bf97d84f77c5d127bd810ba14513dd0",
+  "reviews_sha256": "1e52ff72a345dcfb0b672f67f695484e309dd40a2384b2ff0ba73aed34736f7d",
+  "postprocess_sha256": "45dea6b3d28520b8414da154c79464175e9021606c8fd4a89e5486e89b422243",
+  "pipeline_sha256": "867465e1c6f11ddb11eb1ba5d2996afc0ec18fbf56f30175dbd3ebbae3233cd3",
+  "verifier_sha256": "b9cd2c5655535ef166f70963e1ac370771b0b539a1fabf836140c1443ac26b96",
+  "ultralytics_version": "8.4.180",
+  "torch_version": "2.15.0+cpu",
+  "conf": 0.4,
+  "imgsz": 1280,
+  "iou_nms": 0.7,
+  "mode": "careful",
+  "runtime": {
+    "status": "ok",
+    "device": "cpu",
+    "det_model": "det_obb_s.pt",
+    "cls_model": "cls_finetune_best.pt",
+    "cpu_threads": 2,
+    "conf": 0.4,
+    "nms_iou": 0.7,
+    "default_mode": "careful",
+    "careful_imgsz": 1280,
+    "obb_imgsz": 1280,
+    "clip_check": true,
+    "teacher_check": true,
+    "teacher_model": "yolo11s.pt",
+    "type_verification": "active",
+    "det_task": "obb",
+    "clip_batch_size": 4,
+    "clip_arch": "ViT-L-14",
+    "clip_pretrained": "laion2b_s32b_b82k"
+  },
+  "variants": {
+    "app": {
+      "summary": {
+        "images": 3,
+        "count_mae": 2.3333333333333335,
+        "exact_count_rate": 0.0,
+        "exact_class_counts_rate": 0.0,
+        "per_class_mae": {
+          "0": 1.3333333333333333,
+          "1": 1.3333333333333333,
+          "2": 0.3333333333333333
+        },
+        "background_images": 0,
+        "background_false_positive_images": 0,
+        "iou_50": {
+          "tp": 7,
+          "fp": 13,
+          "fn": 10,
+          "precision": 0.35,
+          "recall": 0.4117647058823529,
+          "f1": 0.3783783783783784,
+          "perfect_instances_rate": 0.0
+        },
+        "iou_75": {
+          "tp": 4,
+          "fp": 16,
+          "fn": 13,
+          "precision": 0.2,
+          "recall": 0.23529411764705882,
+          "f1": 0.21621621621621623,
+          "perfect_instances_rate": 0.0
+        }
+      },
+      "latency_median_ms": 6669.131699999525,
+      "by_role": {
+        "diagnostic": {
+          "images": 3,
+          "count_mae": 2.3333333333333335,
+          "exact_count_rate": 0.0,
+          "exact_class_counts_rate": 0.0,
+          "per_class_mae": {
+            "0": 1.3333333333333333,
+            "1": 1.3333333333333333,
+            "2": 0.3333333333333333
+          },
+          "background_images": 0,
+          "background_false_positive_images": 0,
+          "iou_50": {
+            "tp": 7,
+            "fp": 13,
+            "fn": 10,
+            "precision": 0.35,
+            "recall": 0.4117647058823529,
+            "f1": 0.3783783783783784,
+            "perfect_instances_rate": 0.0
+          },
+          "iou_75": {
+            "tp": 4,
+            "fp": 16,
+            "fn": 13,
+            "precision": 0.2,
+            "recall": 0.23529411764705882,
+            "f1": 0.21621621621621623,
+            "perfect_instances_rate": 0.0
+          }
+        }
+      },
+      "rows": [
+        {
+          "image": "diagnostic/bananaappleorange.jpg",
+          "role": "diagnostic",
+          "true_count": 3,
+          "predicted_count": 4,
+          "absolute_count_error": 1,
+          "exact_count": false,
+          "exact_class_counts": false,
+          "per_class_absolute_error": {
+            "0": 1,
+            "1": 1,
+            "2": 1
+          },
+          "iou_50": {
+            "tp": 1,
+            "fp": 3,
+            "fn": 2,
+            "perfect_instances": false
+          },
+          "iou_75": {
+            "tp": 0,
+            "fp": 4,
+            "fn": 3,
+            "perfect_instances": false
+          },
+          "predictions": [
+            [
+              1,
+              0.54580078125,
+              0.2524271844660194,
+              0.84326171875,
+              0.6384188626907074
+            ],
+            [
+              2,
+              0.26767578125,
+              0.15062413314840498,
+              0.571484375,
+              0.5941747572815533
+            ],
+            [
+              0,
+              0.234375,
+              0.5840499306518724,
+              0.77353515625,
+              0.9149791955617199
+            ],
+            [
+              0,
+              0.02177734375,
+              0.2642163661581137,
+              0.5994140625,
+              0.9926490984743412
+            ]
+          ],
+          "objects": [
+            {
+              "label": "apple",
+              "detector_label": "apple",
+              "confidence": 0.9461,
+              "state": "fresh",
+              "state_confidence": 1.0,
+              "bbox": [
+                558.9,
+                182.0,
+                863.5,
+                460.3
+              ],
+              "rescued": false,
+              "acceptance_threshold": 0.4,
+              "polygon": [
+                [
+                  863.5,
+                  452.1
+                ],
+                [
+                  856.1,
+                  182.0
+                ],
+                [
+                  558.9,
+                  190.2
+                ],
+                [
+                  566.3,
+                  460.3
+                ]
+              ],
+              "type_check": {
+                "label": "apple",
+                "score": 0.9975,
+                "corrected": false
+              }
+            },
+            {
+              "label": "orange",
+              "detector_label": "orange",
+              "confidence": 0.8573,
+              "state": "fresh",
+              "state_confidence": 0.9999,
+              "bbox": [
+                274.1,
+                108.6,
+                585.2,
+                428.4
+              ],
+              "rescued": false,
+              "acceptance_threshold": 0.4,
+              "polygon": [
+                [
+                  573.8,
+                  428.4
+                ],
+                [
+                  585.2,
+                  119.7
+                ],
+                [
+                  285.5,
+                  108.6
+                ],
+                [
+                  274.1,
+                  417.3
+                ]
+              ],
+              "type_check": {
+                "label": "orange",
+                "score": 0.9898,
+                "corrected": false
+              }
+            },
+            {
+              "label": "banana",
+              "detector_label": "banana",
+              "confidence": 0.7086,
+              "state": "fresh",
+              "state_confidence": 0.9997,
+              "bbox": [
+                240.0,
+                421.1,
+                792.1,
+                659.7
+              ],
+              "rescued": false,
+              "acceptance_threshold": 0.4,
+              "polygon": [
+                [
+                  776.7,
+                  659.7
+                ],
+                [
+                  792.1,
+                  463.1
+                ],
+                [
+                  255.3,
+                  421.1
+                ],
+                [
+                  240.0,
+                  617.8
+                ]
+              ],
+              "type_check": {
+                "label": "banana",
+                "score": 0.7799,
+                "corrected": false
+              }
+            },
+            {
+              "label": "banana",
+              "detector_label": "banana",
+              "confidence": 0.6908,
+              "state": "fresh",
+              "state_confidence": 0.9989,
+              "bbox": [
+                22.3,
+                190.5,
+                613.8,
+                715.7
+              ],
+              "rescued": false,
+              "acceptance_threshold": 0.4,
+              "polygon": [
+                [
+                  472.2,
+                  715.7
+                ],
+                [
+                  613.8,
+                  525.6
+                ],
+                [
+                  164.0,
+                  190.5
+                ],
+                [
+                  22.3,
+                  380.6
+                ]
+              ],
+              "type_check": {
+                "label": "other",
+                "score": 0.5965,
+                "corrected": false
+              }
+            }
+          ],
+          "timings_ms": {
+            "queue": 0.0,
+            "detector": 554.92,
+            "type_check": 3967.91,
+            "crop": 2.33,
+            "classifier": 29.63,
+            "total": 4554.9
+          },
+          "detection_counts": {
+            "candidates": 4,
+            "retained": 4,
+            "filtered": 0,
+            "rescued": 0,
+            "corrected": 0
+          },
+          "inference_ms": 4554.916500000218
+        },
+        {
+          "image": "diagnostic/bananas.webp",
+          "role": "diagnostic",
+          "true_count": 7,
+          "predicted_count": 5,
+          "absolute_count_error": 2,
+          "exact_count": false,
+          "exact_class_counts": false,
+          "per_class_absolute_error": {
+            "0": 2,
+            "1": 0,
+            "2": 0
+          },
+          "iou_50": {
+            "tp": 1,
+            "fp": 4,
+            "fn": 6,
+            "perfect_instances": false
+          },
+          "iou_75": {
+            "tp": 0,
+            "fp": 5,
+            "fn": 7,
+            "perfect_instances": false
+          },
+          "predictions": [
+            [
+              0,
+              0.8410341951626356,
+              0.34993804213135066,
+              1.04837364470392,
+              0.9287484510532837
+            ],
+            [
+              0,
+              -0.05587989991659716,
+              -0.02825278810408922,
+              0.35904920767306087,
+              0.8724907063197026
+            ],
+            [
+              0,
+              0.0725604670558799,
+              -0.13841387856257745,
+              0.5542118432026689,
+              0.7531598513011152
+            ],
+            [
+              0,
+              0.10300250208507089,
+              0.40929368029739777,
+              0.3025020850708924,
+              0.9679058240396531
+            ],
+            [
+              0,
+              0.5884070058381985,
+              0.32577447335811643,
+              0.8165137614678899,
+              0.9118959107806691
+            ]
+          ],
+          "objects": [
+            {
+              "label": "banana",
+              "detector_label": "banana",
+              "confidence": 0.5233,
+              "state": "rotten",
+              "state_confidence": 1.0,
+              "bbox": [
+                1008.4,
+                282.4,
+                1257.0,
+                749.5
+              ],
+              "rescued": false,
+              "acceptance_threshold": 0.4,
+              "polygon": [
+                [
+                  1008.4,
+                  725.1
+                ],
+                [
+                  1200.9,
+                  749.5
+                ],
+                [
+                  1257.0,
+                  306.8
+                ],
+                [
+                  1064.6,
+                  282.4
+                ]
+              ],
+              "type_check": {
+                "label": "banana",
+                "score": 0.999,
+                "corrected": false
+              }
+            },
+            {
+              "label": "banana",
+              "detector_label": "banana",
+              "confidence": 0.4639,
+              "state": "fresh",
+              "state_confidence": 0.9999,
+              "bbox": [
+                -67.0,
+                -22.8,
+                430.5,
+                704.1
+              ],
+              "rescued": false,
+              "acceptance_threshold": 0.4,
+              "polygon": [
+                [
+                  175.1,
+                  704.1
+                ],
+                [
+                  430.5,
+                  605.7
+                ],
+                [
+                  188.3,
+                  -22.8
+                ],
+                [
+                  -67.0,
+                  75.6
+                ]
+              ],
+              "type_check": {
+                "label": "banana",
+                "score": 0.9999,
+                "corrected": false
+              }
+            },
+            {
+              "label": "banana",
+              "detector_label": "banana",
+              "confidence": 0.3876,
+              "state": "fresh",
+              "state_confidence": 1.0,
+              "bbox": [
+                87.0,
+                -111.7,
+                664.5,
+                607.8
+              ],
+              "rescued": true,
+              "acceptance_threshold": 0.4,
+              "polygon": [
+                [
+                  447.3,
+                  607.8
+                ],
+                [
+                  664.5,
+                  474.3
+                ],
+                [
+                  304.2,
+                  -111.7
+                ],
+                [
+                  87.0,
+                  21.8
+                ]
+              ],
+              "type_check": {
+                "label": "banana",
+                "score": 1.0,
+                "corrected": false
+              }
+            },
+            {
+              "label": "banana",
+              "detector_label": "banana",
+              "confidence": 0.368,
+              "state": "rotten",
+              "state_confidence": 0.6283,
+              "bbox": [
+                123.5,
+                330.3,
+                362.7,
+                781.1
+              ],
+              "rescued": true,
+              "acceptance_threshold": 0.4,
+              "polygon": [
+                [
+                  123.5,
+                  766.0
+                ],
+                [
+                  331.0,
+                  781.1
+                ],
+                [
+                  362.7,
+                  345.4
+                ],
+                [
+                  155.3,
+                  330.3
+                ]
+              ],
+              "type_check": {
+                "label": "banana",
+                "score": 0.9999,
+                "corrected": false
+              }
+            },
+            {
+              "label": "banana",
+              "detector_label": "banana",
+              "confidence": 0.3262,
+              "state": "rotten",
+              "state_confidence": 0.9443,
+              "bbox": [
+                705.5,
+                262.9,
+                979.0,
+                735.9
+              ],
+              "rescued": true,
+              "acceptance_threshold": 0.4,
+              "polygon": [
+                [
+                  705.5,
+                  702.8
+                ],
+                [
+                  906.8,
+                  735.9
+                ],
+                [
+                  979.0,
+                  296.0
+                ],
+                [
+                  777.7,
+                  262.9
+                ]
+              ],
+              "type_check": {
+                "label": "banana",
+                "score": 0.9991,
+                "corrected": false
+              }
+            }
+          ],
+          "timings_ms": {
+            "queue": 0.02,
+            "detector": 508.33,
+            "type_check": 6118.81,
+            "crop": 4.55,
+            "classifier": 36.15,
+            "total": 6669.07
+          },
+          "detection_counts": {
+            "candidates": 6,
+            "retained": 5,
+            "filtered": 1,
+            "rescued": 3,
+            "corrected": 0
+          },
+          "inference_ms": 6669.131699999525
+        },
+        {
+          "image": "diagnostic/test.webp",
+          "role": "diagnostic",
+          "true_count": 7,
+          "predicted_count": 11,
+          "absolute_count_error": 4,
+          "exact_count": false,
+          "exact_class_counts": false,
+          "per_class_absolute_error": {
+            "0": 1,
+            "1": 3,
+            "2": 0
+          },
+          "iou_50": {
+            "tp": 5,
+            "fp": 6,
+            "fn": 2,
+            "perfect_instances": false
+          },
+          "iou_75": {
+            "tp": 4,
+            "fp": 7,
+            "fn": 3,
+            "perfect_instances": false
+          },
+          "predictions": [
+            [
+              1,
+              0.7962790697674419,
+              0.4415625,
+              0.8711627906976744,
+              0.55359375
+            ],
+            [
+              2,
+              0.2928372093023256,
+              0.5925,
+              0.5636279069767441,
+              1.00234375
+            ],
+            [
+              1,
+              0.09395348837209302,
+              0.47468750000000004,
+              0.3613023255813953,
+              0.93328125
+            ],
+            [
+              2,
+              0.46344186046511626,
+              0.4984375,
+              0.7039069767441861,
+              0.9190625000000001
+            ],
+            [
+              1,
+              -0.005209302325581395,
+              0.37,
+              0.25311627906976747,
+              0.8125
+            ],
+            [
+              1,
+              0.9033488372093024,
+              0.44921875,
+              0.9506976744186046,
+              0.54796875
+            ],
+            [
+              0,
+              0.24669767441860463,
+              0.17453125,
+              0.6152558139534884,
+              0.40140624999999996
+            ],
+            [
+              1,
+              0.9523720930232558,
+              0.61125,
+              1.0028837209302324,
+              0.71828125
+            ],
+            [
+              0,
+              0.2744186046511628,
+              0.0890625,
+              0.8009302325581396,
+              0.81578125
+            ],
+            [
+              0,
+              0.2534883720930233,
+              0.129375,
+              0.756093023255814,
+              0.59765625
+            ],
+            [
+              0,
+              0.6686511627906976,
+              0.10359375,
+              0.8273488372093023,
+              0.485
+            ]
+          ],
+          "objects": [
+            {
+              "label": "apple",
+              "detector_label": "apple",
+              "confidence": 0.9578,
+              "state": "fresh",
+              "state_confidence": 1.0,
+              "bbox": [
+                856.0,
+                282.6,
+                936.5,
+                354.3
+              ],
+              "rescued": false,
+              "acceptance_threshold": 0.4,
+              "polygon": [
+                [
+                  931.6,
+                  354.3
+                ],
+                [
+                  936.5,
+                  288.2
+                ],
+                [
+                  860.9,
+                  282.6
+                ],
+                [
+                  856.0,
+                  348.7
+                ]
+              ],
+              "type_check": {
+                "label": "other",
+                "score": 0.7257,
+                "corrected": false
+              }
+            },
+            {
+              "label": "orange",
+              "detector_label": "orange",
+              "confidence": 0.9261,
+              "state": "fresh",
+              "state_confidence": 1.0,
+              "bbox": [
+                314.8,
+                379.2,
+                605.9,
+                641.5
+              ],
+              "rescued": false,
+              "acceptance_threshold": 0.4,
+              "polygon": [
+                [
+                  605.9,
+                  641.3
+                ],
+                [
+                  605.7,
+                  379.2
+                ],
+                [
+                  314.8,
+                  379.5
+                ],
+                [
+                  315.0,
+                  641.5
+                ]
+              ],
+              "type_check": {
+                "label": "orange",
+                "score": 0.9875,
+                "corrected": false
+              }
+            },
+            {
+              "label": "apple",
+              "detector_label": "apple",
+              "confidence": 0.8756,
+              "state": "fresh",
+              "state_confidence": 1.0,
+              "bbox": [
+                101.0,
+                303.8,
+                388.4,
+                597.3
+              ],
+              "rescued": false,
+              "acceptance_threshold": 0.4,
+              "polygon": [
+                [
+                  388.4,
+                  593.4
+                ],
+                [
+                  384.5,
+                  303.8
+                ],
+                [
+                  101.0,
+                  307.6
+                ],
+                [
+                  104.9,
+                  597.3
+                ]
+              ],
+              "type_check": {
+                "label": "apple",
+                "score": 0.849,
+                "corrected": false
+              }
+            },
+            {
+              "label": "orange",
+              "detector_label": "orange",
+              "confidence": 0.8743,
+              "state": "fresh",
+              "state_confidence": 1.0,
+              "bbox": [
+                498.2,
+                319.0,
+                756.7,
+                588.2
+              ],
+              "rescued": false,
+              "acceptance_threshold": 0.4,
+              "polygon": [
+                [
+                  756.7,
+                  587.9
+                ],
+                [
+                  756.3,
+                  319.0
+                ],
+                [
+                  498.2,
+                  319.4
+                ],
+                [
+                  498.6,
+                  588.2
+                ]
+              ],
+              "type_check": {
+                "label": "orange",
+                "score": 0.6997,
+                "corrected": false
+              }
+            },
+            {
+              "label": "apple",
+              "detector_label": "apple",
+              "confidence": 0.8394,
+              "state": "fresh",
+              "state_confidence": 1.0,
+              "bbox": [
+                -5.6,
+                236.8,
+                272.1,
+                520.0
+              ],
+              "rescued": false,
+              "acceptance_threshold": 0.4,
+              "polygon": [
+                [
+                  263.9,
+                  520.0
+                ],
+                [
+                  272.1,
+                  244.9
+                ],
+                [
+                  2.7,
+                  236.8
+                ],
+                [
+                  -5.6,
+                  511.9
+                ]
+              ],
+              "type_check": {
+                "label": "apple",
+                "score": 0.9972,
+                "corrected": false
+              }
+            },
+            {
+              "label": "apple",
+              "detector_label": "apple",
+              "confidence": 0.5473,
+              "state": "fresh",
+              "state_confidence": 1.0,
+              "bbox": [
+                971.1,
+                287.5,
+                1022.0,
+                350.7
+              ],
+              "rescued": false,
+              "acceptance_threshold": 0.4,
+              "polygon": [
+                [
+                  971.1,
+                  347.9
+                ],
+                [
+                  1018.5,
+                  350.7
+                ],
+                [
+                  1022.0,
+                  290.3
+                ],
+                [
+                  974.6,
+                  287.5
+                ]
+              ],
+              "type_check": {
+                "label": "apple",
+                "score": 0.8681,
+                "corrected": false
+              }
+            },
+            {
+              "label": "banana",
+              "detector_label": "banana",
+              "confidence": 0.5046,
+              "state": "fresh",
+              "state_confidence": 0.9957,
+              "bbox": [
+                265.2,
+                111.7,
+                661.4,
+                256.9
+              ],
+              "rescued": false,
+              "acceptance_threshold": 0.4,
+              "polygon": [
+                [
+                  661.4,
+                  223.3
+                ],
+                [
+                  651.7,
+                  111.7
+                ],
+                [
+                  265.2,
+                  145.3
+                ],
+                [
+                  274.9,
+                  256.9
+                ]
+              ],
+              "type_check": {
+                "label": "banana",
+                "score": 0.9989,
+                "corrected": false
+              }
+            },
+            {
+              "label": "apple",
+              "detector_label": "apple",
+              "confidence": 0.4493,
+              "state": "fresh",
+              "state_confidence": 1.0,
+              "bbox": [
+                1023.8,
+                391.2,
+                1078.1,
+                459.7
+              ],
+              "rescued": false,
+              "acceptance_threshold": 0.4,
+              "polygon": [
+                [
+                  1023.8,
+                  456.6
+                ],
+                [
+                  1074.1,
+                  459.7
+                ],
+                [
+                  1078.1,
+                  394.2
+                ],
+                [
+                  1027.8,
+                  391.2
+                ]
+              ],
+              "type_check": {
+                "label": "other",
+                "score": 0.4019,
+                "corrected": false
+              }
+            },
+            {
+              "label": "banana",
+              "detector_label": "banana",
+              "confidence": 0.4193,
+              "state": "fresh",
+              "state_confidence": 1.0,
+              "bbox": [
+                295.0,
+                57.0,
+                861.0,
+                522.1
+              ],
+              "rescued": false,
+              "acceptance_threshold": 0.4,
+              "polygon": [
+                [
+                  861.0,
+                  227.4
+                ],
+                [
+                  750.9,
+                  57.0
+                ],
+                [
+                  295.0,
+                  351.7
+                ],
+                [
+                  405.1,
+                  522.1
+                ]
+              ],
+              "type_check": {
+                "label": "other",
+                "score": 0.9034,
+                "corrected": false
+              }
+            },
+            {
+              "label": "banana",
+              "detector_label": "banana",
+              "confidence": 0.3406,
+              "state": "fresh",
+              "state_confidence": 1.0,
+              "bbox": [
+                272.5,
+                82.8,
+                812.8,
+                382.5
+              ],
+              "rescued": true,
+              "acceptance_threshold": 0.4,
+              "polygon": [
+                [
+                  812.8,
+                  247.8
+                ],
+                [
+                  767.9,
+                  82.8
+                ],
+                [
+                  272.5,
+                  217.5
+                ],
+                [
+                  317.3,
+                  382.5
+                ]
+              ],
+              "type_check": {
+                "label": "banana",
+                "score": 0.9094,
+                "corrected": false
+              }
+            },
+            {
+              "label": "banana",
+              "detector_label": "banana",
+              "confidence": 0.3367,
+              "state": "fresh",
+              "state_confidence": 1.0,
+              "bbox": [
+                718.8,
+                66.3,
+                889.4,
+                310.4
+              ],
+              "rescued": true,
+              "acceptance_threshold": 0.4,
+              "polygon": [
+                [
+                  775.0,
+                  310.4
+                ],
+                [
+                  889.4,
+                  280.3
+                ],
+                [
+                  833.2,
+                  66.3
+                ],
+                [
+                  718.8,
+                  96.4
+                ]
+              ],
+              "type_check": {
+                "label": "banana",
+                "score": 0.9348,
+                "corrected": false
+              }
+            }
+          ],
+          "timings_ms": {
+            "queue": 0.0,
+            "detector": 455.31,
+            "type_check": 49726.25,
+            "crop": 2.81,
+            "classifier": 61.61,
+            "total": 50247.12
+          },
+          "detection_counts": {
+            "candidates": 31,
+            "retained": 11,
+            "filtered": 20,
+            "rescued": 2,
+            "corrected": 0
+          },
+          "inference_ms": 50247.1529000004
+        }
+      ]
+    }
+  },
+  "thresholds": {
+    "other": 0.8,
+    "swap": 0.8,
+    "rescue_conf": 0.25,
+    "rescue": 0.9
+  },
+  "limitation": "HBB-envelope IoU matching of reviewed boxes, not OBB mAP. No freshness ground truth: not an end-to-end freshness score. detector_only means CLIP disabled; the configured teacher and duplicate filter remain active. Diagnostic/legacy images used during development are not an independent final test. Latency includes classifier; first sample may be colder."
+}

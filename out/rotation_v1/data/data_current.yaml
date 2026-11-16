@@ -1,0 +1,10 @@
+path: D:\privateProject\xuLyAnh\BTL_XLA\out\rotation_v1\data\dataset
+train: D:\privateProject\xuLyAnh\BTL_XLA\out\rotation_v1\data\train_current.txt
+val:
+- val/images
+- val_orientation/images
+test: test/images
+names:
+  0: banana
+  1: apple
+  2: orange

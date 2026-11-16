@@ -1,0 +1,524 @@
+{
+  "ground_truth_reviewed": false,
+  "purpose": "functional CPU smoke, not accuracy measurement",
+  "label_fingerprint_before": "1f901015b1f57f1f32b8ef0c674eae4bd4d71facd885ebee769484397c6326c4",
+  "rows": [
+    {
+      "image": "cup.jpg",
+      "counts": {},
+      "image_width": 447,
+      "image_height": 447,
+      "inference_ms": 209.5,
+      "mode": "careful",
+      "objects": [],
+      "type_verification": "active",
+      "timings_ms": {
+        "queue": 0.0,
+        "detector": 208.55,
+        "type_check": 0.0,
+        "crop": 0.01,
+        "classifier": 0.0,
+        "total": 208.88
+      },
+      "detection_counts": {
+        "candidates": 0,
+        "retained": 0,
+        "filtered": 0,
+        "rescued": 0,
+        "corrected": 0
+      }
+    },
+    {
+      "image": "singleBanana.jpg",
+      "counts": {
+        "banana": 1
+      },
+      "image_width": 238,
+      "image_height": 191,
+      "inference_ms": 1779.7,
+      "mode": "careful",
+      "objects": [
+        {
+          "label": "banana",
+          "detector_label": "banana",
+          "confidence": 0.7997,
+          "state": "fresh",
+          "state_confidence": 0.9985,
+          "bbox": [
+            9.0,
+            12.9,
+            265.7,
+            242.5
+          ],
+          "rescued": false,
+          "acceptance_threshold": 0.4,
+          "polygon": [
+            [
+              265.7,
+              90.9
+            ],
+            [
+              205.5,
+              12.9
+            ],
+            [
+              9.0,
+              164.5
+            ],
+            [
+              69.2,
+              242.5
+            ]
+          ],
+          "type_check": {
+            "label": "banana",
+            "score": 0.9999,
+            "corrected": false
+          }
+        }
+      ],
+      "type_verification": "active",
+      "timings_ms": {
+        "queue": 0.0,
+        "detector": 195.08,
+        "type_check": 1564.85,
+        "crop": 0.39,
+        "classifier": 18.46,
+        "total": 1779.27
+      },
+      "detection_counts": {
+        "candidates": 1,
+        "retained": 1,
+        "filtered": 0,
+        "rescued": 0,
+        "corrected": 0
+      }
+    },
+    {
+      "image": "test.webp",
+      "counts": {
+        "apple": 5,
+        "orange": 2,
+        "banana": 3
+      },
+      "image_width": 1075,
+      "image_height": 640,
+      "inference_ms": 61908.8,
+      "mode": "careful",
+      "objects": [
+        {
+          "label": "apple",
+          "detector_label": "apple",
+          "confidence": 0.9235,
+          "state": "fresh",
+          "state_confidence": 1.0,
+          "bbox": [
+            980.6,
+            439.2,
+            1071.1,
+            519.8
+          ],
+          "rescued": false,
+          "acceptance_threshold": 0.4,
+          "polygon": [
+            [
+              1071.1,
+              517.2
+            ],
+            [
+              1068.8,
+              439.2
+            ],
+            [
+              980.6,
+              441.9
+            ],
+            [
+              982.9,
+              519.8
+            ]
+          ],
+          "type_check": {
+            "label": "apple",
+            "score": 0.9938,
+            "corrected": false
+          }
+        },
+        {
+          "label": "orange",
+          "detector_label": "orange",
+          "confidence": 0.9115,
+          "state": "fresh",
+          "state_confidence": 1.0,
+          "bbox": [
+            317.6,
+            367.7,
+            603.5,
+            646.1
+          ],
+          "rescued": false,
+          "acceptance_threshold": 0.4,
+          "polygon": [
+            [
+              601.2,
+              646.1
+            ],
+            [
+              603.5,
+              370.2
+            ],
+            [
+              320.0,
+              367.7
+            ],
+            [
+              317.6,
+              643.7
+            ]
+          ],
+          "type_check": {
+            "label": "orange",
+            "score": 0.9864,
+            "corrected": false
+          }
+        },
+        {
+          "label": "orange",
+          "detector_label": "orange",
+          "confidence": 0.892,
+          "state": "fresh",
+          "state_confidence": 0.9999,
+          "bbox": [
+            489.5,
+            305.2,
+            766.6,
+            587.1
+          ],
+          "rescued": false,
+          "acceptance_threshold": 0.4,
+          "polygon": [
+            [
+              510.7,
+              587.1
+            ],
+            [
+              766.6,
+              566.4
+            ],
+            [
+              745.4,
+              305.2
+            ],
+            [
+              489.5,
+              326.0
+            ]
+          ],
+          "type_check": {
+            "label": "orange",
+            "score": 0.5976,
+            "corrected": false
+          }
+        },
+        {
+          "label": "apple",
+          "detector_label": "apple",
+          "confidence": 0.8792,
+          "state": "fresh",
+          "state_confidence": 1.0,
+          "bbox": [
+            799.6,
+            257.7,
+            867.4,
+            325.1
+          ],
+          "rescued": false,
+          "acceptance_threshold": 0.4,
+          "polygon": [
+            [
+              864.4,
+              325.1
+            ],
+            [
+              867.4,
+              260.8
+            ],
+            [
+              802.7,
+              257.7
+            ],
+            [
+              799.6,
+              321.9
+            ]
+          ],
+          "type_check": {
+            "label": "other",
+            "score": 0.7718,
+            "corrected": false
+          }
+        },
+        {
+          "label": "apple",
+          "detector_label": "apple",
+          "confidence": 0.8583,
+          "state": "fresh",
+          "state_confidence": 1.0,
+          "bbox": [
+            101.7,
+            285.9,
+            401.4,
+            595.1
+          ],
+          "rescued": false,
+          "acceptance_threshold": 0.4,
+          "polygon": [
+            [
+              110.8,
+              595.1
+            ],
+            [
+              401.4,
+              586.2
+            ],
+            [
+              392.3,
+              285.9
+            ],
+            [
+              101.7,
+              294.8
+            ]
+          ],
+          "type_check": {
+            "label": "apple",
+            "score": 0.8343,
+            "corrected": false
+          }
+        },
+        {
+          "label": "banana",
+          "detector_label": "banana",
+          "confidence": 0.8458,
+          "state": "fresh",
+          "state_confidence": 0.9985,
+          "bbox": [
+            239.7,
+            37.5,
+            747.5,
+            301.8
+          ],
+          "rescued": false,
+          "acceptance_threshold": 0.4,
+          "polygon": [
+            [
+              747.5,
+              154.1
+            ],
+            [
+              710.9,
+              37.5
+            ],
+            [
+              239.7,
+              185.3
+            ],
+            [
+              276.2,
+              301.8
+            ]
+          ],
+          "type_check": {
+            "label": "banana",
+            "score": 0.9994,
+            "corrected": false
+          }
+        },
+        {
+          "label": "apple",
+          "detector_label": "apple",
+          "confidence": 0.8208,
+          "state": "fresh",
+          "state_confidence": 1.0,
+          "bbox": [
+            5.6,
+            230.2,
+            287.2,
+            507.7
+          ],
+          "rescued": false,
+          "acceptance_threshold": 0.4,
+          "polygon": [
+            [
+              286.7,
+              507.7
+            ],
+            [
+              287.2,
+              230.8
+            ],
+            [
+              6.1,
+              230.2
+            ],
+            [
+              5.6,
+              507.2
+            ]
+          ],
+          "type_check": {
+            "label": "apple",
+            "score": 0.9983,
+            "corrected": false
+          }
+        },
+        {
+          "label": "banana",
+          "detector_label": "banana",
+          "confidence": 0.7898,
+          "state": "fresh",
+          "state_confidence": 1.0,
+          "bbox": [
+            260.7,
+            56.1,
+            776.1,
+            386.7
+          ],
+          "rescued": false,
+          "acceptance_threshold": 0.4,
+          "polygon": [
+            [
+              776.1,
+              205.6
+            ],
+            [
+              716.8,
+              56.1
+            ],
+            [
+              260.7,
+              237.2
+            ],
+            [
+              320.0,
+              386.7
+            ]
+          ],
+          "type_check": {
+            "label": "banana",
+            "score": 0.8765,
+            "corrected": false
+          }
+        },
+        {
+          "label": "banana",
+          "detector_label": "banana",
+          "confidence": 0.7279,
+          "state": "fresh",
+          "state_confidence": 1.0,
+          "bbox": [
+            353.2,
+            65.8,
+            885.4,
+            483.9
+          ],
+          "rescued": false,
+          "acceptance_threshold": 0.4,
+          "polygon": [
+            [
+              885.4,
+              231.1
+            ],
+            [
+              789.7,
+              65.8
+            ],
+            [
+              353.2,
+              318.6
+            ],
+            [
+              449.0,
+              483.9
+            ]
+          ],
+          "type_check": {
+            "label": "other",
+            "score": 0.7304,
+            "corrected": false
+          }
+        },
+        {
+          "label": "apple",
+          "detector_label": "apple",
+          "confidence": 0.5989,
+          "state": "fresh",
+          "state_confidence": 1.0,
+          "bbox": [
+            859.9,
+            236.0,
+            930.3,
+            292.4
+          ],
+          "rescued": false,
+          "acceptance_threshold": 0.4,
+          "polygon": [
+            [
+              930.3,
+              290.5
+            ],
+            [
+              928.8,
+              236.0
+            ],
+            [
+              859.9,
+              237.9
+            ],
+            [
+              861.4,
+              292.4
+            ]
+          ],
+          "type_check": {
+            "label": "apple",
+            "score": 0.6756,
+            "corrected": false
+          }
+        }
+      ],
+      "type_verification": "active",
+      "timings_ms": {
+        "queue": 0.0,
+        "detector": 169.22,
+        "type_check": 61648.85,
+        "crop": 3.7,
+        "classifier": 85.68,
+        "total": 61908.11
+      },
+      "detection_counts": {
+        "candidates": 26,
+        "retained": 10,
+        "filtered": 16,
+        "rescued": 0,
+        "corrected": 0
+      }
+    }
+  ],
+  "health": {
+    "status": "ok",
+    "device": "cpu",
+    "det_model": "det_obb_s.pt",
+    "cls_model": "cls_finetune_best.pt",
+    "cpu_threads": 2,
+    "conf": 0.4,
+    "default_mode": "careful",
+    "careful_imgsz": 640,
+    "clip_check": true,
+    "type_verification": "active",
+    "det_task": "obb",
+    "clip_batch_size": 4
+  },
+  "clip_batch_max_abs_difference": 1.1920928955078125e-07,
+  "label_fingerprint_after": "1f901015b1f57f1f32b8ef0c674eae4bd4d71facd885ebee769484397c6326c4"
+}

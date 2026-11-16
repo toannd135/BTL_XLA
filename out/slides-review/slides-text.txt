@@ -1,0 +1,296 @@
+===== SLIDE 1 =====
+Nhận dạng trái cây
+và đánh giá độ tươi
+Nhóm 18
+Nguyễn Duy Thanh - B23DCCN761
+Nguyễn Đức Toàn - B23DCCN831
+Vũ Thùy Dung - B23DCCN194
+
+
+===== SLIDE 2 =====
+Mục tiêu và phạm vi bài toán
+Đầu vào
+Ảnh tĩnh
+Video
+Webcam
+Hệ thống thực hiện
+Phát hiện từng quả và đánh
+giá trạng thái bề mặt: tươi
+hoặc hỏng.
+Không kết luận
+Chất lượng bên trong hay
+mức độ an toàn thực phẩm.
+
+
+===== SLIDE 3 =====
+Detection và Classification khác nhau thế nào?
+Detection · định vị
+Tìm nhiều vật thể trong ảnh; trả về
+bounding box, lớp banana/apple/orange
+và confidence.
+Classification · gán nhãn
+Nhận một crop đã định vị; trả về fresh hoặc
+rotten. Kết hợp hai nhiệm vụ để vừa biết
+quả nào, vừa biết trạng thái.
+
+
+===== SLIDE 4 =====
+Kiến trúc hai tầng YOLO11
+Ảnh đầu vào
+Detector
+640×640
+Box + lớp
+3 loại quả
+Crop
+padding
+10%
+YOLO11n-
+cls
+224×224
+fresh /
+rotten
+Tầng 1 trả lời “ở đâu, loại gì?” · Tầng 2 trả lời “tươi hay hỏng?”
+
+
+===== SLIDE 5 =====
+Luồng xử lý một ảnh
+Resize /
+letterbox
+Detector
+NMS
+Crop + 10%
+Batch
+classifier
+Ghép 6 trạng
+thái
+Đầu ra mỗi quả: bbox + banana/apple/orange × fresh/rotten + confidence
+
+
+===== SLIDE 6 =====
+Vì sao chọn kiến trúc hai tầng?
+Chuyên môn hóa
+Detector tập trung hình
+dạng và vị trí; classifier tập
+trung đặc trưng bề mặt.
+Dễ cải tiến
+Có thể nâng cấp, huấn
+luyện lại và đánh giá độc lập
+từng tầng.
+Đánh đổi
+Lỗi detector truyền xuống
+classifier; toàn pipeline cần
+hai lần suy luận.
+
+
+===== SLIDE 7 =====
+Dữ liệu và nguồn thu thập
+Train
+Val
+Test
+Detector
+Classifier FT
+Public/self
+0
+500
+1,000
+1,500
+2,000
+2,500
+3,000
+3,500
+Ảnh nền
+287 ảnh dùng train
+71 ảnh giữ riêng để đo false
+positive
+
+
+===== SLIDE 8 =====
+Phân bố dữ liệu và mất cân bằng
+Chuối box
+Táo box
+Cam box
+Fresh public
+Rotten public
+0
+200
+400
+600
+800
+1,000
+1,200
+1,400
+Test tự chụp · 28 ảnh
+8 fresh / 20 rotten
+Không có mẫu táo tươi và cam tươi
+→ kết luận theo lớp còn hạn chế.
+
+
+===== SLIDE 9 =====
+Chất lượng nhãn và các vấn đề dữ liệu
+Nhãn không nhất quán
+Chuối nải và từng quả được
+gán box theo hai cách khác
+nhau.
+Nhãn nghi sai
+50 ảnh được phát hiện và
+loại khỏi tập dữ liệu.
+Độ đa dạng thấp
+Model đầu báo quả trên
+~42% của 358 ảnh nền; chỉ
+21/2365 ảnh train có ≥2
+loại quả.
+
+
+===== SLIDE 10 =====
+Chia tập và phòng Data Leakage
+Gom theo nguồn
+Roboflow / dHash
+Chia video
+ảnh tự thu
+Assert chống
+trùng nguồn
+Crop kế thừa
+split ảnh gốc
+Ảnh gần giống còn khoảng 1% — được theo dõi như một rủi ro, không xem là bằng
+chứng tuyệt đối về tổng quát hóa.
+
+
+===== SLIDE 11 =====
+Tiền xử lý ảnh
+Kênh màu
+OpenCV đọc BGR; mô hình
+kỳ vọng RGB. Sai thứ tự
+kênh làm đổi phân bố màu
+và đặc trưng bề mặt.
+Kích thước
+Detector 640×640
+Classifier 224×224
+Letterbox giữ tỷ lệ.
+Chuẩn hóa
+Pixel 0–255 → 0–1 trước
+suy luận; pipeline phải
+đồng nhất train và deploy.
+
+
+===== SLIDE 12 =====
+Augmentation và các kỹ thuật xử lý ảnh
+Augmentation
+Mosaic 1.0
+Lật ngang 0.5
+HSV: 0.015 / 0.7 / 0.4
+Nền tảng mô hình
+Bounding box · convolution · pooling/stride ·
+transfer learning · fine-tuning. Biến đổi phải
+giữ đúng hình học nhãn.
+
+
+===== SLIDE 13 =====
+YOLO11: Backbone – Neck – Head
+Backbone
+trích đặc trưng
+Neck
+hợp nhất đa tỷ lệ
+Head
+box + lớp + confidence
+Thử nghiệm YOLO11n / YOLO11s cho detection; YOLO11n-cls cho classification.
+
+
+===== SLIDE 14 =====
+Huấn luyện Detector: A, B, C, D1
+Cấu hình chung
+RTX 3060 Laptop 6GB
+Ultralytics 8.4.180 · PyTorch
+2.5.1+cu121
+640px · batch 16 · SGD · seed 42
+Các phiên bản
+A — YOLO11n
+B — YOLO11s + làm sạch nhãn
+C — thêm 287 ảnh nền, dùng last.pt epoch 11
+D1 — thử 4/20 epoch, chưa đánh giá
+
+
+===== SLIDE 15 =====
+Huấn luyện Classifier
+Baseline
+YOLO11n-cls pretrained
+10.088 train / 2.270 val
+30 epoch · khoảng 4,6 phút
+Fine-tune
+3.191 train / 2.310 val
+15 epoch · khoảng 0,9 phút
+AdamW · batch 64 · 224×224 · seed 42
+
+
+===== SLIDE 16 =====
+Các chỉ số đánh giá
+Detector
+Precision · Recall · F1
+AP · mAP50 · mAP50–95
+False positive / false negative
+Classifier
+Accuracy · confusion matrix
+Precision / Recall / F1 theo lớp
+Không dùng accuracy để thay thế metric
+định vị.
+
+
+===== SLIDE 17 =====
+Kết quả Detector A/B/C
+
+
+===== SLIDE 18 =====
+Đánh đổi khi bổ sung ảnh nền
+
+
+===== SLIDE 19 =====
+Đường huấn luyện Detector 
+
+
+===== SLIDE 20 =====
+Đường huấn luyện Classifier
+
+
+===== SLIDE 21 =====
+Confusion Matrix Classifier
+
+
+===== SLIDE 22 =====
+Phân tích lỗi Detector B
+
+
+===== SLIDE 23 =====
+Nguồn gốc box thừa của Detector B
+
+
+===== SLIDE 24 =====
+Đánh giá toàn pipeline End-to-End
+
+
+===== SLIDE 25 =====
+Quy mô và cấu trúc dữ liệu
+
+
+===== SLIDE 26 =====
+CLIP kiểm tra loại quả sau detector OBB 
+
+
+===== SLIDE 27 =====
+Đếm quả
+
+
+===== SLIDE 28 =====
+Hạn chế và hướng phát triển
+Hạn chế hiện tại
+Chuối là lớp yếu nhất (F1 0,73); ít cảnh
+nhiều loại; val thiếu ảnh nền; chưa
+ablation, hiệu chuẩn confidence hay E2E
+bản C.
+Ưu tiên tiếp theo
+Mở rộng dữ liệu đa nguồn và cảnh hỗn
+hợp; chuẩn hóa nhãn chuối; thêm negative
+vào validation; benchmark độc lập; đánh
+giá lại C tại conf 0,40.
+
+
+===== SLIDE 29 =====
+THANKS FOR LISTENING!

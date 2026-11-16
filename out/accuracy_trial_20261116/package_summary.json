@@ -1,0 +1,25 @@
+{
+  "added_review_images": {
+    "train": 14,
+    "val": 4
+  },
+  "train_entries": 5340,
+  "train_unique": 4594,
+  "val_images": 297,
+  "reviewed_banana_val_images": 4,
+  "class_boxes_unique": {
+    "train": {
+      "1": 6572,
+      "0": 10229,
+      "2": 6675
+    },
+    "val": {
+      "1": 107,
+      "0": 158,
+      "2": 99
+    }
+  },
+  "zip": "D:\\privateProject\\xuLyAnh\\BTL_XLA\\out\\accuracy_trial_20261116\\fruit_accuracy_trial_20261116.zip",
+  "bytes": 426877520,
+  "sha256": "5f6717706f344e3a13c7805e1ac99a9654697275946ef2d0bdf21763739c1ecb"
+}
