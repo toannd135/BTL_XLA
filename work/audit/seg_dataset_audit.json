@@ -1,0 +1,70 @@
+{
+  "splits": {
+    "train": {
+      "images": 1597,
+      "instances": 3675,
+      "classes": {
+        "apple": 473,
+        "banana": 2764,
+        "orange": 438
+      },
+      "empty_images": 0
+    },
+    "val": {
+      "images": 301,
+      "instances": 362,
+      "classes": {
+        "apple": 108,
+        "banana": 152,
+        "orange": 102
+      },
+      "empty_images": 0
+    },
+    "test": {
+      "images": 274,
+      "instances": 349,
+      "classes": {
+        "apple": 98,
+        "banana": 156,
+        "orange": 95
+      },
+      "empty_images": 0
+    }
+  },
+  "total_images": 2172,
+  "total_instances": 4386,
+  "class_counts": {
+    "apple": 679,
+    "banana": 3072,
+    "orange": 635
+  },
+  "categories": {
+    "mixed_multi_fruit": 23,
+    "crowded_instances": 416,
+    "banana_clusters": 661,
+    "negatives_background": 0
+  },
+  "target_progress": {
+    "mixed_multi_fruit": {
+      "target": "300-500",
+      "current": 23,
+      "status": "needs 277 more"
+    },
+    "crowded_instances": {
+      "target": "100-200",
+      "current": 416,
+      "status": "achieved"
+    },
+    "banana_clusters": {
+      "target": "100",
+      "current": 661,
+      "status": "achieved"
+    },
+    "negatives_background": {
+      "target": "100",
+      "current": 0,
+      "status": "needs 100 more"
+    }
+  },
+  "invalid_polygons": 0
+}

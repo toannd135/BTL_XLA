@@ -15,7 +15,7 @@ Hai tầng YOLO11 nối tiếp, thêm một bước CLIP kiểm tra loại quả
                     Classifier YOLO11n-cls (224×224) ─► fresh | rotten
 ```
 
-- **Detector**: 3 lớp (banana, apple, orange), cho biết vị trí và loại quả. Bản đang dùng là YOLO11s-OBB (`exports/det_obb_s.pt`, box xoay) để tách được từng quả chuối trong nải xòe.
+- **Detector**: 3 lớp (banana, apple, orange), cho biết vị trí và loại quả. Bản mặc định là YOLO11s-OBB (`exports/det_obb_s.pt`), phù hợp hơn với ảnh thực tế có quả chồng/chéo. Bản HBB B (`exports/det_B_clean_backup.pt`) đạt mAP50 0.9101 trên test độc lập 373 ảnh và có thể chọn qua `MODEL_PATH`.
 - **CLIP kiểm tra loại quả**: không train, so crop với các câu mô tả "chuối/táo/cam/vật khác". Bỏ box nếu xác suất "vật khác" ≥ 0.8, đổi nhãn nếu CLIP chắc ≥ 0.9 là loại quả khác detector; giữ thêm box điểm 0.25-0.40 khi CLIP chắc ≥ 0.9 là quả (mục 5.5).
 - **Classifier**: 2 lớp (fresh, rotten), huấn luyện riêng trên ảnh quả đã cắt.
 - Tách hai tầng để mỗi model học một việc, dễ đo và cải thiện riêng. Kết quả cuối cho mỗi quả gồm 6 trạng thái (`banana_fresh` ... `orange_rotten`).
@@ -403,7 +403,7 @@ YOLO là bộ phát hiện **một giai đoạn**: chạy ảnh qua mạng một
 
 1. Người dùng thả ảnh hoặc bật webcam; React gửi ảnh qua HTTP `POST /api/predict` tới FastAPI.
 2. Backend kiểm tra loại file (jpg/png/webp), kích thước ≤ 10MB, ≤ 40 triệu pixel, rồi giải mã bằng OpenCV.
-3. Detector OBB (FP16 trên GPU, conf 0.40, NMS IoU 0.6, `agnostic_nms`) tìm các quả.
+3. Detector mặc định OBB (FP16 trên GPU, conf 0.40, NMS IoU 0.7, `agnostic_nms`) tìm các quả; HBB B dùng khi chọn qua `MODEL_PATH`.
 4. Backend cắt từng box (pad 10%); CLIP chấm từng crop để bỏ vật khác và sửa nhãn loại quả (`backend/clip_check.py`, `detection.refine_types`). Box điểm 0.25-0.40 chỉ được giữ khi CLIP chắc ≥ 0.9 là quả; box bị coi là vật khác được nhìn lại phần giữa trước khi bỏ.
 5. Đưa **tất cả crop còn lại vào classifier trong một batch**.
 6. Gộp thành danh sách `{label, confidence, state, state_confidence, bbox}` cùng thời gian xử lý.
@@ -438,7 +438,7 @@ python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\
 pip install -r backend/requirements.txt opencv-python-headless
 ```
 
-Model trong `exports/`: detector `det_obb_s.pt` (**mặc định của backend**), `det_C_candidate.pt` (bản box thẳng tốt nhất, đổi qua biến `MODEL_PATH`), `det_finetune_best.pt` (C), và classifier `cls_finetune_best.pt`. CLIP ViT-L-14 tự tải lần đầu vào `work/weights/hf/` (~1.7 GB); cài `pip install --no-deps open_clip_torch==2.30.0 timm` để không kéo bản torch khác. Có GPU NVIDIA thì cài PyTorch bản CUDA trước; không có GPU vẫn chạy được trên CPU (đặt `HALF=0` khi chạy backend).
+Model trong `exports/`: detector `det_obb_s.pt` (**mặc định của backend**), `det_B_clean_backup.pt` (bản HBB, đổi qua biến `MODEL_PATH`, mAP50 0.9101), `det_C_candidate.pt`, `det_finetune_best.pt`, và classifier `cls_finetune_best.pt`. CLIP ViT-L-14 tự tải lần đầu vào `work/weights/hf/` (~1.7 GB); cài `pip install --no-deps open_clip_torch==2.30.0 timm` để không kéo bản torch khác. Có GPU NVIDIA thì cài PyTorch bản CUDA trước; không có GPU vẫn chạy được trên CPU (đặt `HALF=0` khi chạy backend).
 
 ### Dòng lệnh
 
@@ -465,10 +465,39 @@ uvicorn main:app --reload --port 8000
 
 ### Duyệt kết quả và active learning
 
-Ở tab **Ảnh**, sau khi đối chiếu bounding box, người dùng có thể chọn **Đúng**
-hoặc **Cần sửa / đưa vào tập duyệt**. Backend lưu ảnh gốc cùng JSON kết quả vào
-`work/feedback/`; các ảnh `needs_review` là ứng viên để sửa nhãn thủ công trước
-khi đưa vào lần huấn luyện tiếp theo. Kết quả có confidence trạng thái dưới
+Ở tab **Ảnh**, sau khi đối chiếu bounding box, người dùng có thể sửa trực tiếp
+loại quả và trạng thái tươi/hỏng trong bảng, rồi chọn **Đúng** hoặc
+**Cần sửa / đưa vào tập duyệt**. Backend lưu ảnh gốc cùng JSON kết quả vào
+`work/feedback/`; dữ liệu không ghi đè test gốc.
+
+Sau khi kiểm tra các feedback, xuất các ảnh đã duyệt thành dataset detection
+riêng để xem lại trước khi train:
+
+```bash
+python tools/export_feedback_dataset.py
+```
+
+Mặc định lệnh chỉ lấy verdict `needs_review` và tạo `work/feedback_dataset/`.
+Có thể xuất các kết quả được đánh dấu đúng bằng:
+
+```bash
+python tools/export_feedback_dataset.py --verdict correct
+``` Kết quả có confidence trạng thái dưới
+
+Để duyệt nhanh các ảnh bị audit gắn cờ, tạo hàng đợi nhỏ hơn:
+
+```bash
+python tools/instance_review.py prepare --flagged-only --out out/instance_review_flagged
+```
+
+Mở `out/instance_review_flagged/review.html`, duyệt các box rồi tải
+`instance_reviews.json`. Chỉ sau khi duyệt xong mới chạy `build`; test gốc không
+bị ghi đè. Kết quả có confidence trạng thái dưới
+
+Exporter sẽ bỏ qua các feedback dùng cùng một ảnh nhưng có nhãn khác nhau để
+tránh đưa nhãn mâu thuẫn vào train; xem `audit.json` và chỉ dùng
+`--allow-duplicates` sau khi đã duyệt thủ công. Các box vượt biên ảnh được
+cắt vào ảnh và được ghi nhận trong báo cáo. Kết quả có confidence trạng thái dưới
 ngưỡng được hiển thị là **Chưa chắc**, không tự động ép thành tươi hoặc hỏng.
 
 Biến môi trường: `CONF` (0.40), `NMS_IOU` (0.70; thử 0.60 nếu xuất hiện box trùng), `OBB_IMGSZ` (1280 cho cảnh chuối chồng lấn; 960 nhanh hơn), `HALF` (1), `MODEL_PATH`, `CLS_MODEL_PATH`, `COLLECT_DIR`, `CORS_ORIGINS`; CLIP: `CLIP_CHECK` (1, đặt 0 để tắt), `CLIP_ARCH` (ViT-L-14; máy yếu dùng ViT-B-32), `CLIP_T_OTHER` (0.8), `CLIP_T_SWAP` (0.9), `RESCUE_CONF` (0.25), `CLIP_T_RESCUE` (0.9), `CLIP_T_INNER` (0.9). `TEACHER_CHECK` (1) bật YOLO11s COCO độc lập để cứu box táo/loại quả bị detector chính bỏ sót; đặt 0 để tắt, hoặc đổi `TEACHER_MODEL_PATH`.

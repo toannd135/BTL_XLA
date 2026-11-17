@@ -3,7 +3,8 @@
 import unittest
 import numpy as np
 from detection import (refine_types, merge_detections, restore_clockwise_boxes, restore_counterclockwise_boxes,
-                       remove_group_boxes, refine_group_detections, detect, deduplicate_boxes, fuse_teacher_boxes)
+                       remove_group_boxes, refine_group_detections, detect, deduplicate_boxes, fuse_teacher_boxes,
+                       get_obb_spine, dist_to_segment, split_banana_cluster_detections)
 
 
 class CoordinateTests(unittest.TestCase):
@@ -203,6 +204,40 @@ class TeacherFusionTests(unittest.TestCase):
         )
         self.assertEqual(len(boxes), 2)
         self.assertEqual(classes.tolist(), [1, 1])
+
+
+class BananaClusterTests(unittest.TestCase):
+    def test_dist_to_segment(self):
+        s1 = np.array([0, 0], dtype=np.float32)
+        s2 = np.array([10, 0], dtype=np.float32)
+        # Point right above middle of segment
+        p = np.array([5, 5], dtype=np.float32)
+        self.assertAlmostEqual(dist_to_segment(p, s1, s2), 5.0)
+        # Point beyond s2
+        p_far = np.array([15, 0], dtype=np.float32)
+        self.assertAlmostEqual(dist_to_segment(p_far, s1, s2), 5.0)
+
+    def test_get_obb_spine(self):
+        # Horizontal rectangle of width 20, height 10
+        # corners: [0, 0], [20, 0], [20, 10], [0, 10]
+        # sides: 20, 10, 20, 10 -> shorter sides are at x=0 and x=20
+        pts = np.array([[0, 0], [20, 0], [20, 10], [0, 10]], dtype=np.float32)
+        s1, s2 = get_obb_spine(pts)
+        # midpoints should be (0, 5) and (20, 5)
+        self.assertTrue(
+            (np.allclose(s1, [0, 5]) and np.allclose(s2, [20, 5])) or
+            (np.allclose(s1, [20, 5]) and np.allclose(s2, [0, 5]))
+        )
+
+    def test_split_none_when_no_obb(self):
+        polys = [np.array([[0, 0], [10, 0], [10, 10]], dtype=np.float32)]
+        boxes = np.array([[0, 0, 10, 10]], dtype=np.float32)
+        scores = np.array([0.8], dtype=np.float32)
+        classes = np.array([0], dtype=np.int64)
+        img = np.zeros((50, 50, 3), dtype=np.uint8)
+
+        p, b, s, c = split_banana_cluster_detections(polys, boxes, scores, classes, None, img)
+        self.assertEqual(len(b), 1)
 
 
 if __name__ == "__main__":

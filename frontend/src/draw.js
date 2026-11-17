@@ -2,19 +2,48 @@ import { boxColor } from './boxStyle'
 
 const FONT = "'Be Vietnam Pro', system-ui, sans-serif"
 
-// khung xoay (model OBB) nếu có polygon, ngược lại box thẳng
-function shapePath(ctx, o) {
+// Vẽ polygon mượt dùng Catmull-Rom spline qua các điểm (thay vì đường gãy polyline)
+function smoothPolygonPath(ctx, pts) {
+  if (!pts || pts.length < 3) return
+  const n = pts.length
   ctx.beginPath()
-  if (o.polygon?.length === 4) {
-    o.polygon.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)))
-    ctx.closePath()
-  } else {
+  for (let i = 0; i < n; i++) {
+    const p0 = pts[(i - 1 + n) % n]
+    const p1 = pts[i]
+    const p2 = pts[(i + 1) % n]
+    const p3 = pts[(i + 2) % n]
+    // Catmull-Rom → Cubic Bezier control points (alpha=0.5)
+    const tension = 0.4
+    const cp1x = p1[0] + (p2[0] - p0[0]) * tension
+    const cp1y = p1[1] + (p2[1] - p0[1]) * tension
+    const cp2x = p2[0] - (p3[0] - p1[0]) * tension
+    const cp2y = p2[1] - (p3[1] - p1[1]) * tension
+    if (i === 0) ctx.moveTo(p1[0], p1[1])
+    ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, p2[0], p2[1])
+  }
+  ctx.closePath()
+}
+
+// Polygon cho Instance Segmentation (N >= 3, mượt) hoặc OBB (N = 4, cạnh thẳng), ngược lại box chữ nhật
+function shapePath(ctx, o) {
+  if (o.polygon && o.polygon.length >= 3) {
+    // OBB (đúng 4 điểm góc): vẽ cạnh thẳng để giữ góc xoay chính xác
+    if (o.polygon.length === 4) {
+      ctx.beginPath()
+      o.polygon.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)))
+      ctx.closePath()
+    } else {
+      // Instance Segmentation mask: dùng Catmull-Rom để vẽ đường cong mượt
+      smoothPolygonPath(ctx, o.polygon)
+    }
+  } else if (o.bbox) {
     const [x1, y1, x2, y2] = o.bbox
+    ctx.beginPath()
     ctx.rect(x1, y1, x2 - x1, y2 - y1)
   }
 }
 
-// vẽ khung + tem nhãn lên ctx, toạ độ theo pixel ảnh gốc
+// Vẽ khung / mask + tem nhãn lên ctx, toạ độ theo pixel ảnh gốc
 export function drawBoxes(ctx, objects, w, h, { selectedIndex = null, displayScale } = {}) {
   const s = displayScale ?? Math.max(0.35, Math.max(w, h) / 960)
   const selected = selectedIndex !== null && objects[selectedIndex] ? selectedIndex : null
@@ -25,23 +54,44 @@ export function drawBoxes(ctx, objects, w, h, { selectedIndex = null, displaySca
   if (selected !== null) order.push(...order.splice(order.indexOf(selected), 1))
   order.forEach((index) => {
     const o = objects[index]
-    // Khung xoay: góc trên-trái của bbox bao ngoài nằm xa khung (khoảng trống), nên gắn tem vào đỉnh cao nhất của polygon.
-    const [x1, y1] = o.polygon?.length === 4
+    // Gắn tem nhãn vào đỉnh cao nhất của polygon hoặc góc trên-trái bbox
+    const [x1, y1] = (o.polygon && o.polygon.length >= 3)
       ? o.polygon.reduce((top, p) => (p[1] < top[1] ? p : top))
-      : o.bbox
+      : (o.bbox || [0, 0])
     const active = selected === index
     const muted = selected !== null && !active
     const color = boxColor(index)
+
+    // Tô vùng mask bán trong suốt cho Instance Segmentation để phân biệt rõ từng quả
+    if (o.polygon && o.polygon.length >= 3) {
+      ctx.save()
+      ctx.fillStyle = color
+      ctx.globalAlpha = active ? 0.35 : (muted ? 0.05 : 0.22)
+      shapePath(ctx, o)
+      ctx.fill()
+      ctx.restore()
+    }
+
     ctx.globalAlpha = muted ? 0.15 : 1
-    // A thin dark outline keeps bright borders visible on both white and yellow fruit.
+    // Viền đậm phía ngoài giữ độ tương phản trên mọi nền
     ctx.strokeStyle = 'rgba(0,0,0,0.55)'
     ctx.lineWidth = (active ? 5 : 3) * s
+    if (o.is_occluded) {
+      ctx.setLineDash([4 * s, 4 * s])
+    } else {
+      ctx.setLineDash([])
+    }
     shapePath(ctx, o)
     ctx.stroke()
+
+    // Viền màu đại diện cho đối tượng
     ctx.strokeStyle = color
     ctx.lineWidth = (active ? 3 : 1.5) * s
+    shapePath(ctx, o)
     ctx.stroke()
-    if (active) {
+    ctx.setLineDash([])
+
+    if (active && (!o.polygon || o.polygon.length < 3)) {
       ctx.globalAlpha = 0.08
       ctx.fillStyle = color
       ctx.fill()
@@ -49,7 +99,7 @@ export function drawBoxes(ctx, objects, w, h, { selectedIndex = null, displaySca
     }
     if (muted) return
 
-    // Compact IDs match the table; stagger badges rather than covering fruit with full labels.
+    // Tem nhãn định danh đồng bộ với bảng kết quả
     const label = `#${index + 1}`
     ctx.font = `700 ${12 * s}px ${FONT}`
     const pad = 5 * s

@@ -184,6 +184,16 @@ export default function ImagesView({ minConf, onVideo }) {
     pump()
   }
 
+  const editObject = (object, field, value) => {
+    if (!selResult) return
+    const index = selResult.objects.indexOf(object)
+    if (index < 0) return
+    const objects = selResult.objects.map((item, i) =>
+      i === index ? { ...item, [field]: value } : item)
+    update(selectedKey, { result: { ...selResult, objects } })
+    message.info('Đã sửa kết quả. Hãy bấm "Cần sửa / đưa vào tập duyệt" để lưu nhãn.')
+  }
+
   const recognitionInfo = (
     <div className="image-mode">
       <Space wrap>
@@ -320,14 +330,39 @@ export default function ImagesView({ minConf, onVideo }) {
       <>
         <SummaryBar c={selC}
           note={`${sel.result.inference_ms} ms, ảnh ${sel.result.image_width}×${sel.result.image_height}`} />
+        {sel.result.quality?.status === 'needs_review' && (
+          <Alert
+            className="mb16"
+            type="warning"
+            showIcon
+            message="Chế độ không chắc chắn: Cần kiểm tra kết quả"
+            description={
+              <div>
+                <p style={{ margin: 0, fontWeight: 500 }}>
+                  Hệ thống không tự động xác nhận kết quả này do phát hiện nghi vấn:
+                </p>
+                <ul style={{ margin: '6px 0', paddingLeft: 20 }}>
+                  {sel.result.quality.reasons.map((r, i) => (
+                    <li key={i}>{r}</li>
+                  ))}
+                </ul>
+                <p style={{ margin: '4px 0 0', color: '#555' }}>
+                  Hãy đối chiếu từng quả với vùng mask trên ảnh. Bạn có thể sửa trực tiếp nhãn/trạng thái trong bảng bên dưới và bấm <b>"Cần sửa / đưa vào tập duyệt"</b> để lưu mẫu chuẩn.
+                </p>
+              </div>
+            }
+          />
+        )}
         <Typography.Paragraph type="secondary" className="box-hint">
-          Số và màu khớp với khung trên ảnh. Bấm một dòng để làm nổi khung hoặc loại khung sai.
+          Đối chiếu số quả với từng khung/mask trên ảnh. Bấm một dòng để làm nổi khung hoặc loại khung sai.
         </Typography.Paragraph>
         <Space wrap className="mb16">
           <Typography.Text strong>Đánh giá kết quả:</Typography.Text>
-          <Button size="small" loading={feedback === 'correct'} disabled={!!feedback}
+          <Button size="small" loading={feedback === 'correct'}
+            disabled={!!feedback || sel.result.quality?.status === 'needs_review'}
             onClick={() => review('correct')}>Đúng</Button>
-          <Button size="small" danger loading={feedback === 'needs_review'} disabled={!!feedback}
+          <Button size="small" type={sel.result.quality?.status === 'needs_review' ? 'primary' : 'default'}
+            danger loading={feedback === 'needs_review'} disabled={!!feedback}
             onClick={() => review('needs_review')}>Cần sửa / đưa vào tập duyệt</Button>
         </Space>
         {selectedBox !== null && (
@@ -344,7 +379,7 @@ export default function ImagesView({ minConf, onVideo }) {
             </Button>
           </Typography.Paragraph>
         )}
-        <ResultTable objects={selObjects} selectedIndex={selectedBox} onSelect={selectBox} />
+        <ResultTable objects={selObjects} selectedIndex={selectedBox} onSelect={selectBox} onEdit={editObject} />
       </>
     )
   }
