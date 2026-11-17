@@ -24,13 +24,26 @@ from PIL import Image
 from ultralytics import YOLO
 
 import collect
-from detection import crop_rotated, deduplicate_boxes, detect, detect_obb, fuse_teacher_boxes, refine_types
+from detection import (
+    crop_rotated,
+    deduplicate_boxes,
+    detect,
+    detect_obb,
+    detect_seg,
+    fuse_teacher_boxes,
+    refine_types,
+    split_banana_cluster_detections,
+    compute_mask_metrics,
+)
 
 # Pillow tự cảnh báo/chặn ảnh lớn; giới hạn đã kiểm tra riêng bằng MAX_PIXELS
 Image.MAX_IMAGE_PIXELS = None
 
 ROOT = Path(__file__).resolve().parent.parent
-DET_PATH = os.getenv("MODEL_PATH", str(ROOT / "exports/det_obb_s.pt"))   # OBB Colab 60 epoch (2026-11-12); bản cũ: exports/det_C_candidate.pt
+DET_PATH = os.getenv("MODEL_PATH", str(ROOT / "yolo11s-seg.pt" if (ROOT / "yolo11s-seg.pt").exists() else ROOT / "exports/det_obb_s.pt"))
+OBB_PATH = os.getenv("OBB_MODEL_PATH", str(ROOT / "exports/det_obb_s.pt"))
+HBB_FALLBACK = os.getenv("HBB_FALLBACK", "1") == "1"
+HBB_PATH = os.getenv("HBB_MODEL_PATH", str(ROOT / "exports/det_B_clean_backup.pt"))
 CLS_PATH = os.getenv("CLS_MODEL_PATH", str(ROOT / "exports/cls_finetune_best.pt"))
 FEEDBACK_DIR = Path(os.getenv("FEEDBACK_DIR", str(ROOT / "work" / "feedback")))
 TEACHER_CHECK = os.getenv("TEACHER_CHECK", "1") == "1"
@@ -72,6 +85,10 @@ async def lifespan(app):
     cv2.setNumThreads(CPU_THREADS)
     models["det"] = YOLO(DET_PATH)
     models["cls"] = YOLO(CLS_PATH)
+    if Path(OBB_PATH).exists() and Path(DET_PATH).resolve() != Path(OBB_PATH).resolve():
+        models["obb"] = YOLO(OBB_PATH)
+    if HBB_FALLBACK and Path(DET_PATH).resolve() != Path(HBB_PATH).resolve():
+        models["hbb"] = YOLO(HBB_PATH)
     if TEACHER_CHECK:
         models["teacher"] = YOLO(TEACHER_PATH)
     if CLIP_CHECK:
@@ -83,6 +100,10 @@ async def lifespan(app):
     # chạy thử 1 lượt để request đầu tiên không bị chậm
     blank = np.zeros((IMGSZ, IMGSZ, 3), np.uint8)
     models["det"].predict(blank, imgsz=IMGSZ, quantize=QUANT, verbose=False)
+    if "obb" in models:
+        models["obb"].predict(blank, imgsz=IMGSZ, quantize=QUANT, verbose=False)
+    if "hbb" in models:
+        models["hbb"].predict(blank, imgsz=IMGSZ, quantize=QUANT, verbose=False)
     models["cls"].predict(blank, imgsz=CLS_IMGSZ, quantize=QUANT, verbose=False)
     if "teacher" in models:
         models["teacher"].predict(blank, imgsz=IMGSZ, quantize=QUANT, classes=[46, 47, 49], verbose=False)
@@ -115,17 +136,124 @@ def crop_box(img, xyxy, pad=CROP_PAD):
     return img[y1:y2, x1:x2]
 
 
+def assess_detection(objects, width, height, diagnostics=None):
+    """Mark predictions that are unsafe to confirm without human review."""
+    reasons = []
+    image_area = max(width * height, 1)
+
+    # 1. Per-object checks
+    for index, obj in enumerate(objects):
+        lbl = obj["label"]
+        x1, y1, x2, y2 = obj["bbox"]
+        area = max(x2 - x1, 0) * max(y2 - y1, 0)
+        conf = obj.get("confidence", 1.0)
+
+        # Low confidence
+        if conf < CONF and not obj.get("rescued"):
+            reasons.append(f"quả #{index + 1} ({lbl}) có độ tin cậy thấp ({conf:.2f} < {CONF})")
+
+        # Oversized object: covering large portion of image, likely a cluster/group
+        if area / image_area > 0.60:
+            reasons.append(f"khung #{index + 1} quá lớn ({area / image_area:.0%}), có nguy cơ gộp nhiều quả")
+
+        # Solidity check for segmentation masks (irregular/dumbbell shaped masks)
+        solidity = obj.get("solidity", 1.0)
+        if obj.get("polygon") and len(obj["polygon"]) >= 5:
+            if lbl in ("apple", "orange") and solidity < 0.65:
+                reasons.append(f"quả #{index + 1} ({lbl}) có hình dạng bất thường (độ lồi {solidity:.2f}), nghi gộp nhiều quả")
+            elif lbl == "banana" and solidity < 0.40:
+                reasons.append(f"quả #{index + 1} ({lbl}) có hình dạng bất thường (độ lồi {solidity:.2f}), nghi gộp cả nải")
+
+        # High occlusion warning
+        occlusion = obj.get("occlusion_ratio", 0.0)
+        if occlusion >= 0.55:
+            reasons.append(f"quả #{index + 1} ({lbl}) bị che khuất nhiều ({occlusion:.0%}), ranh giới không hoàn chỉnh")
+
+    # 2. Pairwise instance overlap check
+    for i in range(len(objects)):
+        oi = objects[i]
+        for j in range(i + 1, len(objects)):
+            oj = objects[j]
+            xi1, yi1, xi2, yi2 = oi["bbox"]
+            xj1, yj1, xj2, yj2 = oj["bbox"]
+            inter = max(0, min(xi2, xj2) - max(xi1, xj1)) * max(0, min(yi2, yj2) - max(yi1, yj1))
+            area_i = max(xi2 - xi1, 0) * max(yi2 - yi1, 0)
+            area_j = max(xj2 - xj1, 0) * max(yj2 - yj1, 0)
+            union = area_i + area_j - inter
+            iou = inter / max(union, 1e-9)
+
+            if oi["label"] == oj["label"]:
+                if iou >= 0.40:
+                    reasons.append(f"hai quả cùng loại #{i + 1} và #{j + 1} ({oi['label']}) bị chồng lấn lớn (IoU {iou:.0%})")
+            else:
+                if iou >= 0.50:
+                    reasons.append(f"hai quả khác loại #{i + 1} ({oi['label']}) và #{j + 1} ({oj['label']}) đè lên nhau quá nhiều (IoU {iou:.0%})")
+
+    # 3. Model discrepancy check
+    if diagnostics:
+        if diagnostics.get("fallback_used"):
+            reasons.append("mô hình kiểm chứng (fallback) cho kết quả khác biệt, cần đối chiếu số lượng")
+        p_cnt = diagnostics.get("primary_count")
+        f_cnt = diagnostics.get("fallback_count")
+        if p_cnt is not None and f_cnt is not None and abs(p_cnt - f_cnt) >= 2:
+            reasons.append(f"số lượng quả giữa các mô hình lệch nhau (Detector chính: {p_cnt}, Kiểm chứng: {f_cnt})")
+
+    unique_reasons = list(dict.fromkeys(reasons))
+    is_uncertain = len(unique_reasons) > 0
+    return {
+        "status": "needs_review" if is_uncertain else "ready",
+        "is_uncertain": is_uncertain,
+        "reasons": unique_reasons,
+    }
+
+
 def predict(img, mode="careful"):
     det, cls = models["det"], models["cls"]
     with lock:
         torch.set_num_threads(CPU_THREADS)
         polys = None
+        mask_metrics = None
+        diagnostics = {"fallback_used": False, "primary_count": None, "fallback_count": None}
         conf = min(CONF, RESCUE_CONF) if "clip" in models else CONF
-        if det.task == "obb":   # khung xoay: một lượt, không cần xoay ảnh (model đã học góc bất kỳ)
+
+        if det.task == "segment":
+            # Instance Segmentation: đếm và phân tách quả bằng mask đa giác thực
+            polys, boxes, scores, classes, mask_metrics = detect_seg(
+                det, img, conf=conf, imgsz=IMGSZ, iou=NMS_IOU, quantize=QUANT,
+            )
+            # Tách nải chuối (banana cluster) thành từng quả riêng biệt bằng OBB spine partitioning
+            if "obb" in models and len(boxes):
+                polys, boxes, scores, classes = split_banana_cluster_detections(
+                    polys, boxes, scores, classes, models["obb"], img,
+                    conf=max(0.30, conf), det_names=det.names, quantize=QUANT,
+                )
+                mask_metrics = compute_mask_metrics(polys, boxes, img.shape[1], img.shape[0])
+            diagnostics["primary_count"] = len(boxes)
+            if "hbb" in models:
+                hbb_boxes, _, _ = detect(
+                    models["hbb"], img, conf=conf, imgsz=QUALITY_IMGSZ,
+                    iou=NMS_IOU, quantize=QUANT, rotated=False,
+                )
+                diagnostics["fallback_count"] = len(hbb_boxes)
+        elif det.task == "obb":   # khung xoay: một lượt, không cần xoay ảnh (model đã học góc bất kỳ)
             polys, boxes, scores, classes = detect_obb(
                 det, img, conf=conf, imgsz=OBB_IMGSZ, iou=NMS_IOU, quantize=QUANT,
             )
-            if "teacher" in models:
+            diagnostics["primary_count"] = len(boxes)
+            # OBB is better for crowded/diagonal fruit, while HBB B is stronger
+            # on ordinary scenes. Use HBB only when it clearly recovers more
+            # candidates and the OBB result is not already crowded.
+            if "hbb" in models and len(boxes) <= 6:
+                hbb_boxes, hbb_scores, hbb_classes = detect(
+                    models["hbb"], img, conf=conf, imgsz=QUALITY_IMGSZ,
+                    iou=NMS_IOU, quantize=QUANT, rotated=False,
+                )
+                diagnostics["fallback_count"] = len(hbb_boxes)
+                if len(hbb_boxes) >= len(boxes) + 2:
+                    boxes, scores, classes = hbb_boxes, hbb_scores, hbb_classes
+                    polys = None
+                    diagnostics["fallback_used"] = True
+            if "teacher" in models and polys is not None:
                 teacher_result = models["teacher"].predict(
                     img, conf=0.20, imgsz=IMGSZ, quantize=QUANT,
                     classes=[46, 47, 49], verbose=False,
@@ -148,6 +276,7 @@ def predict(img, mode="careful"):
             boxes, scores, classes = detect(det, img, conf=conf,
                 imgsz=QUALITY_IMGSZ if mode == "careful" else IMGSZ,
                 iou=NMS_IOU, quantize=QUANT, rotated=mode == "careful")
+            diagnostics["primary_count"] = len(boxes)
         if len(boxes) and "clip" in models:
             clip = models["clip"]
             keep, classes = refine_types(det.names, classes, clip.names,
@@ -156,30 +285,38 @@ def predict(img, mode="careful"):
                                          protected_min_conf=0.30)
             boxes, scores, classes = boxes[keep], scores[keep], classes[keep]
             if polys is not None:
-                polys = polys[keep]
-        if polys is not None and len(boxes):
+                polys = [p for i, p in enumerate(polys) if keep[i]]
+            if mask_metrics is not None:
+                mask_metrics = [m for i, m in enumerate(mask_metrics) if keep[i]]
+        if polys is not None and det.task == "obb" and len(boxes):
             polys, boxes, scores, classes = deduplicate_boxes(polys, boxes, scores, classes)
         if not len(boxes):
-            return []
-        crops = [crop_rotated(img, q, CROP_PAD) for q in polys] if polys is not None else [crop_box(img, b) for b in boxes]
+            return [], diagnostics
+        crops = [crop_rotated(img, q, CROP_PAD) for q in polys] if (polys is not None and det.task == "obb") else [crop_box(img, b) for b in boxes]
         # Explicit chunks: predict(list) does not honor batch in every Ultralytics version.
         rs = []
         for start in range(0, len(crops), 8):
             rs.extend(cls.predict(crops[start:start + 8], imgsz=CLS_IMGSZ, quantize=QUANT, verbose=False))
     out = []
     for k, (b, c, conf, p) in enumerate(zip(boxes, classes, scores, rs)):
+        lbl = det.names[int(c)] if int(c) in det.names else f"fruit_{int(c)}"
         item = {
-            "label": det.names[int(c)],
+            "label": lbl,
             "confidence": round(float(conf), 4),
             "state": cls.names[int(p.probs.top1)],
             "state_confidence": round(float(p.probs.top1conf), 4),
             "bbox": [round(float(v), 1) for v in b],
             "rescued": bool(float(conf) < CONF),   # điểm detector < CONF nhưng CLIP xác nhận là quả
         }
-        if polys is not None:
+        if polys is not None and k < len(polys) and len(polys[k]) > 0:
             item["polygon"] = [[round(float(x), 1), round(float(y), 1)] for x, y in polys[k]]
+        if mask_metrics is not None and k < len(mask_metrics):
+            item["mask_area"] = mask_metrics[k]["mask_area"]
+            item["solidity"] = mask_metrics[k]["solidity"]
+            item["occlusion_ratio"] = mask_metrics[k]["occlusion_ratio"]
+            item["is_occluded"] = mask_metrics[k]["is_occluded"]
         out.append(item)
-    return out
+    return out, diagnostics
 
 
 @app.get("/api/health")
@@ -189,6 +326,10 @@ def health():
         # predictor mới giữ thiết bị thật (model.device vẫn báo cpu)
         "device": str(models["det"].predictor.device) if models else None,
         "det_model": Path(DET_PATH).name,
+        "obb_helper": "obb" in models,
+        "obb_model": Path(OBB_PATH).name if "obb" in models else None,
+        "hbb_fallback": HBB_FALLBACK and "hbb" in models,
+        "hbb_model": Path(HBB_PATH).name if "hbb" in models else None,
         "cls_model": Path(CLS_PATH).name,
         "cpu_threads": torch.get_num_threads(),
         "conf": CONF,
@@ -225,23 +366,65 @@ async def read_image(file):
     img = cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_COLOR)
     if img is None:
         raise HTTPException(400, "Không đọc được file ảnh")
+    img = enhance_image(img)
     return data, img
+
+
+def enhance_image(img: np.ndarray) -> np.ndarray:
+    """Tiền xử lý ảnh để tăng độ nét và chi tiết trước khi chạy detection.
+
+    Pipeline:
+    1. Upscale ảnh rất nhỏ (<480px) → YOLO có thêm pixel để lấy contour chính xác hơn
+    2. Unsharp mask → làm nét cạnh (trái cây có màu đơn, nét rõ giúp mask đúng hơn)
+    3. CLAHE trên kênh Luminance → tăng tương phản cục bộ, phân tách màu gần nhau
+    """
+    h, w = img.shape[:2]
+    min_side = min(h, w)
+
+    # 1. Upscale chỉ khi ảnh thực sự nhỏ (<480px chiều ngắn) để tránh chậm không cần thiết
+    #    YOLO tự resize về imgsz nên chỉ cần upscale để tăng thông tin contour ban đầu
+    if min_side < 480:
+        scale = 480 / min_side
+        new_w = int(round(w * scale))
+        new_h = int(round(h * scale))
+        img = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_CUBIC)
+
+    # 2. Unsharp mask: amount=0.8 — đủ để nét cạnh, không mất quả confidence thấp
+    #    sharp = alpha * original + (1-alpha) * blur  →  original + (alpha-1)*(original-blur)
+    blur = cv2.GaussianBlur(img, (0, 0), sigmaX=1.2)
+    img = cv2.addWeighted(img, 1.4, blur, -0.4, 0)
+
+    # 3. CLAHE trên kênh L của LAB (tăng tương phản cục bộ, không làm bão hòa màu)
+    lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
+    l_chan, a_chan, b_chan = cv2.split(lab)
+    clahe = cv2.createCLAHE(clipLimit=1.0, tileGridSize=(8, 8))
+    l_chan = clahe.apply(l_chan)
+    lab = cv2.merge([l_chan, a_chan, b_chan])
+    img = cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
+
+    return img
 
 
 @app.post("/api/predict")
 async def predict_api(file: UploadFile = File(...), mode: Literal["fast", "careful"] = Form("careful")):
     _, img = await read_image(file)
     t = time.perf_counter()
-    objects = await run_in_threadpool(predict, img, mode)
+    objects, diagnostics = await run_in_threadpool(predict, img, mode)
     ms = (time.perf_counter() - t) * 1000
 
     h, w = img.shape[:2]
+    quality = assess_detection(objects, w, h, diagnostics)
     return {
         "image_width": w,
         "image_height": h,
         "inference_ms": round(ms, 1),
         "mode": mode,
         "objects": objects,
+        "quality": quality | {
+            "fallback_used": diagnostics["fallback_used"],
+            "primary_count": diagnostics["primary_count"],
+            "fallback_count": diagnostics["fallback_count"],
+        },
     }
 
 
@@ -258,6 +441,22 @@ async def feedback_api(
         raise HTTPException(400, "Kết quả phản hồi không hợp lệ")
     if not isinstance(payload, dict) or not isinstance(payload.get("objects"), list):
         raise HTTPException(400, "Kết quả phản hồi phải chứa danh sách objects")
+    valid_labels = {"banana", "apple", "orange"}
+    valid_states = {"fresh", "rotten"}
+    for obj in payload["objects"]:
+        if not isinstance(obj, dict):
+            raise HTTPException(400, "Mỗi object phản hồi phải là một object JSON")
+        if obj.get("label") not in valid_labels or obj.get("state") not in valid_states:
+            raise HTTPException(400, "Nhãn quả hoặc trạng thái phản hồi không hợp lệ")
+        bbox = obj.get("bbox")
+        if not isinstance(bbox, list) or len(bbox) != 4:
+            raise HTTPException(400, "Bounding box phản hồi không hợp lệ")
+        try:
+            coords = [float(value) for value in bbox]
+        except (TypeError, ValueError):
+            raise HTTPException(400, "Bounding box phản hồi phải là số")
+        if not all(np.isfinite(coords)) or coords[2] <= coords[0] or coords[3] <= coords[1]:
+            raise HTTPException(400, "Bounding box phản hồi phải có kích thước dương")
 
     _, img = await read_image(file)
     FEEDBACK_DIR.mkdir(parents=True, exist_ok=True)

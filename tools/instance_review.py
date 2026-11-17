@@ -73,7 +73,7 @@ def source_group(stem):
     return re.sub(r"(_(?:jpg|jpeg|png|bmp|webp))?\.rf\.[a-z0-9]+$", "", stem, flags=re.I)
 
 
-def prepare(source, output, diagnostics=None):
+def prepare(source, output, diagnostics=None, flagged_only=False):
     source, output = source.resolve(), output.resolve()
     if output.exists():
         raise ValueError("Output exists; choose a new review folder")
@@ -92,6 +92,8 @@ def prepare(source, output, diagnostics=None):
                 continue
             label = folder / "labels" / (image.stem + ".txt")
             warning = flags.get((role, image.name), "")
+            if flagged_only and not warning:
+                continue
             if role == "train" and image.name in quarantine:
                 warning += ";quarantine"
             entries.append((role, image, label, warning.strip(";"),
@@ -221,13 +223,15 @@ def main():
                              default=repo if (repo / "local_dataset/det").is_dir() else repo.parent)
     preparation.add_argument("--out", type=Path, default=repo / "out/instance_review_v1")
     preparation.add_argument("--diagnostics", type=Path)
+    preparation.add_argument("--flagged-only", action="store_true",
+                             help="Include only images with automated audit flags.")
     compiler = sub.add_parser("build")
     compiler.add_argument("--bundle", type=Path, default=repo / "out/instance_review_v1")
     compiler.add_argument("--reviews", type=Path, required=True)
     compiler.add_argument("--out", type=Path, default=repo / "out/instance_clean_v1")
     args = parser.parse_args()
     if args.action == "prepare":
-        prepare(args.source_root, args.out, args.diagnostics)
+        prepare(args.source_root, args.out, args.diagnostics, args.flagged_only)
     else:
         build(args.bundle, args.reviews, args.out)
 

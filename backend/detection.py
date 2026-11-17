@@ -284,3 +284,290 @@ def refine_types(det_names, classes, type_names, type_probs, t_other=0.6, t_swap
         elif name in det_idx and det_idx[name] != out[k] and p[top] >= t_swap:
             out[k] = det_idx[name]
     return keep, out
+
+
+from scipy.ndimage import gaussian_filter1d
+
+
+def smooth_contour_curve(pts, sigma=1.8, max_points=100):
+    """Smooth closed 2D polygon contour coordinates using Gaussian filtering along parameter curve.
+    Removes proto-mask 160x160 scaling staircase artifacts and sharp jagged corners,
+    producing an organic, visually pleasing fruit outline while preserving real area.
+    """
+    pts = np.asarray(pts, dtype=np.float32).reshape(-1, 2)
+    if len(pts) < 6:
+        return pts
+    x = gaussian_filter1d(pts[:, 0], sigma=sigma, mode="wrap")
+    y = gaussian_filter1d(pts[:, 1], sigma=sigma, mode="wrap")
+    smoothed = np.column_stack([x, y])
+    if len(smoothed) > max_points:
+        step = len(smoothed) / float(max_points)
+        idx = [int(i * step) for i in range(max_points)]
+        smoothed = smoothed[idx]
+    return np.round(smoothed, 1)
+
+
+def simplify_polygon(poly, epsilon=1.5):
+    """Simplify polygon contour points to keep JSON payload compact and smooth."""
+    pts = np.asarray(poly, dtype=np.float32)
+    if len(pts) < 3:
+        return pts
+    approx = cv2.approxPolyDP(pts.reshape(-1, 1, 2), epsilon=epsilon, closed=True).reshape(-1, 2)
+    return approx if len(approx) >= 3 else pts
+
+
+def compute_mask_metrics(polygons, boxes, width, height):
+    """Calculate mask area, solidity, and pairwise occlusion/overlap between instances."""
+    n = len(polygons)
+    if n == 0:
+        return []
+    masks = [np.zeros((height, width), dtype=np.uint8) for _ in range(n)]
+    for i, p in enumerate(polygons):
+        if len(p) >= 3:
+            cv2.fillPoly(masks[i], [np.round(p).astype(np.int32)], 1)
+    areas = [float(m.sum()) for m in masks]
+    metrics = []
+    for i in range(n):
+        p = polygons[i]
+        b = boxes[i]
+        area = areas[i]
+        solidity = 1.0
+        if len(p) >= 3 and area > 0:
+            cnt = np.asarray(p, dtype=np.float32).reshape(-1, 1, 2)
+            hull = cv2.convexHull(cnt)
+            hull_area = cv2.contourArea(hull)
+            if hull_area > 0:
+                solidity = float(min(1.0, max(0.0, cv2.contourArea(cnt) / hull_area)))
+        max_overlap = 0.0
+        overlap_details = []
+        for j in range(n):
+            if i == j:
+                continue
+            bj = boxes[j]
+            if max(b[0], bj[0]) < min(b[2], bj[2]) and max(b[1], bj[1]) < min(b[3], bj[3]):
+                inter = float((masks[i] & masks[j]).sum())
+                if inter > 0 and area > 0:
+                    overlap_ratio = inter / area
+                    if overlap_ratio > max_overlap:
+                        max_overlap = overlap_ratio
+                    overlap_details.append({
+                        "other_idx": j,
+                        "overlap_ratio": round(float(overlap_ratio), 3),
+                        "intersection_px": int(inter),
+                    })
+        metrics.append({
+            "mask_area": int(area),
+            "solidity": round(float(solidity), 3),
+            "occlusion_ratio": round(float(max_overlap), 3),
+            "is_occluded": bool(max_overlap >= 0.25),
+            "overlaps": overlap_details,
+        })
+    return metrics
+
+
+def detect_seg(model, image, conf=0.4, imgsz=640, iou=0.6, quantize=None, simplify_eps=1.5):
+    """YOLO Instance Segmentation.
+    Runs prediction and returns (polygons, boxes, scores, classes, mask_metrics).
+    Handles both custom 3-class fruit models (banana/apple/orange) and 80-class COCO seg models.
+    """
+    height, width = image.shape[:2]
+    classes_arg = None
+    coco_fruit_ids = {46: 0, 47: 1, 49: 2}
+    is_coco = False
+    if len(model.names) >= 80 and 46 in model.names and 47 in model.names:
+        is_coco = True
+        classes_arg = [46, 47, 49]
+
+    result = model.predict(
+        image, conf=conf, imgsz=imgsz, quantize=quantize,
+        agnostic_nms=True, iou=iou, max_det=300, verbose=False,
+        classes=classes_arg,
+    )[0]
+
+    if result.boxes is None or len(result.boxes) == 0:
+        return [], np.zeros((0, 4), dtype=np.float32), np.zeros(0, dtype=np.float32), np.zeros(0, dtype=np.int64), []
+
+    boxes = result.boxes.xyxy.cpu().numpy()
+    scores = np.asarray(result.boxes.conf.tolist(), dtype=np.float32)
+    raw_classes = np.asarray(result.boxes.cls.tolist(), dtype=np.int64)
+    classes = raw_classes
+
+    polygons = []
+    if result.masks is not None and len(result.masks.xy) > 0:
+        for poly in result.masks.xy:
+            if len(poly) >= 3:
+                # Apply smooth Gaussian curve FIRST to remove pixel-grid staircase artifacts
+                # from YOLO's 160x160 proto-mask upscaling, then simplify
+                smooth = smooth_contour_curve(poly, sigma=1.8, max_points=120)
+                simp = simplify_polygon(smooth, epsilon=simplify_eps)
+                simp[:, 0] = np.clip(simp[:, 0], 0, width)
+                simp[:, 1] = np.clip(simp[:, 1], 0, height)
+                polygons.append(simp)
+            else:
+                polygons.append(np.zeros((0, 2), dtype=np.float32))
+    else:
+        for b in boxes:
+            polygons.append(np.array([[b[0], b[1]], [b[2], b[1]], [b[2], b[3]], [b[0], b[3]]], dtype=np.float32))
+
+    mask_metrics = compute_mask_metrics(polygons, boxes, width, height)
+    return polygons, boxes, scores, classes, mask_metrics
+
+
+def get_obb_spine(pts):
+    """Compute the centerline spine segment (s1, s2) of an oriented bounding box."""
+    pts = np.asarray(pts, dtype=np.float32)
+    d01 = np.linalg.norm(pts[0] - pts[1])
+    d12 = np.linalg.norm(pts[1] - pts[2])
+    if d01 < d12:
+        return (pts[0] + pts[1]) / 2.0, (pts[2] + pts[3]) / 2.0
+    else:
+        return (pts[1] + pts[2]) / 2.0, (pts[3] + pts[0]) / 2.0
+
+
+def dist_to_segment(p, s1, s2):
+    """Euclidean distance from point p to line segment (s1, s2)."""
+    v = s2 - s1
+    l2 = float(np.dot(v, v))
+    if l2 == 0:
+        return float(np.linalg.norm(p - s1))
+    t = max(0.0, min(1.0, float(np.dot(p - s1, v) / l2)))
+    proj = s1 + t * v
+    return float(np.linalg.norm(p - proj))
+
+
+def split_banana_cluster_detections(polygons, boxes, scores, classes, obb_model, image,
+                                    conf=0.35, det_names=None, quantize=None):
+    """Partitions grouped banana cluster masks into individual banana instances using OBB guidance.
+
+    Pipeline:
+    1. Run OBB detector (det_obb_s.pt) to find individual banana orientations.
+    2. Deduplicate OBB bananas by mask IoU (keeps distinct non-overlapping boxes only).
+    3. For each seg banana mask overlapping >= 2 OBB bananas:
+       - Assign each foreground pixel to the nearest OBB spine (Voronoi partitioning).
+       - Morphological close + Gaussian blur smoothing on each sub-mask.
+       - Extract clean smoothed contour polygon for each separated banana.
+    4. Non-banana objects are passed through unchanged.
+    """
+    if len(boxes) == 0 or obb_model is None:
+        return polygons, boxes, scores, classes
+
+    height, width = image.shape[:2]
+    banana_ids = {k for k, v in det_names.items() if v == "banana"} if det_names else {0, 46}
+    obb_banana_ids = {k for k, v in obb_model.names.items() if v == "banana"}
+
+    # Run OBB prediction to detect individual banana orientations
+    obb_res = obb_model.predict(
+        image, conf=conf, imgsz=1280, quantize=quantize,
+        agnostic_nms=True, iou=0.5, verbose=False,
+    )[0]
+    if not hasattr(obb_res, "obb") or obb_res.obb is None or len(obb_res.obb) == 0:
+        return polygons, boxes, scores, classes
+
+    # Collect all OBB banana candidates sorted by confidence (highest first)
+    raw_obb = []
+    for cls, c_conf, poly in zip(obb_res.obb.cls, obb_res.obb.conf, obb_res.obb.xyxyxyxy):
+        if int(cls) in obb_banana_ids:
+            pts = poly.cpu().numpy()
+            b_mask = np.zeros((height, width), dtype=np.uint8)
+            cv2.fillPoly(b_mask, [np.round(pts).astype(np.int32)], 1)
+            raw_obb.append({"conf": float(c_conf), "pts": pts, "mask": b_mask, "area": float(b_mask.sum())})
+    raw_obb.sort(key=lambda x: -x["conf"])
+
+    # Deduplicate: remove OBBs that overlap heavily with a higher-confidence OBB
+    obb_bananas = []
+    for ob in raw_obb:
+        dup = False
+        for kept in obb_bananas:
+            inter = float((ob["mask"] & kept["mask"]).sum())
+            union = float((ob["mask"] | kept["mask"]).sum())
+            iou = inter / max(union, 1.0)
+            overlap_smaller = inter / max(min(ob["area"], kept["area"]), 1.0)
+            if iou >= 0.35 or overlap_smaller >= 0.50:
+                dup = True
+                break
+        if not dup:
+            ob["spine"] = get_obb_spine(ob["pts"])
+            obb_bananas.append(ob)
+
+    if len(obb_bananas) <= 1:
+        return polygons, boxes, scores, classes
+
+    new_polys, new_boxes, new_scores, new_classes = [], [], [], []
+    default_banana_cls = next(iter(banana_ids))
+
+    for idx in range(len(boxes)):
+        c = int(classes[idx])
+        poly = polygons[idx] if idx < len(polygons) else None
+        b = boxes[idx]
+        sc = scores[idx]
+
+        if c not in banana_ids or poly is None or len(poly) < 3:
+            new_polys.append(poly)
+            new_boxes.append(b)
+            new_scores.append(sc)
+            new_classes.append(c)
+            continue
+
+        # Render the segmentation banana mask
+        cur_mask = np.zeros((height, width), dtype=np.uint8)
+        cv2.fillPoly(cur_mask, [np.round(poly).astype(np.int32)], 1)
+
+        # Match OBB bananas that overlap significantly with this seg mask
+        matched = []
+        for ob in obb_bananas:
+            inter = int((cur_mask & ob["mask"]).sum())
+            if ob["area"] > 0 and inter / ob["area"] >= 0.15:
+                matched.append(ob)
+
+        if len(matched) <= 1:
+            # No splitting needed — pass through unchanged
+            new_polys.append(poly)
+            new_boxes.append(b)
+            new_scores.append(sc)
+            new_classes.append(c)
+            continue
+
+        # --- Spine-distance Voronoi partitioning ---
+        y_idxs, x_idxs = np.where(cur_mask > 0)
+        coords = np.column_stack([x_idxs, y_idxs]).astype(np.float32)
+        dists = []
+        for ob in matched:
+            s1, s2 = ob["spine"]
+            dists.append([dist_to_segment(p, s1, s2) for p in coords])
+        assigned = np.argmin(np.array(dists), axis=0)
+
+        for m_idx, ob in enumerate(matched):
+            sub_mask = np.zeros((height, width), dtype=np.uint8)
+            sub_mask[y_idxs[assigned == m_idx], x_idxs[assigned == m_idx]] = 255
+
+            # Morphological close to fill seam gaps, then Gaussian blur to smooth jagged boundary
+            kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+            sub_mask = cv2.morphologyEx(sub_mask, cv2.MORPH_CLOSE, kernel)
+            sub_mask = cv2.GaussianBlur(sub_mask, (7, 7), 2.0)
+            _, sub_mask = cv2.threshold(sub_mask, 127, 255, cv2.THRESH_BINARY)
+
+            cnts, _ = cv2.findContours(sub_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_TC89_KCOS)
+            if not cnts:
+                continue
+            cnt = max(cnts, key=cv2.contourArea)
+            if cv2.contourArea(cnt) < 100:
+                continue
+
+            # Smooth the contour with Gaussian curve to remove staircase artifacts
+            smooth = smooth_contour_curve(cnt.reshape(-1, 2), sigma=2.0, max_points=100)
+            smooth[:, 0] = np.clip(smooth[:, 0], 0, width)
+            smooth[:, 1] = np.clip(smooth[:, 1], 0, height)
+            x, y, bw, bh = cv2.boundingRect(cnt)
+            new_polys.append(smooth)
+            new_boxes.append(np.array([x, y, x + bw, y + bh], dtype=np.float32))
+            new_scores.append(float(ob["conf"]))
+            new_classes.append(default_banana_cls)
+
+    return (
+        new_polys,
+        np.array(new_boxes, dtype=np.float32) if len(new_boxes) else np.zeros((0, 4), dtype=np.float32),
+        np.array(new_scores, dtype=np.float32) if len(new_scores) else np.zeros(0, dtype=np.float32),
+        np.array(new_classes, dtype=np.int64) if len(new_classes) else np.zeros(0, dtype=np.int64),
+    )
+
+

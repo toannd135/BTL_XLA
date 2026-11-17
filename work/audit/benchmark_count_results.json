@@ -1,0 +1,220 @@
+{
+  "summary": {
+    "model": "yolo11s-seg.pt",
+    "task": "segment",
+    "total_images": 20,
+    "exact_count_accuracy": 0.4,
+    "count_mae": 0.65,
+    "over_count_rate": 0.35,
+    "under_count_rate": 0.25,
+    "per_class_mae": {
+      "banana": 0.0,
+      "apple": 0.65,
+      "orange": 0.0
+    },
+    "quality_gate_safety_rate": 0.3333,
+    "total_miscounted": 12,
+    "miscounted_caught": 4
+  },
+  "details": [
+    {
+      "image": "mbk__apple_12.jpg",
+      "true_total": 1,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_15.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_17.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_20.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_21.jpg",
+      "true_total": 2,
+      "pred_total": 3,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 che khuất nhiều (100%)",
+        "khung #2 che khuất nhiều (100%)",
+        "khung #3 che khuất nhiều (57%)",
+        "trùng lặp khung #1 và #3",
+        "trùng lặp khung #2 và #3"
+      ]
+    },
+    {
+      "image": "mbk__apple_29.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_32.jpg",
+      "true_total": 1,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_39.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_40.jpg",
+      "true_total": 1,
+      "pred_total": 3,
+      "abs_error": 2,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_42.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (71%)"
+      ]
+    },
+    {
+      "image": "mbk__apple_45.jpg",
+      "true_total": 2,
+      "pred_total": 1,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (71%)"
+      ]
+    },
+    {
+      "image": "mbk__apple_54.jpg",
+      "true_total": 1,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (60%)",
+        "khung #1 che khuất nhiều (59%)",
+        "khung #2 che khuất nhiều (100%)",
+        "trùng lặp khung #1 và #2"
+      ]
+    },
+    {
+      "image": "mbk__apple_59.jpg",
+      "true_total": 1,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_64.jpg",
+      "true_total": 1,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_71.jpg",
+      "true_total": 2,
+      "pred_total": 1,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (67%)"
+      ]
+    },
+    {
+      "image": "mbk__apple_79.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_8.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (62%)"
+      ]
+    },
+    {
+      "image": "mbk__apple_82.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_85.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_9.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    }
+  ]
+}
