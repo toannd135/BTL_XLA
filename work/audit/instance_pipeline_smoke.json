@@ -1,0 +1,266 @@
+{
+  "summary": {
+    "model": "yolo11s-seg.pt",
+    "obb_model": "exports\\det_obb_s.pt",
+    "sam_model": "work\\weights\\sam2.1_t.pt",
+    "pipeline": "segmentation_refinement",
+    "images": 12,
+    "exact_count_accuracy": 0.6666666666666666,
+    "count_mae": 0.3333333333333333,
+    "over_count_rate": 0.16666666666666666,
+    "under_count_rate": 0.16666666666666666,
+    "quality_gate_safety_rate": 0.0,
+    "miscounted": 4,
+    "miscounted_caught": 0
+  },
+  "details": [
+    {
+      "image": "mbk__apple_59.jpg",
+      "true_total": 1,
+      "predicted_total": 2,
+      "absolute_count_error": 1,
+      "true_counts": {
+        "apple": 1
+      },
+      "predicted_counts": {
+        "apple": 2
+      },
+      "flagged_needs_review": false,
+      "diagnostics": {
+        "fruit_split_groups": 0,
+        "fruit_split_pending": 0,
+        "fruit_recovered": 0,
+        "banana_split_groups": 0,
+        "banana_split_pending": 0,
+        "instance_refinement": {}
+      }
+    },
+    {
+      "image": "mbk__apple_79.jpg",
+      "true_total": 1,
+      "predicted_total": 0,
+      "absolute_count_error": 1,
+      "true_counts": {
+        "apple": 1
+      },
+      "predicted_counts": {},
+      "flagged_needs_review": false,
+      "diagnostics": {
+        "fruit_split_groups": 0,
+        "fruit_split_pending": 0,
+        "fruit_recovered": 0,
+        "banana_split_groups": 0,
+        "banana_split_pending": 0,
+        "instance_refinement": {}
+      }
+    },
+    {
+      "image": "mbk__apple_8.jpg",
+      "true_total": 1,
+      "predicted_total": 1,
+      "absolute_count_error": 0,
+      "true_counts": {
+        "apple": 1
+      },
+      "predicted_counts": {
+        "apple": 1
+      },
+      "flagged_needs_review": false,
+      "diagnostics": {
+        "fruit_split_groups": 0,
+        "fruit_split_pending": 0,
+        "fruit_recovered": 0,
+        "banana_split_groups": 0,
+        "banana_split_pending": 0,
+        "instance_refinement": {}
+      }
+    },
+    {
+      "image": "mbk__banana_9.jpg",
+      "true_total": 1,
+      "predicted_total": 1,
+      "absolute_count_error": 0,
+      "true_counts": {
+        "banana": 1
+      },
+      "predicted_counts": {
+        "banana": 1
+      },
+      "flagged_needs_review": false,
+      "diagnostics": {
+        "fruit_split_groups": 0,
+        "fruit_split_pending": 0,
+        "fruit_recovered": 0,
+        "banana_split_groups": 0,
+        "banana_split_pending": 0,
+        "instance_refinement": {}
+      }
+    },
+    {
+      "image": "mbk__orange_23.jpg",
+      "true_total": 1,
+      "predicted_total": 2,
+      "absolute_count_error": 1,
+      "true_counts": {
+        "orange": 1
+      },
+      "predicted_counts": {
+        "orange": 2
+      },
+      "flagged_needs_review": false,
+      "diagnostics": {
+        "fruit_split_groups": 0,
+        "fruit_split_pending": 0,
+        "fruit_recovered": 0,
+        "banana_split_groups": 0,
+        "banana_split_pending": 0,
+        "instance_refinement": {}
+      }
+    },
+    {
+      "image": "mbk__orange_5.jpg",
+      "true_total": 2,
+      "predicted_total": 2,
+      "absolute_count_error": 0,
+      "true_counts": {
+        "orange": 2
+      },
+      "predicted_counts": {
+        "orange": 2
+      },
+      "flagged_needs_review": false,
+      "diagnostics": {
+        "fruit_split_groups": 0,
+        "fruit_split_pending": 0,
+        "fruit_recovered": 0,
+        "banana_split_groups": 0,
+        "banana_split_pending": 0,
+        "instance_refinement": {}
+      }
+    },
+    {
+      "image": "own-apple_YTSave_YouTube_Media_ajay1tq_roU_Apple-Timelapse-Video_001_1080p__apple_YTSave_YouTube_Media_ajay1tq_roU_Apple-Timelapse-Video_001_1080p_004340.jpg",
+      "true_total": 1,
+      "predicted_total": 1,
+      "absolute_count_error": 0,
+      "true_counts": {
+        "apple": 1
+      },
+      "predicted_counts": {
+        "apple": 1
+      },
+      "flagged_needs_review": false,
+      "diagnostics": {
+        "fruit_split_groups": 0,
+        "fruit_split_pending": 0,
+        "fruit_recovered": 0,
+        "banana_split_groups": 0,
+        "banana_split_pending": 0,
+        "instance_refinement": {}
+      }
+    },
+    {
+      "image": "rf_v7__a_f020_png.rf.ee9bb08891b1b152148f161bb9fd2ace.jpg",
+      "true_total": 1,
+      "predicted_total": 1,
+      "absolute_count_error": 0,
+      "true_counts": {
+        "apple": 1
+      },
+      "predicted_counts": {
+        "apple": 1
+      },
+      "flagged_needs_review": false,
+      "diagnostics": {
+        "fruit_split_groups": 0,
+        "fruit_split_pending": 0,
+        "fruit_recovered": 0,
+        "banana_split_groups": 0,
+        "banana_split_pending": 0,
+        "instance_refinement": {}
+      }
+    },
+    {
+      "image": "rf_v7__a_f040_png.rf.b3fd216842267aff7c344d88df38afe7.jpg",
+      "true_total": 1,
+      "predicted_total": 1,
+      "absolute_count_error": 0,
+      "true_counts": {
+        "apple": 1
+      },
+      "predicted_counts": {
+        "apple": 1
+      },
+      "flagged_needs_review": false,
+      "diagnostics": {
+        "fruit_split_groups": 0,
+        "fruit_split_pending": 0,
+        "fruit_recovered": 0,
+        "banana_split_groups": 0,
+        "banana_split_pending": 0,
+        "instance_refinement": {}
+      }
+    },
+    {
+      "image": "rf_v7__a_f080_png.rf.5ef280e91e8f1d12fa668f12ae515e6d.jpg",
+      "true_total": 1,
+      "predicted_total": 1,
+      "absolute_count_error": 0,
+      "true_counts": {
+        "apple": 1
+      },
+      "predicted_counts": {
+        "apple": 1
+      },
+      "flagged_needs_review": false,
+      "diagnostics": {
+        "fruit_split_groups": 0,
+        "fruit_split_pending": 0,
+        "fruit_recovered": 0,
+        "banana_split_groups": 0,
+        "banana_split_pending": 0,
+        "instance_refinement": {}
+      }
+    },
+    {
+      "image": "rf_v7__b_f085_png.rf.e7878422f76e72d0d0540e14353d384a.jpg",
+      "true_total": 1,
+      "predicted_total": 1,
+      "absolute_count_error": 0,
+      "true_counts": {
+        "banana": 1
+      },
+      "predicted_counts": {
+        "banana": 1
+      },
+      "flagged_needs_review": false,
+      "diagnostics": {
+        "fruit_split_groups": 0,
+        "fruit_split_pending": 0,
+        "fruit_recovered": 0,
+        "banana_split_groups": 0,
+        "banana_split_pending": 0,
+        "instance_refinement": {}
+      }
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_33_00-PM_png.rf.eaef0206e42a35356d2a59db34da7103.jpg",
+      "true_total": 1,
+      "predicted_total": 0,
+      "absolute_count_error": 1,
+      "true_counts": {
+        "orange": 1
+      },
+      "predicted_counts": {},
+      "flagged_needs_review": false,
+      "diagnostics": {
+        "fruit_split_groups": 0,
+        "fruit_split_pending": 0,
+        "fruit_recovered": 0,
+        "banana_split_groups": 0,
+        "banana_split_pending": 0,
+        "instance_refinement": {}
+      }
+    }
+  ]
+}

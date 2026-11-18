@@ -21,9 +21,10 @@ from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from PIL import Image
-from ultralytics import YOLO
+from ultralytics import SAM, YOLO
 
 import collect
+from quality import assess_detection
 from detection import (
     crop_rotated,
     deduplicate_boxes,
@@ -32,8 +33,9 @@ from detection import (
     detect_seg,
     fuse_teacher_boxes,
     refine_types,
-    split_banana_cluster_detections,
+    split_fruit_cluster_detections,
     compute_mask_metrics,
+    configure_sam_refiner,
 )
 
 # Pillow tự cảnh báo/chặn ảnh lớn; giới hạn đã kiểm tra riêng bằng MAX_PIXELS
@@ -42,6 +44,21 @@ Image.MAX_IMAGE_PIXELS = None
 ROOT = Path(__file__).resolve().parent.parent
 DET_PATH = os.getenv("MODEL_PATH", str(ROOT / "yolo11s-seg.pt" if (ROOT / "yolo11s-seg.pt").exists() else ROOT / "exports/det_obb_s.pt"))
 OBB_PATH = os.getenv("OBB_MODEL_PATH", str(ROOT / "exports/det_obb_s.pt"))
+OBB_ENSEMBLE_PATHS = [
+    Path(value.strip()) for value in os.getenv(
+        "OBB_ENSEMBLE_PATHS",
+        ",".join(str(p) for p in (
+            ROOT / "exports/det_obb_s.pt",
+            ROOT / "exports/det_obb_map95_s1.pt",
+            ROOT / "exports/det_obb_map95_s2.pt",
+        )),
+    ).split(",") if value.strip()
+]
+SAM_REFINE = os.getenv("SAM_REFINE", "1") == "1"
+SAM_PATH = os.getenv("SAM_MODEL_PATH", str(next(
+    (p for p in (ROOT / "work/weights/sam2.1_t.pt", ROOT / "work/weights/sam2.1_b.pt") if p.is_file()),
+    ROOT / "work/weights/sam2.1_t.pt",
+)))
 HBB_FALLBACK = os.getenv("HBB_FALLBACK", "1") == "1"
 HBB_PATH = os.getenv("HBB_MODEL_PATH", str(ROOT / "exports/det_B_clean_backup.pt"))
 CLS_PATH = os.getenv("CLS_MODEL_PATH", str(ROOT / "exports/cls_finetune_best.pt"))
@@ -54,6 +71,11 @@ CONF = float(os.getenv("CONF", "0.4"))   # chốt 0.40 cho model C (F1 tổng 0.
 IMGSZ = 640
 QUALITY_IMGSZ = 640   # 960 đếm chuối thừa ~2.4x, nền sai 3/71 (docs/handoff/dem-chuoi.md)
 OBB_IMGSZ = int(os.getenv("OBB_IMGSZ", "1280"))
+SEG_IMGSZ = int(os.getenv("SEG_IMGSZ", "640"))
+SEG_RETINA_MASKS = os.getenv("SEG_RETINA_MASKS", "1") == "1"
+SEG_SIMPLIFY_EPS = float(os.getenv("SEG_SIMPLIFY_EPS", "0.75"))
+ENHANCE_IMAGE = os.getenv("ENHANCE_IMAGE", "0") == "1"
+INSTANCE_CROP_CHECKS = max(0, min(24, int(os.getenv("INSTANCE_CROP_CHECKS", "12"))))
 NMS_IOU = float(os.getenv("NMS_IOU", "0.7"))   # giữ các quả chuối sát nhau; đặt 0.6 nếu tăng box trùng
 QUANT = 16 if os.getenv("HALF", "1") == "1" else None   # FP16 trên GPU (ultralytics tự tắt khi chạy CPU); đặt HALF=0 để tắt
 CLS_IMGSZ = 224
@@ -85,11 +107,17 @@ async def lifespan(app):
     cv2.setNumThreads(CPU_THREADS)
     models["det"] = YOLO(DET_PATH)
     models["cls"] = YOLO(CLS_PATH)
-    if Path(OBB_PATH).exists() and Path(DET_PATH).resolve() != Path(OBB_PATH).resolve():
+    if models["det"].task == "segment" and Path(OBB_PATH).exists():
         models["obb"] = YOLO(OBB_PATH)
+        models["obb_ensemble"] = [
+            YOLO(str(path)) for path in OBB_ENSEMBLE_PATHS
+            if path.exists()
+        ] or [models["obb"]]
+    if models["det"].task == "segment" and SAM_REFINE and Path(SAM_PATH).is_file():
+        models["sam"] = configure_sam_refiner(SAM(SAM_PATH))
     if HBB_FALLBACK and Path(DET_PATH).resolve() != Path(HBB_PATH).resolve():
         models["hbb"] = YOLO(HBB_PATH)
-    if TEACHER_CHECK:
+    if TEACHER_CHECK and models["det"].task == "obb":
         models["teacher"] = YOLO(TEACHER_PATH)
     if CLIP_CHECK:
         try:
@@ -102,6 +130,8 @@ async def lifespan(app):
     models["det"].predict(blank, imgsz=IMGSZ, quantize=QUANT, verbose=False)
     if "obb" in models:
         models["obb"].predict(blank, imgsz=IMGSZ, quantize=QUANT, verbose=False)
+    for model in models.get("obb_ensemble", [])[1:]:
+        model.predict(blank, imgsz=IMGSZ, quantize=QUANT, verbose=False)
     if "hbb" in models:
         models["hbb"].predict(blank, imgsz=IMGSZ, quantize=QUANT, verbose=False)
     models["cls"].predict(blank, imgsz=CLS_IMGSZ, quantize=QUANT, verbose=False)
@@ -136,105 +166,42 @@ def crop_box(img, xyxy, pad=CROP_PAD):
     return img[y1:y2, x1:x2]
 
 
-def assess_detection(objects, width, height, diagnostics=None):
-    """Mark predictions that are unsafe to confirm without human review."""
-    reasons = []
-    image_area = max(width * height, 1)
-
-    # 1. Per-object checks
-    for index, obj in enumerate(objects):
-        lbl = obj["label"]
-        x1, y1, x2, y2 = obj["bbox"]
-        area = max(x2 - x1, 0) * max(y2 - y1, 0)
-        conf = obj.get("confidence", 1.0)
-
-        # Low confidence
-        if conf < CONF and not obj.get("rescued"):
-            reasons.append(f"quả #{index + 1} ({lbl}) có độ tin cậy thấp ({conf:.2f} < {CONF})")
-
-        # Oversized object: covering large portion of image, likely a cluster/group
-        if area / image_area > 0.60:
-            reasons.append(f"khung #{index + 1} quá lớn ({area / image_area:.0%}), có nguy cơ gộp nhiều quả")
-
-        # Solidity check for segmentation masks (irregular/dumbbell shaped masks)
-        solidity = obj.get("solidity", 1.0)
-        if obj.get("polygon") and len(obj["polygon"]) >= 5:
-            if lbl in ("apple", "orange") and solidity < 0.65:
-                reasons.append(f"quả #{index + 1} ({lbl}) có hình dạng bất thường (độ lồi {solidity:.2f}), nghi gộp nhiều quả")
-            elif lbl == "banana" and solidity < 0.40:
-                reasons.append(f"quả #{index + 1} ({lbl}) có hình dạng bất thường (độ lồi {solidity:.2f}), nghi gộp cả nải")
-
-        # High occlusion warning
-        occlusion = obj.get("occlusion_ratio", 0.0)
-        if occlusion >= 0.55:
-            reasons.append(f"quả #{index + 1} ({lbl}) bị che khuất nhiều ({occlusion:.0%}), ranh giới không hoàn chỉnh")
-
-    # 2. Pairwise instance overlap check
-    for i in range(len(objects)):
-        oi = objects[i]
-        for j in range(i + 1, len(objects)):
-            oj = objects[j]
-            xi1, yi1, xi2, yi2 = oi["bbox"]
-            xj1, yj1, xj2, yj2 = oj["bbox"]
-            inter = max(0, min(xi2, xj2) - max(xi1, xj1)) * max(0, min(yi2, yj2) - max(yi1, yj1))
-            area_i = max(xi2 - xi1, 0) * max(yi2 - yi1, 0)
-            area_j = max(xj2 - xj1, 0) * max(yj2 - yj1, 0)
-            union = area_i + area_j - inter
-            iou = inter / max(union, 1e-9)
-
-            if oi["label"] == oj["label"]:
-                if iou >= 0.40:
-                    reasons.append(f"hai quả cùng loại #{i + 1} và #{j + 1} ({oi['label']}) bị chồng lấn lớn (IoU {iou:.0%})")
-            else:
-                if iou >= 0.50:
-                    reasons.append(f"hai quả khác loại #{i + 1} ({oi['label']}) và #{j + 1} ({oj['label']}) đè lên nhau quá nhiều (IoU {iou:.0%})")
-
-    # 3. Model discrepancy check
-    if diagnostics:
-        if diagnostics.get("fallback_used"):
-            reasons.append("mô hình kiểm chứng (fallback) cho kết quả khác biệt, cần đối chiếu số lượng")
-        p_cnt = diagnostics.get("primary_count")
-        f_cnt = diagnostics.get("fallback_count")
-        if p_cnt is not None and f_cnt is not None and abs(p_cnt - f_cnt) >= 2:
-            reasons.append(f"số lượng quả giữa các mô hình lệch nhau (Detector chính: {p_cnt}, Kiểm chứng: {f_cnt})")
-
-    unique_reasons = list(dict.fromkeys(reasons))
-    is_uncertain = len(unique_reasons) > 0
-    return {
-        "status": "needs_review" if is_uncertain else "ready",
-        "is_uncertain": is_uncertain,
-        "reasons": unique_reasons,
-    }
-
-
 def predict(img, mode="careful"):
     det, cls = models["det"], models["cls"]
     with lock:
         torch.set_num_threads(CPU_THREADS)
         polys = None
         mask_metrics = None
-        diagnostics = {"fallback_used": False, "primary_count": None, "fallback_count": None}
+        diagnostics = {"fallback_used": False, "primary_count": None, "fallback_count": None,
+                       "banana_split_pending": 0, "banana_split_groups": 0, "primary_task": det.task}
         conf = min(CONF, RESCUE_CONF) if "clip" in models else CONF
 
         if det.task == "segment":
             # Instance Segmentation: đếm và phân tách quả bằng mask đa giác thực
             polys, boxes, scores, classes, mask_metrics = detect_seg(
-                det, img, conf=conf, imgsz=IMGSZ, iou=NMS_IOU, quantize=QUANT,
+                det, img, conf=conf, imgsz=SEG_IMGSZ, iou=NMS_IOU, quantize=QUANT,
+                retina_masks=SEG_RETINA_MASKS, simplify_eps=SEG_SIMPLIFY_EPS,
+                compute_metrics=False,
             )
-            # Tách nải chuối (banana cluster) thành từng quả riêng biệt bằng OBB spine partitioning
-            if "obb" in models and len(boxes):
-                polys, boxes, scores, classes = split_banana_cluster_detections(
-                    polys, boxes, scores, classes, models["obb"], img,
-                    conf=max(0.30, conf), det_names=det.names, quantize=QUANT,
-                )
-                mask_metrics = compute_mask_metrics(polys, boxes, img.shape[1], img.shape[0])
-            diagnostics["primary_count"] = len(boxes)
+            hbb_detections = None
             if "hbb" in models:
-                hbb_boxes, _, _ = detect(
+                hbb_detections = detect(
                     models["hbb"], img, conf=conf, imgsz=QUALITY_IMGSZ,
                     iou=NMS_IOU, quantize=QUANT, rotated=False,
                 )
-                diagnostics["fallback_count"] = len(hbb_boxes)
+                diagnostics["fallback_count"] = len(hbb_detections[0])
+            # All fruit classes can be grouped or missed, including apples.
+            polys, boxes, scores, classes = split_fruit_cluster_detections(
+                polys, boxes, scores, classes,
+                models.get("obb_ensemble", models.get("obb")), img,
+                conf=max(0.30, conf), det_names=det.names, quantize=QUANT,
+                mask_model=models.get("sam"), diagnostics=diagnostics,
+                hbb_detections=hbb_detections,
+                hbb_names=models["hbb"].names if "hbb" in models else None,
+                seg_model=det,
+                max_crop_checks=INSTANCE_CROP_CHECKS,
+            )
+            diagnostics["primary_count"] = len(boxes)
         elif det.task == "obb":   # khung xoay: một lượt, không cần xoay ảnh (model đã học góc bất kỳ)
             polys, boxes, scores, classes = detect_obb(
                 det, img, conf=conf, imgsz=OBB_IMGSZ, iou=NMS_IOU, quantize=QUANT,
@@ -286,8 +253,11 @@ def predict(img, mode="careful"):
             boxes, scores, classes = boxes[keep], scores[keep], classes[keep]
             if polys is not None:
                 polys = [p for i, p in enumerate(polys) if keep[i]]
-            if mask_metrics is not None:
-                mask_metrics = [m for i, m in enumerate(mask_metrics) if keep[i]]
+        # Recompute after splitting AND CLIP filtering so overlap indices and ratios
+        # cannot refer to an instance that has already been removed.
+        if det.task == "segment":
+            mask_metrics = compute_mask_metrics(polys, boxes, img.shape[1], img.shape[0])
+            diagnostics["primary_count"] = len(boxes)
         if polys is not None and det.task == "obb" and len(boxes):
             polys, boxes, scores, classes = deduplicate_boxes(polys, boxes, scores, classes)
         if not len(boxes):
@@ -306,15 +276,22 @@ def predict(img, mode="careful"):
             "state": cls.names[int(p.probs.top1)],
             "state_confidence": round(float(p.probs.top1conf), 4),
             "bbox": [round(float(v), 1) for v in b],
-            "rescued": bool(float(conf) < CONF),   # điểm detector < CONF nhưng CLIP xác nhận là quả
+            "rescued": bool("clip" in models and float(conf) < CONF),
         }
         if polys is not None and k < len(polys) and len(polys[k]) > 0:
             item["polygon"] = [[round(float(x), 1), round(float(y), 1)] for x, y in polys[k]]
+        item["geometry_type"] = ("mask" if det.task == "segment" else "obb") if "polygon" in item else "box"
         if mask_metrics is not None and k < len(mask_metrics):
             item["mask_area"] = mask_metrics[k]["mask_area"]
             item["solidity"] = mask_metrics[k]["solidity"]
             item["occlusion_ratio"] = mask_metrics[k]["occlusion_ratio"]
             item["is_occluded"] = mask_metrics[k]["is_occluded"]
+            item["overlap_ratio"] = mask_metrics[k]["overlap_ratio"]
+            item["has_mask_overlap"] = mask_metrics[k]["has_mask_overlap"]
+            item["mask_valid"] = mask_metrics[k]["mask_valid"]
+            item["mask_overlaps"] = mask_metrics[k]["overlaps"]
+            if not item["mask_valid"]:
+                item["geometry_type"] = "box"
         out.append(item)
     return out, diagnostics
 
@@ -328,6 +305,8 @@ def health():
         "det_model": Path(DET_PATH).name,
         "obb_helper": "obb" in models,
         "obb_model": Path(OBB_PATH).name if "obb" in models else None,
+        "obb_ensemble": [Path(path).name for path in OBB_ENSEMBLE_PATHS
+                         if path.exists()] if "obb" in models else [],
         "hbb_fallback": HBB_FALLBACK and "hbb" in models,
         "hbb_model": Path(HBB_PATH).name if "hbb" in models else None,
         "cls_model": Path(CLS_PATH).name,
@@ -337,6 +316,14 @@ def health():
         "default_mode": "careful",
         "careful_imgsz": QUALITY_IMGSZ,
         "obb_imgsz": OBB_IMGSZ,
+        "seg_imgsz": SEG_IMGSZ,
+        "seg_retina_masks": SEG_RETINA_MASKS,
+        "seg_simplify_eps": SEG_SIMPLIFY_EPS,
+        "sam_refine": "sam" in models,
+        "sam_model": Path(SAM_PATH).name if "sam" in models else None,
+        "enhance_image": ENHANCE_IMAGE,
+        "instance_refine_classes": ["banana", "apple", "orange"],
+        "instance_crop_checks": INSTANCE_CROP_CHECKS,
         "clip_check": "clip" in models,
         "teacher_check": "teacher" in models,
         "teacher_model": Path(TEACHER_PATH).name if "teacher" in models else None,
@@ -366,7 +353,8 @@ async def read_image(file):
     img = cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_COLOR)
     if img is None:
         raise HTTPException(400, "Không đọc được file ảnh")
-    img = enhance_image(img)
+    if ENHANCE_IMAGE:
+        img = enhance_image(img)
     return data, img
 
 
@@ -405,6 +393,40 @@ def enhance_image(img: np.ndarray) -> np.ndarray:
     return img
 
 
+def segment_prompt(img, prompts):
+    """Return one SAM polygon for normalized positive/negative point prompts."""
+    if "sam" not in models:
+        raise RuntimeError("SAM chưa được bật hoặc chưa có trọng số")
+    height, width = img.shape[:2]
+    points = [[int(round(float(p["x"]) * (width - 1))),
+               int(round(float(p["y"]) * (height - 1)))] for p in prompts]
+    labels = [int(p["label"]) for p in prompts]
+    with lock:
+        result = models["sam"].predict(
+            img, points=[points], labels=[labels], conf=0.0, verbose=False,
+        )[0]
+    if result.masks is None or len(result.masks.data) == 0:
+        return None
+    masks = result.masks.data.cpu().numpy()
+    scores = (result.boxes.conf.cpu().numpy()
+              if result.boxes is not None else np.ones(len(masks), dtype=np.float32))
+    best = int(np.argmax(scores))
+    mask = (masks[best] > 0.5).astype(np.uint8)
+    if mask.shape != (height, width):
+        mask = cv2.resize(mask, (width, height), interpolation=cv2.INTER_NEAREST)
+    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if not contours:
+        return None
+    contour = max(contours, key=cv2.contourArea).reshape(-1, 2)
+    if len(contour) < 3 or cv2.contourArea(contour) < 32:
+        return None
+    return {
+        "polygon": [[round(float(x) / width, 6), round(float(y) / height, 6)]
+                    for x, y in contour],
+        "confidence": round(float(scores[best]), 6),
+    }
+
+
 @app.post("/api/predict")
 async def predict_api(file: UploadFile = File(...), mode: Literal["fast", "careful"] = Form("careful")):
     _, img = await read_image(file)
@@ -413,7 +435,7 @@ async def predict_api(file: UploadFile = File(...), mode: Literal["fast", "caref
     ms = (time.perf_counter() - t) * 1000
 
     h, w = img.shape[:2]
-    quality = assess_detection(objects, w, h, diagnostics)
+    quality = assess_detection(objects, w, h, diagnostics, conf_threshold=CONF)
     return {
         "image_width": w,
         "image_height": h,
@@ -424,8 +446,39 @@ async def predict_api(file: UploadFile = File(...), mode: Literal["fast", "caref
             "fallback_used": diagnostics["fallback_used"],
             "primary_count": diagnostics["primary_count"],
             "fallback_count": diagnostics["fallback_count"],
+            "banana_split_pending": diagnostics["banana_split_pending"],
+            "banana_split_groups": diagnostics["banana_split_groups"],
+            "fruit_split_groups": diagnostics.get("fruit_split_groups", 0),
+            "fruit_split_pending": diagnostics.get("fruit_split_pending", 0),
+            "fruit_recovered": diagnostics.get("fruit_recovered", 0),
+            "instance_refinement": diagnostics.get("instance_refinement", {}),
         },
     }
+
+
+@app.post("/api/segment_prompt")
+async def segment_prompt_api(file: UploadFile = File(...), prompts: str = Form(...)):
+    """Create a review polygon from SAM point prompts; never changes detections."""
+    if "sam" not in models:
+        raise HTTPException(503, "SAM chưa sẵn sàng")
+    try:
+        payload = json.loads(prompts)
+    except (TypeError, json.JSONDecodeError):
+        raise HTTPException(400, "Danh sách điểm SAM không hợp lệ")
+    if (not isinstance(payload, list) or not 1 <= len(payload) <= 16 or
+            any(not isinstance(point, dict) or point.get("label") not in (0, 1)
+                or not all(isinstance(point.get(key), (int, float))
+                           and np.isfinite(point[key]) and 0 <= point[key] <= 1
+                           for key in ("x", "y")) for point in payload)):
+        raise HTTPException(400, "Điểm SAM phải có x, y chuẩn hóa và label 0/1")
+    _, img = await read_image(file)
+    try:
+        result = await run_in_threadpool(segment_prompt, img, payload)
+    except RuntimeError as exc:
+        raise HTTPException(500, str(exc))
+    if result is None:
+        raise HTTPException(422, "SAM không tạo được mask từ các điểm đã chọn")
+    return {"image_width": img.shape[1], "image_height": img.shape[0], **result}
 
 
 @app.post("/api/feedback")

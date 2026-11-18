@@ -1,4 +1,4 @@
-import { Progress, Select, Table, Tag } from 'antd'
+import { Progress, Select, Table, Tag, Tooltip } from 'antd'
 import { FruitSticker, StateMark } from './Sticker'
 import { FRUIT, STATE, pct } from './labels'
 import { boxColor } from './boxStyle'
@@ -43,19 +43,21 @@ const columns = [
     ) : <StateMark obj={r} />,
   },
   {
-    title: 'Độ che / Mask',
-    dataIndex: 'occlusion_ratio',
+    title: 'Chồng lấp mask',
+    dataIndex: 'overlap_ratio',
     width: 120,
     render: (v, r) => {
+      if (r.mask_valid === false) return <Tag color="warning">Thiếu mask</Tag>
+      v = v ?? r.occlusion_ratio
       if (v === undefined || v === null) return <span style={{ color: '#aaa' }}>-</span>
       const pctVal = Math.round(v * 100)
-      if (pctVal >= 55) {
-        return <Tag color="error">Che {pctVal}%</Tag>
-      }
-      if (pctVal >= 25) {
-        return <Tag color="warning">Che {pctVal}%</Tag>
-      }
-      return <Tag color="success">Rõ ({pctVal}%)</Tag>
+      return (
+        <Tooltip title="Tỉ lệ vùng mask trùng với mask quả khác; không đo phần quả bị che khuất.">
+          <Tag color={pctVal >= 55 ? 'error' : pctVal >= 25 ? 'warning' : 'default'}>
+            Trùng {pctVal}%
+          </Tag>
+        </Tooltip>
+      )
     },
   },
 ]

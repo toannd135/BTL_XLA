@@ -2,6 +2,8 @@
 
 Báo cáo đồ án môn Xử lý ảnh. Hệ thống tìm từng quả **chuối, táo, cam** trong ảnh rồi cho biết quả **tươi** hay **hỏng**. README này tập trung vào **quy trình huấn luyện** (mục 3-4) và **kết quả** (mục 5). Cách chạy hệ thống ở mục 7.
 
+**Demo instance segmentation (17/11/2026):** khi có `yolo11s-seg.pt`, backend ưu tiên mask độ phân giải cao, xét cụm chuối/táo/cam bằng SAM2 và kiểm tra lại các vùng quả bị bỏ sót bằng crop. Cấu hình, giới hạn và cách kiểm tra nằm trong [tối ưu đường biên instance](docs/toi-uu-bien-instance.md). Các bảng mAP OBB/HBB phía dưới mô tả những thí nghiệm detector trước đó; chưa phải kết quả đánh giá mask của demo này.
+
 ## 1. Bài toán và kiến trúc
 
 Hai tầng YOLO11 nối tiếp, thêm một bước CLIP kiểm tra loại quả (từ 2026-11-12):

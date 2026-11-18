@@ -10,6 +10,7 @@ Measures count accuracy metrics instead of relying solely on mAP:
 
 import argparse
 import json
+import random
 import sys
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -21,6 +22,7 @@ from ultralytics import YOLO
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "backend"))
 from detection import detect, detect_obb, detect_seg
+from quality import assess_detection
 
 
 LABELS = {0: "banana", 1: "apple", 2: "orange"}
@@ -35,7 +37,8 @@ def parse_args():
     parser.add_argument("--conf", type=float, default=0.40)
     parser.add_argument("--imgsz", type=int, default=640)
     parser.add_argument("--output", type=Path, default=ROOT / "work/audit/benchmark_count_results.json")
-    parser.add_argument("--max-images", type=int, default=100)
+    parser.add_argument("--max-images", type=int, default=0, help="0 evaluates the entire split")
+    parser.add_argument("--seed", type=int, default=42)
     return parser.parse_args()
 
 
@@ -43,7 +46,7 @@ def load_ground_truth(label_path):
     counts = Counter()
     total = 0
     if not label_path.exists():
-        return total, counts
+        raise FileNotFoundError(f"Missing ground truth (not a verified negative image): {label_path}")
     for line in label_path.read_text().splitlines():
         line = line.strip()
         if not line:
@@ -55,44 +58,6 @@ def load_ground_truth(label_path):
             counts[lbl] += 1
             total += 1
     return total, counts
-
-
-def assess_uncertainty(objects, width, height, conf_threshold):
-    reasons = []
-    image_area = max(width * height, 1)
-    for idx, obj in enumerate(objects):
-        lbl = obj["label"]
-        x1, y1, x2, y2 = obj["bbox"]
-        area = max(x2 - x1, 0) * max(y2 - y1, 0)
-        conf = obj.get("confidence", 1.0)
-        if conf < conf_threshold:
-            reasons.append(f"khung #{idx+1} ({lbl}) điểm thấp ({conf:.2f})")
-        if area / image_area > 0.60:
-            reasons.append(f"khung #{idx+1} quá lớn ({area/image_area:.0%})")
-        solidity = obj.get("solidity", 1.0)
-        if obj.get("polygon") and len(obj["polygon"]) >= 5:
-            if lbl in ("apple", "orange") and solidity < 0.65:
-                reasons.append(f"khung #{idx+1} độ lồi bất thường ({solidity:.2f})")
-            elif lbl == "banana" and solidity < 0.40:
-                reasons.append(f"khung #{idx+1} độ lồi bất thường ({solidity:.2f})")
-        if obj.get("occlusion_ratio", 0.0) >= 0.55:
-            reasons.append(f"khung #{idx+1} che khuất nhiều ({obj['occlusion_ratio']:.0%})")
-
-    for i in range(len(objects)):
-        for j in range(i + 1, len(objects)):
-            oi, oj = objects[i], objects[j]
-            xi1, yi1, xi2, yi2 = oi["bbox"]
-            xj1, yj1, xj2, yj2 = oj["bbox"]
-            inter = max(0, min(xi2, xj2) - max(xi1, xj1)) * max(0, min(yi2, yj2) - max(yi1, yj1))
-            area_i = max(xi2 - xi1, 0) * max(yi2 - yi1, 0)
-            area_j = max(xj2 - xj1, 0) * max(yi2 - yi1, 0)
-            union = area_i + area_j - inter
-            iou = inter / max(union, 1e-9)
-            if oi["label"] == oj["label"] and iou >= 0.40:
-                reasons.append(f"trùng lặp khung #{i+1} và #{j+1}")
-
-    unique = list(dict.fromkeys(reasons))
-    return {"status": "needs_review" if unique else "ready", "reasons": unique}
 
 
 def main():
@@ -111,7 +76,7 @@ def main():
     lbl_dir = args.data_split / "labels"
     images = sorted([p for p in img_dir.iterdir() if p.suffix.lower() in (".jpg", ".jpeg", ".png")])
     if args.max_images:
-        images = images[:args.max_images]
+        images = sorted(random.Random(args.seed).sample(images, min(args.max_images, len(images))))
 
     print(f"Running count benchmark on {len(images)} images (conf={args.conf})...")
 
@@ -140,19 +105,19 @@ def main():
             for k in range(len(boxes)):
                 c = int(classes[k])
                 objects.append({
-                    "label": LABELS.get(c, f"class_{c}"),
+                    "label": model.names[c],
                     "confidence": float(scores[k]),
                     "bbox": boxes[k].tolist(),
                     "polygon": polys[k].tolist() if k < len(polys) else None,
-                    "solidity": mask_metrics[k]["solidity"] if k < len(mask_metrics) else 1.0,
-                    "occlusion_ratio": mask_metrics[k]["occlusion_ratio"] if k < len(mask_metrics) else 0.0,
+                    **mask_metrics[k],
+                    "mask_overlaps": mask_metrics[k]["overlaps"],
                 })
         elif task == "obb":
             polys, boxes, scores, classes = detect_obb(model, img, conf=args.conf, imgsz=args.imgsz)
             for k in range(len(boxes)):
                 c = int(classes[k])
                 objects.append({
-                    "label": LABELS.get(c, f"class_{c}"),
+                    "label": model.names[c],
                     "confidence": float(scores[k]),
                     "bbox": boxes[k].tolist(),
                     "polygon": polys[k].tolist() if k < len(polys) else None,
@@ -162,7 +127,7 @@ def main():
             for k in range(len(boxes)):
                 c = int(classes[k])
                 objects.append({
-                    "label": LABELS.get(c, f"class_{c}"),
+                    "label": model.names[c],
                     "confidence": float(scores[k]),
                     "bbox": boxes[k].tolist(),
                 })
@@ -180,7 +145,7 @@ def main():
         else:
             under_count_hits += 1
 
-        quality = assess_uncertainty(objects, w, h, args.conf)
+        quality = assess_detection(objects, w, h, conf_threshold=args.conf)
         is_flagged = (quality["status"] == "needs_review")
 
         if not is_exact:
@@ -205,6 +170,11 @@ def main():
     benchmark_summary = {
         "model": str(model_path.name),
         "task": task,
+        "pipeline": "detector_only",
+        "imgsz": args.imgsz,
+        "confidence": args.conf,
+        "sample_seed": args.seed,
+        "retina_masks": task == "segment",
         "total_images": n,
         "exact_count_accuracy": round(exact_count_hits / n, 4) if n else 0.0,
         "count_mae": round(total_abs_error / n, 4) if n else 0.0,
@@ -217,7 +187,7 @@ def main():
     }
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps({"summary": benchmark_summary, "details": results}, indent=2, ensure_ascii=False))
+    args.output.write_text(json.dumps({"summary": benchmark_summary, "details": results}, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"\n=== COUNT BENCHMARK RESULTS ({model_path.name}) ===")
     print(f"Exact Count Accuracy (ECA) : {benchmark_summary['exact_count_accuracy'] * 100:.2f}%")
     print(f"Count MAE                  : {benchmark_summary['count_mae']:.3f} fruits/image")

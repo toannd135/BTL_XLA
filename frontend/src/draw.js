@@ -1,41 +1,13 @@
-import { boxColor } from './boxStyle'
+import { boxColor } from './boxStyle.js'
 
 const FONT = "'Be Vietnam Pro', system-ui, sans-serif"
 
-// Vẽ polygon mượt dùng Catmull-Rom spline qua các điểm (thay vì đường gãy polyline)
-function smoothPolygonPath(ctx, pts) {
-  if (!pts || pts.length < 3) return
-  const n = pts.length
-  ctx.beginPath()
-  for (let i = 0; i < n; i++) {
-    const p0 = pts[(i - 1 + n) % n]
-    const p1 = pts[i]
-    const p2 = pts[(i + 1) % n]
-    const p3 = pts[(i + 2) % n]
-    // Catmull-Rom → Cubic Bezier control points (alpha=0.5)
-    const tension = 0.4
-    const cp1x = p1[0] + (p2[0] - p0[0]) * tension
-    const cp1y = p1[1] + (p2[1] - p0[1]) * tension
-    const cp2x = p2[0] - (p3[0] - p1[0]) * tension
-    const cp2y = p2[1] - (p3[1] - p1[1]) * tension
-    if (i === 0) ctx.moveTo(p1[0], p1[1])
-    ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, p2[0], p2[1])
-  }
-  ctx.closePath()
-}
-
-// Polygon cho Instance Segmentation (N >= 3, mượt) hoặc OBB (N = 4, cạnh thẳng), ngược lại box chữ nhật
+// Vẽ đúng contour từ API. Spline có thể phình khỏi mask ở cuống và chỗ lõm.
 function shapePath(ctx, o) {
   if (o.polygon && o.polygon.length >= 3) {
-    // OBB (đúng 4 điểm góc): vẽ cạnh thẳng để giữ góc xoay chính xác
-    if (o.polygon.length === 4) {
-      ctx.beginPath()
-      o.polygon.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)))
-      ctx.closePath()
-    } else {
-      // Instance Segmentation mask: dùng Catmull-Rom để vẽ đường cong mượt
-      smoothPolygonPath(ctx, o.polygon)
-    }
+    ctx.beginPath()
+    o.polygon.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)))
+    ctx.closePath()
   } else if (o.bbox) {
     const [x1, y1, x2, y2] = o.bbox
     ctx.beginPath()
@@ -49,6 +21,8 @@ export function drawBoxes(ctx, objects, w, h, { selectedIndex = null, displaySca
   const selected = selectedIndex !== null && objects[selectedIndex] ? selectedIndex : null
   const usedLabels = []
   ctx.save()
+  ctx.lineJoin = 'round'
+  ctx.lineCap = 'round'
   ctx.textBaseline = 'middle'
   const order = objects.map((_, i) => i)
   if (selected !== null) order.push(...order.splice(order.indexOf(selected), 1))
@@ -76,7 +50,7 @@ export function drawBoxes(ctx, objects, w, h, { selectedIndex = null, displaySca
     // Viền đậm phía ngoài giữ độ tương phản trên mọi nền
     ctx.strokeStyle = 'rgba(0,0,0,0.55)'
     ctx.lineWidth = (active ? 5 : 3) * s
-    if (o.is_occluded) {
+    if (o.has_mask_overlap ?? o.is_occluded) {
       ctx.setLineDash([4 * s, 4 * s])
     } else {
       ctx.setLineDash([])

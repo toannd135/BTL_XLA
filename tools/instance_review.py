@@ -48,6 +48,26 @@ def validate_boxes(boxes):
     return result
 
 
+def validate_segments(segments, expected_count=None):
+    if segments is None:
+        return []
+    if not isinstance(segments, list):
+        raise ValueError("Segments must be a list")
+    if expected_count is not None and len(segments) != expected_count:
+        raise ValueError("Segments must align with boxes")
+    result = []
+    for segment in segments:
+        if segment is None:
+            result.append(None)
+            continue
+        if (not isinstance(segment, list) or len(segment) < 6 or len(segment) % 2 or
+                not all(isinstance(value, (float, int)) and math.isfinite(value)
+                        and 0 <= value <= 1 for value in segment)):
+            raise ValueError("Invalid polygon segment")
+        result.append([float(value) for value in segment])
+    return result
+
+
 def read_labels(path):
     boxes, warnings = [], []
     if not path.is_file():
@@ -148,7 +168,7 @@ def prepare(source, output, diagnostics=None, flagged_only=False):
     return report
 
 
-def build(bundle, reviews_file, output):
+def build(bundle, reviews_file, output, allow_subset=False):
     bundle, output = bundle.resolve(), output.resolve()
     if output.exists():
         raise ValueError("Output exists; choose a new dataset version")
@@ -168,18 +188,19 @@ def build(bundle, reviews_file, output):
             continue
         count = review.get("expected_count")
         boxes = validate_boxes(review.get("boxes"))
+        segments = validate_segments(review.get("segments"), len(boxes))
         if isinstance(count, bool) or not isinstance(count, int) or count != len(boxes):
             raise ValueError("Manual fruit count must equal the number of individual boxes")
         image = (bundle / item["image"]).resolve()
         if not image.is_relative_to(bundle) or sha256(image) != item["display_image_sha256"]:
             raise ValueError("Review image missing, changed, or outside bundle")
-        verified.append((item, boxes, image))
+        verified.append((item, boxes, segments, image))
     for role in ("train", "val"):
-        classes = {b[0] for item, boxes, _ in verified if item["role"] == role for b in boxes}
-        if classes != set(NAMES):
+        classes = {b[0] for item, boxes, _, _ in verified if item["role"] == role for b in boxes}
+        if not allow_subset and classes != set(NAMES):
             raise ValueError(f"Reviewed {role} needs all three classes; unreviewed images cannot be used")
     groups, image_splits = {}, {}
-    for item, _, _ in verified:
+    for item, _, _, _ in verified:
         role = item["role"]
         for mapping, key in ((groups, item["source_group"]), (image_splits, item["source_image_sha256"])):
             previous = mapping.setdefault(key, role)
@@ -187,14 +208,21 @@ def build(bundle, reviews_file, output):
                 raise ValueError("Source/image leakage between reviewed dataset splits")
     output.mkdir(parents=True)
     totals = {role: {"images": 0, "backgrounds": 0, "boxes": Counter()} for role in ("train", "val", "test")}
-    for item, boxes, image in verified:
+    for item, boxes, segments, image in verified:
         role, identifier = item["role"], item["id"]
         dest_image = output / role / "images" / (identifier + image.suffix)
         dest_label = output / role / "labels" / (identifier + ".txt")
         dest_image.parent.mkdir(parents=True, exist_ok=True)
         dest_label.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(image, dest_image)
-        dest_label.write_text("".join(f"{int(c)} {x:.7f} {y:.7f} {w:.7f} {h:.7f}\n" for c, x, y, w, h in boxes), encoding="utf-8")
+        lines = []
+        for index, (c, x, y, w, h) in enumerate(boxes):
+            segment = segments[index] if index < len(segments) else None
+            if segment:
+                lines.append(f"{int(c)} " + " ".join(f"{value:.7f}" for value in segment))
+            else:
+                lines.append(f"{int(c)} {x:.7f} {y:.7f} {w:.7f} {h:.7f}")
+        dest_label.write_text("\n".join(lines) + ("\n" if lines else ""), encoding="utf-8")
         totals[role]["images"] += 1
         totals[role]["backgrounds"] += not boxes
         totals[role]["boxes"].update(b[0] for b in boxes)
@@ -208,7 +236,7 @@ def build(bundle, reviews_file, output):
                "policy": "approved annotations only; diagnostics excluded; pending images are not negatives",
                "provenance": [{"id": item["id"], "source": item["source_image"], "role": item["role"],
                                "image_sha256": item["source_image_sha256"], "boxes": len(boxes)}
-                              for item, boxes, _ in verified]}
+                               for item, boxes, _, _ in verified]}
     (output / "reviewed_manifest.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(json.dumps({"output": str(output), "splits": totals}, indent=2))
     return summary
@@ -229,11 +257,13 @@ def main():
     compiler.add_argument("--bundle", type=Path, default=repo / "out/instance_review_v1")
     compiler.add_argument("--reviews", type=Path, required=True)
     compiler.add_argument("--out", type=Path, default=repo / "out/instance_clean_v1")
+    compiler.add_argument("--allow-subset", action="store_true",
+                          help="Allow a focused class dataset, such as banana-only review.")
     args = parser.parse_args()
     if args.action == "prepare":
         prepare(args.source_root, args.out, args.diagnostics, args.flagged_only)
     else:
-        build(args.bundle, args.reviews, args.out)
+        build(args.bundle, args.reviews, args.out, args.allow_subset)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,102 @@
+{
+  "received_on": "2026-11-17",
+  "report": "comparison_val.json",
+  "report_sha256": "a22d6c8ded5ef02e67ee316608589ebb122872189f4ee0399de443ee2ad489a8",
+  "models": [
+    {
+      "id": "s1",
+      "source_filename": "best.pt",
+      "checkpoint_path": "exports/det_obb_map95_s1.pt",
+      "sha256": "f4d2a0cf2c9766c2d3af8a65a01c48bbdf238a94b390f9217df5535455af71e5",
+      "bytes": 19744520,
+      "head": "OBB",
+      "classes": {
+        "0": "banana",
+        "1": "apple",
+        "2": "orange"
+      },
+      "status": "not_promoted_validation_regression_vs_initialization",
+      "checkpoint_epoch": -1,
+      "has_optimizer": false,
+      "train_args": {
+        "model": "/content/fruit_map95_20261117/models/trial_v1.pt",
+        "epochs": 60,
+        "imgsz": 640,
+        "batch": 2,
+        "optimizer": "AdamW",
+        "lr0": 0.0001,
+        "lrf": 0.05,
+        "cos_lr": true,
+        "patience": 12,
+        "seed": 42,
+        "close_mosaic": 10
+      },
+      "checkpoint_train_metrics": {
+        "metrics/precision(B)": 0.8738,
+        "metrics/recall(B)": 0.8507,
+        "metrics/mAP50(B)": 0.87434,
+        "metrics/mAP50-95(B)": 0.72728,
+        "val/box_loss": 0.74178,
+        "val/cls_loss": 0.79761,
+        "val/dfl_loss": 2.2464,
+        "val/angle_loss": 0.08794,
+        "fitness": 0.72728
+      },
+      "mAP50_95": 0.7268620164327976,
+      "gain_vs_initialization": -0.010609085165251386
+    },
+    {
+      "id": "s2",
+      "source_filename": "best (1).pt",
+      "checkpoint_path": "exports/det_obb_map95_s2.pt",
+      "sha256": "4319556a9fed6feea48e468cd6088dbd6cc09ed37abc60dd2942cdd3b0662c57",
+      "bytes": 19742024,
+      "head": "OBB",
+      "classes": {
+        "0": "banana",
+        "1": "apple",
+        "2": "orange"
+      },
+      "status": "not_promoted_validation_regression_vs_initialization",
+      "checkpoint_epoch": -1,
+      "has_optimizer": false,
+      "train_args": {
+        "model": "/content/fruit_map95_20261117/models/trial_v1.pt",
+        "epochs": 60,
+        "imgsz": 640,
+        "batch": 2,
+        "optimizer": "AdamW",
+        "lr0": 0.0003,
+        "lrf": 0.05,
+        "cos_lr": true,
+        "patience": 12,
+        "seed": 42,
+        "close_mosaic": 10
+      },
+      "checkpoint_train_metrics": {
+        "metrics/precision(B)": 0.91382,
+        "metrics/recall(B)": 0.8395,
+        "metrics/mAP50(B)": 0.88453,
+        "metrics/mAP50-95(B)": 0.72619,
+        "val/box_loss": 0.76278,
+        "val/cls_loss": 0.78367,
+        "val/dfl_loss": 2.28769,
+        "val/angle_loss": 0.09221,
+        "fitness": 0.72619
+      },
+      "mAP50_95": 0.7256934664763577,
+      "gain_vs_initialization": -0.011777635121691277
+    }
+  ],
+  "original_report_and_download_files_unchanged": true,
+  "checks": {
+    "all_model_hashes_match_report": true,
+    "input_contract_and_runner_match_local": true,
+    "common_evaluation_protocol": true,
+    "AP_and_operating_aggregate_arithmetic": true,
+    "checkpoint_head_classes_and_lr_inspected": true
+  },
+  "inference_or_training_rerun_locally": false,
+  "default_app_checkpoint_unchanged": "exports/det_obb_s.pt",
+  "recommendation": "Retain trial_v1 as OBB reference at this protocol; neither s1 nor s2 improves its mAP50-95. Continue the agreed segmentation pilot separately."
+}

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Alert, App as AntApp, Button, Card, Col, Empty, Progress, Row, Space, Spin, Tag, Typography, Upload,
 } from 'antd'
-import { predict, submitFeedback, errorText } from './api'
+import { predict, errorText } from './api'
 import ImageBoxes from './ImageBoxes'
 import ResultTable from './ResultTable'
 import SummaryBar from './SummaryBar'
@@ -76,7 +76,6 @@ export default function ImagesView({ minConf, onVideo }) {
   const [selectedBox, setSelectedBox] = useState(null)
   const [running, setRunning] = useState(false)
   const [stopping, setStopping] = useState(false)
-  const [feedback, setFeedback] = useState(null)
   const canvas = useRef(null)
   const box = useRef(null)
   const stopRef = useRef(false)
@@ -191,7 +190,7 @@ export default function ImagesView({ minConf, onVideo }) {
     const objects = selResult.objects.map((item, i) =>
       i === index ? { ...item, [field]: value } : item)
     update(selectedKey, { result: { ...selResult, objects } })
-    message.info('Đã sửa kết quả. Hãy bấm "Cần sửa / đưa vào tập duyệt" để lưu nhãn.')
+    message.info('Đã cập nhật kết quả hiển thị.')
   }
 
   const recognitionInfo = (
@@ -270,25 +269,6 @@ export default function ImagesView({ minConf, onVideo }) {
     downloadCanvas(canvas.current, name)
   }
 
-  const review = async (verdict) => {
-    if (!sel?.file || !selResult || feedback) return
-    setFeedback(verdict)
-    try {
-      await submitFeedback(sel.file, verdict, {
-        ...selResult,
-        objects: selObjects,
-        excluded: sel.excluded || [],
-      })
-      message.success(verdict === 'correct'
-        ? 'Đã lưu kết quả đúng'
-        : 'Đã lưu ảnh cần kiểm tra để duyệt nhãn')
-    } catch (err) {
-      message.error(errorText(err))
-    } finally {
-      setFeedback(null)
-    }
-  }
-
   if (items.length === 0) {
     return (
       <div ref={box}>
@@ -335,7 +315,9 @@ export default function ImagesView({ minConf, onVideo }) {
             className="mb16"
             type="warning"
             showIcon
-            message="Chế độ không chắc chắn: Cần kiểm tra kết quả"
+            message={sel.result.quality?.decision === 'do_not_auto_count'
+              ? 'Không đủ tin cậy để tự động đếm'
+              : 'Chế độ không chắc chắn: Cần kiểm tra kết quả'}
             description={
               <div>
                 <p style={{ margin: 0, fontWeight: 500 }}>
@@ -347,24 +329,12 @@ export default function ImagesView({ minConf, onVideo }) {
                   ))}
                 </ul>
                 <p style={{ margin: '4px 0 0', color: '#555' }}>
-                  Hãy đối chiếu từng quả với vùng mask trên ảnh. Bạn có thể sửa trực tiếp nhãn/trạng thái trong bảng bên dưới và bấm <b>"Cần sửa / đưa vào tập duyệt"</b> để lưu mẫu chuẩn.
+                  Không dùng số đếm này cho luồng tự động; hãy chụp lại ảnh hoặc bỏ qua kết quả không chắc chắn.
                 </p>
               </div>
             }
           />
         )}
-        <Typography.Paragraph type="secondary" className="box-hint">
-          Đối chiếu số quả với từng khung/mask trên ảnh. Bấm một dòng để làm nổi khung hoặc loại khung sai.
-        </Typography.Paragraph>
-        <Space wrap className="mb16">
-          <Typography.Text strong>Đánh giá kết quả:</Typography.Text>
-          <Button size="small" loading={feedback === 'correct'}
-            disabled={!!feedback || sel.result.quality?.status === 'needs_review'}
-            onClick={() => review('correct')}>Đúng</Button>
-          <Button size="small" type={sel.result.quality?.status === 'needs_review' ? 'primary' : 'default'}
-            danger loading={feedback === 'needs_review'} disabled={!!feedback}
-            onClick={() => review('needs_review')}>Cần sửa / đưa vào tập duyệt</Button>
-        </Space>
         {selectedBox !== null && (
           <Space wrap className="mb16">
             <Button size="small" onClick={() => setSelectedBox(null)}>Hiện tất cả khung</Button>
