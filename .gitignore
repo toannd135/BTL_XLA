@@ -8,6 +8,7 @@
 !/work/**/*.py
 !/work/audit/*.csv
 !/work/audit/*.json
+/work/audit/phase1_dataset_audit.json
 !/work/audit/quarantine_train.txt
 # Dữ liệu OBB đã dựng (để train trên Colab) + 71 ảnh nền giữ riêng dùng khi đo
 !/work/obb/data/**
