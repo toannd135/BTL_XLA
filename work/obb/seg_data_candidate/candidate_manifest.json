@@ -1,0 +1,1801 @@
+{
+  "source_dataset": "work/obb/seg_data_clean",
+  "background_split": {
+    "train": 287,
+    "test": 71
+  },
+  "background_split_rule": "md5(relative path) % 5 == 0 is held out in test",
+  "warning": "Fruit polygons are SAM pseudo-labels; inspect per-instance boundaries before production use.",
+  "backgrounds": [
+    {
+      "source": "own_neg/ball/30th_St_Moritz_Polo_World_Cup_on_Snow_20140202_Cartier_vs_Ra.jpg",
+      "split": "train",
+      "image": "train/images/negative__0a525e1aac896d52.jpg"
+    },
+    {
+      "source": "own_neg/ball/A_group_photo_of_a_Netball_Team_in_Tamale_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__89f8e4229ca39a8d.jpg"
+    },
+    {
+      "source": "own_neg/ball/African_college_girls_playing_netball_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__0272e48388e45cf2.jpg"
+    },
+    {
+      "source": "own_neg/ball/Ball_JPG.jpg",
+      "split": "test",
+      "image": "test/images/negative__8969a4a016175acb.jpg"
+    },
+    {
+      "source": "own_neg/ball/Bianca_Chatfield_2008c_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__3c97f6bdbb74bc93.jpg"
+    },
+    {
+      "source": "own_neg/ball/Birmingham_Panthers_Netball_Colours_2024_png.jpg",
+      "split": "train",
+      "image": "train/images/negative__95168d7f001c6732.jpg"
+    },
+    {
+      "source": "own_neg/ball/Boys_playing_street_football_in_Egypt_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__d16979f465b23209.jpg"
+    },
+    {
+      "source": "own_neg/ball/CZE_vs_FRA_01_2010_European_Men_s_Handball_Championship_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__618d6fb94b245346.jpg"
+    },
+    {
+      "source": "own_neg/ball/Cardiff_Dragons_Netball_Colours_2024_png.jpg",
+      "split": "test",
+      "image": "test/images/negative__0c01f2b0bb729d09.jpg"
+    },
+    {
+      "source": "own_neg/ball/Daniel_Sou_ek_U21_Czech_Republic_vs_Greece_10_10_2019_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__54a04301f52fc35c.jpg"
+    },
+    {
+      "source": "own_neg/ball/Jerkin_AM_2017_66_6_2_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__b65dd9401da1b582.jpg"
+    },
+    {
+      "source": "own_neg/ball/Leeds_Rhinos_Netball_Colours_2024_png.jpg",
+      "split": "train",
+      "image": "train/images/negative__9374f9f7a4a084a4.jpg"
+    },
+    {
+      "source": "own_neg/ball/London_Mavericks_Netball_Colours_2024_png.jpg",
+      "split": "train",
+      "image": "train/images/negative__d0e2ceaf317cc8c1.jpg"
+    },
+    {
+      "source": "own_neg/ball/Loughborough_Lightning_Netball_Colours_2024_2022_png.jpg",
+      "split": "train",
+      "image": "train/images/negative__98613f0b411e5e48.jpg"
+    },
+    {
+      "source": "own_neg/ball/MA_I167110_TePapa_Scene_from_a_netball_full_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__7cd2168726148f26.jpg"
+    },
+    {
+      "source": "own_neg/ball/MO_ONIA_GERRARD_JOANNA_BINNS_2927923700_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__c1527fdabb1e9632.jpg"
+    },
+    {
+      "source": "own_neg/ball/MalawiFijiNetball_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__c5c7cc0f222500fe.jpg"
+    },
+    {
+      "source": "own_neg/ball/Multi_sport_ball_court_final_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__dd2bccf9f3f154cc.jpg"
+    },
+    {
+      "source": "own_neg/ball/NATALIE_MEDHURST_2927067059_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__412f3ae877da356d.jpg"
+    },
+    {
+      "source": "own_neg/ball/Netball_League_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__5ea6f7cb8fc0568b.jpg"
+    },
+    {
+      "source": "own_neg/ball/Netball_allibons_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__128e89d09b9661b0.jpg"
+    },
+    {
+      "source": "own_neg/ball/Netball_at_Namboole_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__b49c15c3b859f601.jpg"
+    },
+    {
+      "source": "own_neg/ball/Netball_books_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__ac4be4e4eec4a443.jpg"
+    },
+    {
+      "source": "own_neg/ball/Netball_court_Panorama_Dimitrios_Savva_and_Jarod_Guest_via_P.jpg",
+      "split": "train",
+      "image": "train/images/negative__0c3c637b0f356fc6.jpg"
+    },
+    {
+      "source": "own_neg/ball/Netball_court_Preview_Dimitrios_Savva_and_Jarod_Guest_via_Po.jpg",
+      "split": "train",
+      "image": "train/images/negative__b369fb484abac165.jpg"
+    },
+    {
+      "source": "own_neg/ball/Nikiszowiec_courtyard_with_chimneys_2024_08_09_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__040e9b5a2fdffe6a.jpg"
+    },
+    {
+      "source": "own_neg/ball/Nottingham_Forest_Netball_Colours_2024_png.jpg",
+      "split": "train",
+      "image": "train/images/negative__e533815b778ffd5f.jpg"
+    },
+    {
+      "source": "own_neg/ball/Playing_in_the_Nuba_mountains_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__744917e7488ea757.jpg"
+    },
+    {
+      "source": "own_neg/ball/StateLibQld_1_107796_Netball_team_photograph_Brisbane_1940_j.jpg",
+      "split": "train",
+      "image": "train/images/negative__bab5f560cc6882ac.jpg"
+    },
+    {
+      "source": "own_neg/ball/T_shirt_netball_AM_2017_66_37_6_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__373c4f05af21de0a.jpg"
+    },
+    {
+      "source": "own_neg/ball/U20_WorldCup2007_Okotie_Onka_JPG.jpg",
+      "split": "train",
+      "image": "train/images/negative__c6c7512f907f4a1b.jpg"
+    },
+    {
+      "source": "own_neg/ball/_2014_netball_mural_geograph_org_uk_6136479_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__5dc7b61f9db4594b.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/A_red_bell_pepper_seedling_png.jpg",
+      "split": "train",
+      "image": "train/images/negative__13faea2a34853ed9.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Baby_Bell_pepper_Capsicum_annuum_3_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__20748e1b67592653.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Bent_red_bell_pepper_2017_1A_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__68e47fcac55d975d.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Bent_red_bell_pepper_2017_1B_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__77dd3923e22c68ec.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Bent_red_bell_pepper_2017_2A_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__affeb6894e3004cf.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Bent_red_bell_pepper_2017_2B_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__0dad4d77fef2ad4c.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Bent_red_bell_pepper_2017_2C_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__d3d29ff3a48f1bcb.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Capsicum_annuum_2008_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__b65bc5ec1fb3441e.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Capsicum_annuum_fruits_IMGP0049_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__0522908ff4e4e487.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Colorful_Bell_Peppers_Unsplash_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__14a8727b42ec4e6f.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Green_Yellow_Red_Pepper_2009_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__02056439df6bd912.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Green_and_red_peppers_01_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__11872caa66656147.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Green_yellow_and_red_bell_peppers_in_zooming_up_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__148dc4eed056678e.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Paprikas_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__3a17d6b3f76ac7d1.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Pimiento_Morr_n_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__3f54b641d3b7fa9f.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Poivrons_Luc_Viatour_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__a21eea42db71b4ce.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Red_Bell_Peppers_49440387113_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__4aa59fb31c8d124d.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Red_Bell_pepper_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__4a474fe1268d33f2.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Red_Big_Bertha_bell_pepper_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__993dbae650b31888.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Red_Yellow_and_Green_bell_peppers_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__78c061d9bd710598.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Red_bell_pepper_in_food_processor_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__2a6c393a9bd2afa0.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Red_bell_pepper_on_a_plate_2017_A_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__b54853395bcc29eb.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Red_bell_peppers_for_sale_at_Safeway_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__36008ea9474856ae.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Red_capsicum_and_cross_section_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__b92450d67c8e66fb.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Three_colors_of_peppers_at_Giant_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__d69df385f0dc398b.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Yellow_Red_Green_Sweet_Peppers_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__63676608a4b996d8.jpg"
+    },
+    {
+      "source": "own_neg/bellpepper/Yellow_orange_and_red_bell_peppers_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__cf657df4a492379e.jpg"
+    },
+    {
+      "source": "own_neg/bottle/1960_to_1963_plastic_dispenser_bottle_for_Black_Arrow_KI_UPP.jpg",
+      "split": "train",
+      "image": "train/images/negative__a0dd4cb43f21ca85.jpg"
+    },
+    {
+      "source": "own_neg/bottle/A_man_caring_used_plastic_bottle_ready_to_sell_to_recycling_.jpg",
+      "split": "train",
+      "image": "train/images/negative__0f85d87f15a4618e.jpg"
+    },
+    {
+      "source": "own_neg/bottle/A_plastic_bottle_of_ice_please_9591423176_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__71818769807efd17.jpg"
+    },
+    {
+      "source": "own_neg/bottle/Bales_of_PET_bottles_closeup_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__6f2b14d864472a29.jpg"
+    },
+    {
+      "source": "own_neg/bottle/Bottle_of_Coca_Cola_Dreamworld_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__505f77d6d3bfccde.jpg"
+    },
+    {
+      "source": "own_neg/bottle/Bottle_of_Water_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__f772c38fe251e31c.jpg"
+    },
+    {
+      "source": "own_neg/bottle/Dead_plant_grown_in_plastic_bottle_April_2013_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__6370bc5b16b71e4b.jpg"
+    },
+    {
+      "source": "own_neg/bottle/Dornbirn_bottle_3_05_Liter_Orangejuice_01ASD_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__50dcf2a74118a491.jpg"
+    },
+    {
+      "source": "own_neg/bottle/Empty_Plastic_Bottle_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__e2cf4427cf67f7d8.jpg"
+    },
+    {
+      "source": "own_neg/bottle/Fuel_for_sale_in_plastic_bottles_smuggled_into_the_Gaza_Stri.jpg",
+      "split": "train",
+      "image": "train/images/negative__bb5e4eff3384004b.jpg"
+    },
+    {
+      "source": "own_neg/bottle/German_plastic_bottle_with_sign_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__37ab90ae42272fab.jpg"
+    },
+    {
+      "source": "own_neg/bottle/Maeder_bottle_3_001_Liter_Cola_01ASD_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__3b00d8504849b873.jpg"
+    },
+    {
+      "source": "own_neg/bottle/Petrol_station_in_B_nin_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__e46eb9ecda5c3841.jpg"
+    },
+    {
+      "source": "own_neg/bottle/PlasticBottle_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__3e7a5a4fe96cb1ba.jpg"
+    },
+    {
+      "source": "own_neg/bottle/Plastic_Bottle_Flowers_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__8e4d6283cf2b453a.jpg"
+    },
+    {
+      "source": "own_neg/bottle/Plastic_Bottle_with_Attached_Cap_in_Europe_53926339908_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__4871052772177dfb.jpg"
+    },
+    {
+      "source": "own_neg/bottle/Plastic_ban_icon_png.jpg",
+      "split": "train",
+      "image": "train/images/negative__d028c03444fe4ad3.jpg"
+    },
+    {
+      "source": "own_neg/bottle/Plastic_bottle_booth_Kaprikkad_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__8250bbd6e5a28c31.jpg"
+    },
+    {
+      "source": "own_neg/bottle/Plastic_bottle_booth_Kerala_02_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__89a419a5a489dfa9.jpg"
+    },
+    {
+      "source": "own_neg/bottle/Plastic_bottle_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__f66788328c86f247.jpg"
+    },
+    {
+      "source": "own_neg/bottle/Plastic_bottle_of_milk_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__7122b405a8cd2828.jpg"
+    },
+    {
+      "source": "own_neg/bottle/Plastic_bottle_with_hose_spray_attachment_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__7c03dbb90f879857.jpg"
+    },
+    {
+      "source": "own_neg/bottle/Plastic_bottles_before_processing_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__0e76969eb029543a.jpg"
+    },
+    {
+      "source": "own_neg/bottle/Plastic_bottles_for_recycling_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__1d595ef20b1b4dac.jpg"
+    },
+    {
+      "source": "own_neg/bottle/Plastic_bottles_used_as_tree_protectors_at_Kazinga_Channel_i.jpg",
+      "split": "train",
+      "image": "train/images/negative__14a08f4d2fe57537.jpg"
+    },
+    {
+      "source": "own_neg/bottle/Plastic_soft_drinks_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__fb2e4d9507bf6a88.jpg"
+    },
+    {
+      "source": "own_neg/bottle/Recyclables_JPG.jpg",
+      "split": "train",
+      "image": "train/images/negative__87826dfb63da0c97.jpg"
+    },
+    {
+      "source": "own_neg/bottle/Super_Supau_Bottle_png.jpg",
+      "split": "train",
+      "image": "train/images/negative__f4ed845082efb52d.jpg"
+    },
+    {
+      "source": "own_neg/bottle/The_breakdown_of_a_plastic_bottle_into_smaller_fragments_eve.jpg",
+      "split": "train",
+      "image": "train/images/negative__76ddb455ec6d060e.jpg"
+    },
+    {
+      "source": "own_neg/bottle/Waste_Plastic_Bottles_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__86bc42203f790000.jpg"
+    },
+    {
+      "source": "own_neg/bottle/Water_bottle_13779_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__16d5ca00b1f36b49.jpg"
+    },
+    {
+      "source": "own_neg/cucumber/2012_08_05_038_Gurkenranke_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__505e2a60aad698a4.jpg"
+    },
+    {
+      "source": "own_neg/cucumber/ARS_cucumber_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__0cc81a06ff967b63.jpg"
+    },
+    {
+      "source": "own_neg/cucumber/Cucumber_plants_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__eb4d67455da047cc.jpg"
+    },
+    {
+      "source": "own_neg/cucumber/Cucumis_sativus20090812_497_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__74646335b11be2fa.jpg"
+    },
+    {
+      "source": "own_neg/cucumber/Cucumis_sativus_Alternaria_alternata_Hinrichs_Berger_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__5a18233dd188267a.jpg"
+    },
+    {
+      "source": "own_neg/cucumber/Cucumis_sativus_Corynespora_cassiicola_1_Hinrichs_Berger_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__edd2af5fea1488e3.jpg"
+    },
+    {
+      "source": "own_neg/cucumber/Cucumis_sativus_Gr_ne_Reisewanze_Nezera_viridula_mit_Eigeleg.jpg",
+      "split": "train",
+      "image": "train/images/negative__c8eccb44023598f9.jpg"
+    },
+    {
+      "source": "own_neg/cucumber/Cucumis_sativus_Olimp_2022_04_26_7557_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__a93de6accd87cc6e.jpg"
+    },
+    {
+      "source": "own_neg/cucumber/Cucumis_sativus_Olimp_2022_04_26_7558_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__b7c10be08693a214.jpg"
+    },
+    {
+      "source": "own_neg/cucumber/Cucumis_sativus_Olimp_2022_04_26_7561_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__30f3725a2d44f483.jpg"
+    },
+    {
+      "source": "own_neg/cucumber/Cucumis_sativus_Olimp_F1_2023_05_21_5677_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__55d25efab25cff79.jpg"
+    },
+    {
+      "source": "own_neg/cucumber/Cucumis_sativus_Olimp_F1_2023_05_21_5678_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__89a3db6084831aaf.jpg"
+    },
+    {
+      "source": "own_neg/cucumber/Cucumis_sativus_Olimp_F1_2023_05_27_6147_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__1d623dbe5003c00f.jpg"
+    },
+    {
+      "source": "own_neg/cucumber/Cucumis_sativus_Olimp_F1_2023_06_06_6921_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__64100dfddc632212.jpg"
+    },
+    {
+      "source": "own_neg/cucumber/Cucumis_sativus_Olimp_F1_2023_06_09_7153_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__11b137afd34df5c6.jpg"
+    },
+    {
+      "source": "own_neg/cucumber/Cucumis_sativus_Olimp_F1_2023_06_11_7353_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__0843ebdadec711b6.jpg"
+    },
+    {
+      "source": "own_neg/cucumber/Cucumis_sativus_Olimp_F1_2023_06_11_7354_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__c992dd4b017b6a15.jpg"
+    },
+    {
+      "source": "own_neg/cucumber/Cucumis_sativus_Schwarzf_ule_der_Gurke_Phomopsis_cucurbitae_.jpg",
+      "split": "train",
+      "image": "train/images/negative__f51ce72b06faa302.jpg"
+    },
+    {
+      "source": "own_neg/cucumber/Cucumis_sativus_Wassermelonenmosaik_Virus_watermelon_mosaic_.jpg",
+      "split": "train",
+      "image": "train/images/negative__6007ab8c7fb42260.jpg"
+    },
+    {
+      "source": "own_neg/cucumber/Cucumis_sativus_cucumber_Tasty_Jade_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__f04463d924ae4088.jpg"
+    },
+    {
+      "source": "own_neg/cucumber/Cucumis_sativus_mit_Wanze_Josef_Schlaghecken_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__6da4c85b450c6f0d.jpg"
+    },
+    {
+      "source": "own_neg/cucumber/Cucumis_sativus_var_carosello_in_seedbed_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__43cd6c4a1cbeb07d.jpg"
+    },
+    {
+      "source": "own_neg/cucumber/Cucurbitales_Cucumis_sativus_3_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__a2c7ae6265c296dc.jpg"
+    },
+    {
+      "source": "own_neg/cucumber/Greek_yoghurt_cucumbers_garlic_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__c0e5a520c1a16f5d.jpg"
+    },
+    {
+      "source": "own_neg/cup/A_mug_with_Ogham_letters_Tasse_mit_Ogham_Zeichen_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__370d38822f708839.jpg"
+    },
+    {
+      "source": "own_neg/cup/Atom_Editor_coffee_mug_2025_05_04_jpeg.jpg",
+      "split": "train",
+      "image": "train/images/negative__d726e3f05e2a6595.jpg"
+    },
+    {
+      "source": "own_neg/cup/Black_and_white_coffee_cup_mug_23698833853_cropped_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__ab41081005700da4.jpg"
+    },
+    {
+      "source": "own_neg/cup/Black_and_white_coffee_cup_mug_23698833853_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__030e551ede16ab60.jpg"
+    },
+    {
+      "source": "own_neg/cup/Cappuccino_mug_and_saucer_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__563b02d9bb348a3a.jpg"
+    },
+    {
+      "source": "own_neg/cup/Charles_Garjian_Silver_Mug_1936_NGA_26474_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__bfc14e1e95e5b7fa.jpg"
+    },
+    {
+      "source": "own_neg/cup/City_of_London_Cemetery_caf_tea_bag_mug_of_tea_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__4be70f0774dcf71c.jpg"
+    },
+    {
+      "source": "own_neg/cup/Coffee_cup_mug_spoon_23957007159_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__b83ebdf74bc11733.jpg"
+    },
+    {
+      "source": "own_neg/cup/Coffee_mugs_cups_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__97763f61290c6a56.jpg"
+    },
+    {
+      "source": "own_neg/cup/Darjeeling_mug_and_teapot_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__71550ac50c10e535.jpg"
+    },
+    {
+      "source": "own_neg/cup/E11even_Miami_Florida_Panthers_Stanley_Cup_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__aac97dee6826cdd8.jpg"
+    },
+    {
+      "source": "own_neg/cup/Gordon_Sanborn_Silver_Mug_1936_NGA_26462_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__fd0107eeb436a5d2.jpg"
+    },
+    {
+      "source": "own_neg/cup/Henry_Granet_Silver_Mug_1936_NGA_26483_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__ff73435f22a23132.jpg"
+    },
+    {
+      "source": "own_neg/cup/Jeremy_Boyer_Hoisting_the_Stanley_Cup_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__fb18f45ad55aca23.jpg"
+    },
+    {
+      "source": "own_neg/cup/Jeremy_Boyer_playing_during_Game_7_of_the_2019_Stanley_Cup_F.jpg",
+      "split": "train",
+      "image": "train/images/negative__05bbf8c1e97d99ea.jpg"
+    },
+    {
+      "source": "own_neg/cup/Jeremy_Boyer_playing_organ_at_the_2019_Stanley_Cup_Final_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__6aaf189509a9d467.jpg"
+    },
+    {
+      "source": "own_neg/cup/Jeremy_Boyers_2019_Stanley_Cup_Ring_png.jpg",
+      "split": "train",
+      "image": "train/images/negative__1c7897a9f2a6a57b.jpg"
+    },
+    {
+      "source": "own_neg/cup/Jordan_Binnington_with_the_Stanley_Cup_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__fb5be1983aa454da.jpg"
+    },
+    {
+      "source": "own_neg/cup/Lawrence_Flynn_Silver_Mug_c_1938_NGA_26253_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__3ab1e7cf3944d81a.jpg"
+    },
+    {
+      "source": "own_neg/cup/Louise_cake_and_Wikipedia_mug_of_tea_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__9463b04b87e71e7f.jpg"
+    },
+    {
+      "source": "own_neg/cup/Mark_Streit_2017_06_11_1_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__f47a4cfbcedcb3ba.jpg"
+    },
+    {
+      "source": "own_neg/cup/Mug_Shot_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__e7f8067425e6bf7b.jpg"
+    },
+    {
+      "source": "own_neg/cup/Mug_from_Krynica_JPG.jpg",
+      "split": "train",
+      "image": "train/images/negative__4ef1aaf7fe633191.jpg"
+    },
+    {
+      "source": "own_neg/cup/Mug_of_Cappucino_Epoch_Cafe_2026_01_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__9daebccc3aa668c2.jpg"
+    },
+    {
+      "source": "own_neg/cup/Mug_of_Tea_Starmugs_Cafe_on_Lordship_Lane_Tottenham_London_E.jpg",
+      "split": "test",
+      "image": "test/images/negative__0122410b5cce58f7.jpg"
+    },
+    {
+      "source": "own_neg/cup/Mug_vs_cup_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__74b187e6ec90ad96.jpg"
+    },
+    {
+      "source": "own_neg/cup/Never_settle_mug_Unsplash_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__34da83fd283c175f.jpg"
+    },
+    {
+      "source": "own_neg/cup/Niklas_Kronwall_with_Stanley_Cup_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__cb7c0cf27ce047fc.jpg"
+    },
+    {
+      "source": "own_neg/cup/StanleyCup_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__1c5d339ee9b960cf.jpg"
+    },
+    {
+      "source": "own_neg/cup/Stanley_Cup_2015_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__842e34037025f04c.jpg"
+    },
+    {
+      "source": "own_neg/cup/Stanley_Cup_Hockey_Hall_of_Fame_Toronto_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__1fdb70f52f4c23cf.jpg"
+    },
+    {
+      "source": "own_neg/cup/Stanley_Cup_Parade_42853177231_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__42661fa2c0bccc7b.jpg"
+    },
+    {
+      "source": "own_neg/cup/Stanley_Cup_Parade_42853179181_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__63c88c122bfe24c2.jpg"
+    },
+    {
+      "source": "own_neg/cup/Stanley_Cup_Parade_42853179361_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__43b7cc5628918854.jpg"
+    },
+    {
+      "source": "own_neg/cup/Stanley_Cup_Parade_42853179431_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__69d1e42cee59d70e.jpg"
+    },
+    {
+      "source": "own_neg/cup/Syl_Apps_holding_the_Stanley_Cup_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__5bf5215f39187ebc.jpg"
+    },
+    {
+      "source": "own_neg/face/1870er_Jahre_circa_anonym_Portrait_Adolf_Breymann_Staedt_Mus.jpg",
+      "split": "train",
+      "image": "train/images/negative__4585d353bab9a100.jpg"
+    },
+    {
+      "source": "own_neg/face/Auguste_DARZENS_Portrait_Maison_LT_Piver_png.jpg",
+      "split": "train",
+      "image": "train/images/negative__67e3e9c512ad7dc1.jpg"
+    },
+    {
+      "source": "own_neg/face/Boy_Face_from_Venezuela_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__757d79d08ed83e5a.jpg"
+    },
+    {
+      "source": "own_neg/face/Dama_z_gronostajem_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__ca60871928ba16a7.jpg"
+    },
+    {
+      "source": "own_neg/face/Elderly_Gambian_woman_face_portrait_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__1f538bd2f6f4110a.jpg"
+    },
+    {
+      "source": "own_neg/face/Jaime_Gili_Portrait_in_Studio_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__134ab3cd081f2ab3.jpg"
+    },
+    {
+      "source": "own_neg/face/John_F_Kennedy_Official_Portrait_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__f48a2c2b2500cfff.jpg"
+    },
+    {
+      "source": "own_neg/face/John_Jay_Gilbert_Stuart_portrait_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__05fb7669072a5f4d.jpg"
+    },
+    {
+      "source": "own_neg/face/Joseph_Ducreux_French_Self_Portrait_Yawning_Google_Art_Proje.jpg",
+      "split": "train",
+      "image": "train/images/negative__0a51df4e71dde38b.jpg"
+    },
+    {
+      "source": "own_neg/face/Ming_Xuanzong_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__78f1bfcc6e5b858b.jpg"
+    },
+    {
+      "source": "own_neg/face/Piero_del_Pollaiuolo_Profile_Portrait_of_a_Young_Lady_Gem_ld.jpg",
+      "split": "train",
+      "image": "train/images/negative__18c82778a93c8c5d.jpg"
+    },
+    {
+      "source": "own_neg/face/Pigeon_portrait_4861_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__647ecb16e9bb92af.jpg"
+    },
+    {
+      "source": "own_neg/face/Portrait_Christian_Bolt_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__2bad5bddf0fd146c.jpg"
+    },
+    {
+      "source": "own_neg/face/Portrait_Suzanne_Schiffman_par_Laurence_Sudre_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__15cac718565f9cf0.jpg"
+    },
+    {
+      "source": "own_neg/face/Portrait_by_Mncedisi_Nkosi_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__5a5d51213dd8a5f5.jpg"
+    },
+    {
+      "source": "own_neg/face/Portrait_de_Joseph_Aletti_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__02fcdb0015c690cb.jpg"
+    },
+    {
+      "source": "own_neg/face/Portrait_de_Luc_Joly_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__6dfacf2a62684b6d.jpg"
+    },
+    {
+      "source": "own_neg/face/Portrait_de_Madame_Blondeau_png.jpg",
+      "split": "train",
+      "image": "train/images/negative__ecc16fa581cbb3d6.jpg"
+    },
+    {
+      "source": "own_neg/face/Portrait_de_Pierrette_Marie_SIMONET_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__c39dce0f40977deb.jpg"
+    },
+    {
+      "source": "own_neg/face/Portrait_of_Djuna_Barnes_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__23a0a0e725ba4bcc.jpg"
+    },
+    {
+      "source": "own_neg/face/Portrait_of_Paul_Trappen_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__52302891a95ee207.jpg"
+    },
+    {
+      "source": "own_neg/face/Portrait_of_Souter_at_StX_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__357d586c27844ac0.jpg"
+    },
+    {
+      "source": "own_neg/face/Portrait_of_a_Slovene_Peasant_Woman_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__579ddc2180fd4f60.jpg"
+    },
+    {
+      "source": "own_neg/face/Portrait_of_a_Woman_MET_DP162139_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__4acf70ff40618954.jpg"
+    },
+    {
+      "source": "own_neg/face/Portrait_of_a_Woman_MET_DT1381_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__2f2c5822de5363c4.jpg"
+    },
+    {
+      "source": "own_neg/face/Portrait_of_a_Woman_MET_SLP0129_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__6337c0755b3d06eb.jpg"
+    },
+    {
+      "source": "own_neg/face/Portrait_of_a_smiling_girl_with_wet_face_at_golden_hour_in_L.jpg",
+      "split": "train",
+      "image": "train/images/negative__9a192508d3ca66de.jpg"
+    },
+    {
+      "source": "own_neg/face/Portrait_of_an_Iguana_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__3063f4e2626a40c4.jpg"
+    },
+    {
+      "source": "own_neg/face/Topless_female_model_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__be9378728bfa6a55.jpg"
+    },
+    {
+      "source": "own_neg/face/Triple_Portrait_of_Cardinal_de_Richelieu_probably_1642_Phili.jpg",
+      "split": "train",
+      "image": "train/images/negative__691318284f4149ca.jpg"
+    },
+    {
+      "source": "own_neg/face/Vasily_Perov_Google_Art_Project_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__39443afec2bc0f7d.jpg"
+    },
+    {
+      "source": "own_neg/face/_Agen_Portrait_de_Marie_Jos_phe_de_Saxe_dauphine_de_France_J.jpg",
+      "split": "train",
+      "image": "train/images/negative__10f09a2dc9f3ce70.jpg"
+    },
+    {
+      "source": "own_neg/hand/Ambigram_Escher_and_tessellation_background_photomontage_wit.jpg",
+      "split": "train",
+      "image": "train/images/negative__472b9abca9e7b29b.jpg"
+    },
+    {
+      "source": "own_neg/hand/Angiogram_of_human_hand_January_23rd_1896_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__8ad08536628c5221.jpg"
+    },
+    {
+      "source": "own_neg/hand/Backlit_keyboard_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__6610e1f81ca72ad3.jpg"
+    },
+    {
+      "source": "own_neg/hand/Bergelut_dengan_asap_nan_beracun_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__23ed722720c469e0.jpg"
+    },
+    {
+      "source": "own_neg/hand/Brown_creeper_at_a_banding_station_90455_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__24805168ceb217c8.jpg"
+    },
+    {
+      "source": "own_neg/hand/Dean_Rusk_Lyndon_B_Johnson_and_Robert_McNamara_in_Cabinet_Ro.jpg",
+      "split": "train",
+      "image": "train/images/negative__cf90dbd23b6dee42.jpg"
+    },
+    {
+      "source": "own_neg/hand/Eurasian_tree_sparrows_feeding_from_the_hand_in_Ueno_Park_To.jpg",
+      "split": "train",
+      "image": "train/images/negative__3c35d2c92fbc3667.jpg"
+    },
+    {
+      "source": "own_neg/hand/Golden_crowned_kinglet_at_a_banding_station_90437_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__b41c5fb1c374dbaf.jpg"
+    },
+    {
+      "source": "own_neg/hand/Hand_and_power_stone_bracelets_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__98a85bc0b498d455.jpg"
+    },
+    {
+      "source": "own_neg/hand/Hand_of_a_Human_Male_png.jpg",
+      "split": "train",
+      "image": "train/images/negative__830252dc5d62fc71.jpg"
+    },
+    {
+      "source": "own_neg/hand/Hand_of_a_Teenage_Boy_png.jpg",
+      "split": "train",
+      "image": "train/images/negative__e81c3d72c7e2e2cd.jpg"
+    },
+    {
+      "source": "own_neg/hand/Hand_skin_close_up_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__16fcc7534a48be79.jpg"
+    },
+    {
+      "source": "own_neg/hand/Hand_surgery_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__1bc199ffc8aa82b1.jpg"
+    },
+    {
+      "source": "own_neg/hand/Hand_with_leaf_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__c4174d1866b739bf.jpg"
+    },
+    {
+      "source": "own_neg/hand/Hands_Drawing_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__cafbccb0a53da8b5.jpg"
+    },
+    {
+      "source": "own_neg/hand/Human_Hands_Back_Front_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__c308a47e6932a580.jpg"
+    },
+    {
+      "source": "own_neg/hand/Human_hand_holding_onion_in_Madagascar_181095487_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__8ae8149dcafa8176.jpg"
+    },
+    {
+      "source": "own_neg/hand/Human_hand_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__33f0dc9c3f99da5a.jpg"
+    },
+    {
+      "source": "own_neg/hand/Human_hand_polydactyly_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__7913cb92f5372557.jpg"
+    },
+    {
+      "source": "own_neg/hand/India_Varanasi_green_peas_2714_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__b4060b3daa602206.jpg"
+    },
+    {
+      "source": "own_neg/hand/Left_Hand_of_a_Female_Human_png.jpg",
+      "split": "test",
+      "image": "test/images/negative__e20cba9198bbb8a0.jpg"
+    },
+    {
+      "source": "own_neg/hand/Left_hand_holding_pen_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__cc8f5388fe66a97c.jpg"
+    },
+    {
+      "source": "own_neg/hand/Macaca_sylvanus_feet_and_hands_JPG.jpg",
+      "split": "train",
+      "image": "train/images/negative__432498dae60f9f0d.jpg"
+    },
+    {
+      "source": "own_neg/hand/Man_playing_an_acoustic_brazilian_guitar_Viol_o_on_Marco_Zer.jpg",
+      "split": "train",
+      "image": "train/images/negative__26cb94d1c8947081.jpg"
+    },
+    {
+      "source": "own_neg/hand/Marcosticks_Human_hand_For_finger_identification_for_chopsti.jpg",
+      "split": "train",
+      "image": "train/images/negative__afebef7e2ceb7199.jpg"
+    },
+    {
+      "source": "own_neg/hand/Marcosticks_Human_hand_Wide_open_Flat_Palm_png.jpg",
+      "split": "train",
+      "image": "train/images/negative__7a8aa5adcd1e6fa0.jpg"
+    },
+    {
+      "source": "own_neg/hand/Marcosticks_Human_hand_curled_in_prep_for_holding_chopsticks.jpg",
+      "split": "test",
+      "image": "test/images/negative__f60ee2ab4884d4d8.jpg"
+    },
+    {
+      "source": "own_neg/hand/Open_Palm_of_the_Left_Hand_Fingers_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__88178ac54c399a6e.jpg"
+    },
+    {
+      "source": "own_neg/hand/Playing_with_hands_JPG.jpg",
+      "split": "train",
+      "image": "train/images/negative__93a866c969e78d2d.jpg"
+    },
+    {
+      "source": "own_neg/hand/Polydactyly_01_Lhand_AP_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__6d668d60f76d3a36.jpg"
+    },
+    {
+      "source": "own_neg/hand/Redstart_Phoenicurus_phoenicurus_male_ringed_Malta_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__43d32d6a1d86a094.jpg"
+    },
+    {
+      "source": "own_neg/hand/Right_Hand_Fingers_png.jpg",
+      "split": "train",
+      "image": "train/images/negative__041cc92f5c5f97fc.jpg"
+    },
+    {
+      "source": "own_neg/hand/Right_Hand_Palm_png.jpg",
+      "split": "train",
+      "image": "train/images/negative__fc0d283f8630d9b2.jpg"
+    },
+    {
+      "source": "own_neg/hand/Sausage_making_H_5_edited2_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__89ffa7d57d8ba591.jpg"
+    },
+    {
+      "source": "own_neg/hand/Sitta_europaea_wildlife_3_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__b2c80f69f03e1e94.jpg"
+    },
+    {
+      "source": "own_neg/hand/Sole_of_foot_of_an_infant_held_between_the_middle_finger_and.jpg",
+      "split": "train",
+      "image": "train/images/negative__b864c03d2c6466a9.jpg"
+    },
+    {
+      "source": "own_neg/hand/Study_of_a_hand_MET_DP368637_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__909f044acdafd8bd.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/2020_12_09_15_43_51_A_tabby_cat_standing_on_a_desk_looking_a.jpg",
+      "split": "train",
+      "image": "train/images/negative__824ed427c8519167.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/Brown_and_beige_Computer_desk_Rostov_on_Don_Russia_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__e026fe6d359e1fc4.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/Camera_zoom_burst_on_a_Microsoft_computer_keyboard_in_Tuntor.jpg",
+      "split": "train",
+      "image": "train/images/negative__ea94bd2c0c7ab710.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/Computer_keyboard_placed_on_a_black_desk_in_a_modern_workspa.jpg",
+      "split": "test",
+      "image": "test/images/negative__00fb1018c263cfef.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/Computer_keyboard_smart_card_reader_and_mouse_on_a_wooden_de.jpg",
+      "split": "train",
+      "image": "train/images/negative__ebe09379a2d3a7df.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/Desk_Setup_Unsplash_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__3c1713543499c50a.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/Desktop_workspace_in_transition_2008_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__c3031e131769090b.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/Doctor_working_at_a_desk_using_a_computer_mouse_and_keyboard.jpg",
+      "split": "train",
+      "image": "train/images/negative__a1005eac174605e5.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/EFTA00000884_Computer_workstation_featuring_a_laptop_keyboar.jpg",
+      "split": "test",
+      "image": "test/images/negative__c9bcf4fea6ee337d.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/EFTA00001348_Wooden_desk_with_a_computer_phone_keyboard_mat_.jpg",
+      "split": "test",
+      "image": "test/images/negative__9691577063119982.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/EFTA00002168_Cluttered_desk_with_a_computer_monitor_printer_.jpg",
+      "split": "train",
+      "image": "train/images/negative__f8159d667f99a19b.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/EFTA00002896_Pool_House_Sleek_black_desk_holds_an_orange_fol.jpg",
+      "split": "train",
+      "image": "train/images/negative__50bb46160a57798e.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/EFTA00003139_Maintenance_Area_Office_Cluttered_desk_with_a_c.jpg",
+      "split": "train",
+      "image": "train/images/negative__894d46a5318de440.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/GX_260_Cozy_workspace_with_dark_desk_computer_water_bottle_p.jpg",
+      "split": "train",
+      "image": "train/images/negative__1baf39639bda8e32.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/Gadgets_on_a_desk_Unsplash_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__41adf5c1e0cc4945.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/Hands_woman_apple_desk_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__e2e5c99f5f28f5f2.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/ICL_One_Per_Desk_keyboard_PCB_JPG.jpg",
+      "split": "train",
+      "image": "train/images/negative__d1f3eedd694931b6.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/ICL_One_Per_Desk_keyboard_front_view_JPG.jpg",
+      "split": "train",
+      "image": "train/images/negative__c6f21cf3db4fa5f7.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/My_keyboard_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__818b3dd1875c1538.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/Paperless_work_desk_with_an_iPad_iMac_and_a_MacBook_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__0198931c1d99ea15.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/Picture_of_computer_desk_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__7fd36e3ee3e827ee.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/Setup_with_two_type_of_ergonomic_keyboards_2014_10_22_by_mik.jpg",
+      "split": "train",
+      "image": "train/images/negative__0f59fea14b7be7bb.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/Transkribeingsgrottan_two_ergonomic_keyboards_2015_02_06_by_.jpg",
+      "split": "train",
+      "image": "train/images/negative__3406f12d2acc67fa.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/VT420_with_German_keyboard_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__c5eed6a66c742031.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/Video_editing_color_keyboard_with_Yamaha_AW4416_Recording_Wo.jpg",
+      "split": "test",
+      "image": "test/images/negative__6ae57c405bf843f1.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/White_keyboard_on_a_modern_desk_closeup_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__96d0fca775c6341c.jpg"
+    },
+    {
+      "source": "own_neg/keyboard/_2_Computer_Desk_6ft_holds_two_CPU_and_has_slidng_keyboard_t.jpg",
+      "split": "train",
+      "image": "train/images/negative__62785b455ac5412b.jpg"
+    },
+    {
+      "source": "own_neg/lemon/Citrus_flower_2019_06_13_09_54_06_C_PSD_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__2ec1c33d61501c51.jpg"
+    },
+    {
+      "source": "own_neg/lemon/Citrus_limon_chlorosis_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__9351aa4a17ae283e.jpg"
+    },
+    {
+      "source": "own_neg/lemon/Citrus_limon_seedling_about_2_years_old_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__5b03f2956f44b798.jpg"
+    },
+    {
+      "source": "own_neg/lemon/Don_Lemon_at_the_2018_Pulitzer_Prizes_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__9ee3dc4494c25c29.jpg"
+    },
+    {
+      "source": "own_neg/lemon/Lemon_Boy_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__e73c7359871867b1.jpg"
+    },
+    {
+      "source": "own_neg/lemon/Lemon_Citrus_limon_aka_Citrus_limon_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__452a171ef44a6e8c.jpg"
+    },
+    {
+      "source": "own_neg/lemon/Lemon_blossoms_in_Israel_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__743b75a031feef7b.jpg"
+    },
+    {
+      "source": "own_neg/lemon/Lemon_flower_1_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__b6e8c1a7d7a440ff.jpg"
+    },
+    {
+      "source": "own_neg/lemon/Lemon_flower_5_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__38a37daa99dacf48.jpg"
+    },
+    {
+      "source": "own_neg/lemon/Lemon_flower_6_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__6f04eff24dc4bd1c.jpg"
+    },
+    {
+      "source": "own_neg/lemon/Lemon_flower_7_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__1e72ef6063e7a60d.jpg"
+    },
+    {
+      "source": "own_neg/lemon/Lemon_from_flower_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__048699954ceb2903.jpg"
+    },
+    {
+      "source": "own_neg/lemon/Lemon_tree_flowers_with_ant_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__e4dcf0b9ae0dca77.jpg"
+    },
+    {
+      "source": "own_neg/lemon/Lemon_tree_in_front_yard_East_Hollywood_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__1dfdb547cf758d1f.jpg"
+    },
+    {
+      "source": "own_neg/lemon/Lemon_tree_with_phytophtora_02_collar_rot_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__162779e270c00bf1.jpg"
+    },
+    {
+      "source": "own_neg/lemon/Spiralling_roots_of_a_Citrus_limon_seedling_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__cc3cf1cd3eeb14b2.jpg"
+    },
+    {
+      "source": "own_neg/lemon/Unripe_fruits_of_Citrus_limon_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__04f5ef21018989ce.jpg"
+    },
+    {
+      "source": "own_neg/peach/02024_0431_Silesian_fruit_peach_cake_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__b15d84753a6b31e8.jpg"
+    },
+    {
+      "source": "own_neg/peach/Bufford_s_fruit_cards_no_779_6_peach_Bufford_LCCN2013646755_.jpg",
+      "split": "train",
+      "image": "train/images/negative__a79a07784623027f.jpg"
+    },
+    {
+      "source": "own_neg/peach/Carved_peach_pit_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__8a358520ca2a62b2.jpg"
+    },
+    {
+      "source": "own_neg/peach/Dried_yellow_peach_20240912_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__159f6a80331c2621.jpg"
+    },
+    {
+      "source": "own_neg/peach/Licorice_peach_meat_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__04d2de5b3720213b.jpg"
+    },
+    {
+      "source": "own_neg/peach/Salt_pickled_peach_meat_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__48022e363e4f08b0.jpg"
+    },
+    {
+      "source": "own_neg/pear/African_Pear_Being_Plucked_From_a_Pear_Tree_to_a_Purple_Plat.jpg",
+      "split": "test",
+      "image": "test/images/negative__7f5c5e2752f7687a.jpg"
+    },
+    {
+      "source": "own_neg/pear/Avocado_Pear_fruit_hanging_on_a_pear_plant_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__7649d898d6d9c018.jpg"
+    },
+    {
+      "source": "own_neg/pear/Bergami_Pears_or_Choice_Fruit_MET_DP818362_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__16be73b1d9c3baaf.jpg"
+    },
+    {
+      "source": "own_neg/pear/Bufford_s_fruit_cards_no_779_1_pear_Bufford_LCCN2013646760_j.jpg",
+      "split": "test",
+      "image": "test/images/negative__fc4a12d71f71793e.jpg"
+    },
+    {
+      "source": "own_neg/pear/Candied_pear_and_black_tea_tapioca_pudding_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__ba42cc925a653eec.jpg"
+    },
+    {
+      "source": "own_neg/pear/Fruit_Trees_pear_GN10588_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__62a30b59436a9a84.jpg"
+    },
+    {
+      "source": "own_neg/pear/Parkes_BIG_Pears_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__fdeb1e430171692c.jpg"
+    },
+    {
+      "source": "own_neg/potato/20261105_Solanum_tuberosum_foliage_image_1_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__37ee09161e663e20.jpg"
+    },
+    {
+      "source": "own_neg/potato/20261105_Solanum_tuberosum_foliage_image_2_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__3326df98ee945bed.jpg"
+    },
+    {
+      "source": "own_neg/potato/Argentine_Sweet_Potato_Chips_with_Sugar_and_Salt_png.jpg",
+      "split": "train",
+      "image": "train/images/negative__570399194ab767cd.jpg"
+    },
+    {
+      "source": "own_neg/potato/Dettaglio_Solanaceae_Solanum_tuberosum_Lin_Erbario_Frizzi_Pe.jpg",
+      "split": "train",
+      "image": "train/images/negative__47d3313263f4215b.jpg"
+    },
+    {
+      "source": "own_neg/potato/Dor_Solanum_tuberosum_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__802606916e0d4b4e.jpg"
+    },
+    {
+      "source": "own_neg/potato/Imago_of_Colorado_potato_beetle_on_leaf_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__b573c697d90f8476.jpg"
+    },
+    {
+      "source": "own_neg/potato/Ipomoea_batatas_Sweet_Potato_Flower_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__8ebbcd14cd2d3912.jpg"
+    },
+    {
+      "source": "own_neg/potato/Meloidogyne_spp_at_Solanum_tuberosum_01_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__626710dad9598f70.jpg"
+    },
+    {
+      "source": "own_neg/potato/Mercado_Modelo_de_Huancayo_Peru_Solanum_tuberosum_varieties_.jpg",
+      "split": "train",
+      "image": "train/images/negative__661cdea2108956a9.jpg"
+    },
+    {
+      "source": "own_neg/potato/Papa_Solanum_tuberosum_Flickr_Alejandro_Bayer_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__9551f7a242f73f56.jpg"
+    },
+    {
+      "source": "own_neg/potato/Potato_Solanum_tuberosum_35871124806_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__470040f7c72de38d.jpg"
+    },
+    {
+      "source": "own_neg/potato/Potato_band_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__2b5390f14a122247.jpg"
+    },
+    {
+      "source": "own_neg/potato/Potato_flowers_2016_G1_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__b9b8878858773254.jpg"
+    },
+    {
+      "source": "own_neg/potato/Potato_masher_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__e7187dbb8bc1ccc8.jpg"
+    },
+    {
+      "source": "own_neg/potato/Potato_plant_in_bucket_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__1b6c2e3e110f4e2a.jpg"
+    },
+    {
+      "source": "own_neg/potato/Potato_plant_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__3380336acb5ecc08.jpg"
+    },
+    {
+      "source": "own_neg/potato/Potato_sprout_January_23_2006_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__41a6697771582786.jpg"
+    },
+    {
+      "source": "own_neg/potato/Small_section_of_a_potato_Solanum_tuberosum_plant_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__12b5f7a7786d3bcd.jpg"
+    },
+    {
+      "source": "own_neg/potato/Solanum_tuberosum_Mannheim_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__8e9876e655799806.jpg"
+    },
+    {
+      "source": "own_neg/potato/Solanum_tuberosum_Puca_Quitish_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__1dd88268d8859b59.jpg"
+    },
+    {
+      "source": "own_neg/potato/Solanum_tuberosum_potato_flowers_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__226773d217765f5a.jpg"
+    },
+    {
+      "source": "own_neg/potato/Starr_080914_9946_Solanum_tuberosum_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__e7e051a643139470.jpg"
+    },
+    {
+      "source": "own_neg/potato/Sweet_Potato_Curry_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__32afb9efd0da77b5.jpg"
+    },
+    {
+      "source": "own_neg/potato/Sweet_Potato_Sauteed_With_Honey_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__99fa89d285efb747.jpg"
+    },
+    {
+      "source": "own_neg/potato/Sweet_Potato_Snack_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__f4125494165a8a92.jpg"
+    },
+    {
+      "source": "own_neg/potato/Sweet_Potato_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__6bb09585a85a47c0.jpg"
+    },
+    {
+      "source": "own_neg/potato/Sweet_potato_and_wild_relatives_png.jpg",
+      "split": "train",
+      "image": "train/images/negative__eea68b7b3f5e906c.jpg"
+    },
+    {
+      "source": "own_neg/potato/Sweet_potato_plants_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__661faa905b37dc62.jpg"
+    },
+    {
+      "source": "own_neg/potato/White_potato_plant_01_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__d4c23dfa9a3a23fd.jpg"
+    },
+    {
+      "source": "own_neg/potato/White_potato_plant_02_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__14e82102ee9936c9.jpg"
+    },
+    {
+      "source": "own_neg/potato/_Solanum_tuberosum_GBIF_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__3d1afc573968584e.jpg"
+    },
+    {
+      "source": "own_neg/table/A_laptop_on_the_wooden_table_2_Pixabay_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__a24b07cb12c59a37.jpg"
+    },
+    {
+      "source": "own_neg/table/Abstract_wooden_table_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__bf52548aafb583d5.jpg"
+    },
+    {
+      "source": "own_neg/table/Adult_and_children_at_a_wooden_picnic_table_in_California_ab.jpg",
+      "split": "train",
+      "image": "train/images/negative__1924554e7fb2965d.jpg"
+    },
+    {
+      "source": "own_neg/table/Azur_Lane_BSV_0061_top_and_wooden_table_20230729_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__1f0729e1130749e1.jpg"
+    },
+    {
+      "source": "own_neg/table/Carved_wooden_bench_furniture_and_crafts_at_Heuan_Chan_herit.jpg",
+      "split": "train",
+      "image": "train/images/negative__6036907bcf70b9d3.jpg"
+    },
+    {
+      "source": "own_neg/table/Detail_of_an_exterior_wooden_table_Rosendals_tr_dg_rd_Stockh.jpg",
+      "split": "test",
+      "image": "test/images/negative__06b6dbb81a4b4668.jpg"
+    },
+    {
+      "source": "own_neg/table/Dinner_table_side_pine_wood_large_table_2_png.jpg",
+      "split": "train",
+      "image": "train/images/negative__fa1c7efc539858c3.jpg"
+    },
+    {
+      "source": "own_neg/table/Dinner_table_side_pine_wood_large_table_front_png.jpg",
+      "split": "train",
+      "image": "train/images/negative__271ce10fcd4bdd9e.jpg"
+    },
+    {
+      "source": "own_neg/table/Dinner_table_side_pine_wood_large_table_side_png.jpg",
+      "split": "train",
+      "image": "train/images/negative__93e29ede4be3f636.jpg"
+    },
+    {
+      "source": "own_neg/table/East_Slovak_Museum_in_Ko_ice_Experience_Gothic_exhibit_Woode.jpg",
+      "split": "train",
+      "image": "train/images/negative__e188ade615fd2c40.jpg"
+    },
+    {
+      "source": "own_neg/table/East_Slovak_Museum_in_Ko_ice_Salon_Renaissance_exhibit_Woode.jpg",
+      "split": "train",
+      "image": "train/images/negative__99aafe588efe5be5.jpg"
+    },
+    {
+      "source": "own_neg/table/Hal_Blakeley_Wooden_Table_c_1953_NGA_20059_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__7f0485fcc3f29ddc.jpg"
+    },
+    {
+      "source": "own_neg/table/Hand_made_wooden_picnic_table_in_Voltino_Zagreb_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__9ac5617596565149.jpg"
+    },
+    {
+      "source": "own_neg/table/Handcraft_Vintage_Wooden_Table_46307576835_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__1eb0292d2897f025.jpg"
+    },
+    {
+      "source": "own_neg/table/Handmade_wooden_picnic_table_Cerni_ka_agovina_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__0a2824a7b11017b6.jpg"
+    },
+    {
+      "source": "own_neg/table/Intricate_Wooden_Table_with_Epoxy_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__b07c1f5e83c8eaf0.jpg"
+    },
+    {
+      "source": "own_neg/table/Long_wooden_table_at_Loddebo_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__339234d88b0f799a.jpg"
+    },
+    {
+      "source": "own_neg/table/Long_wooden_table_at_Salem_Methodist_Church_Barrettsville_GA.jpg",
+      "split": "train",
+      "image": "train/images/negative__17c219e51f8feeec.jpg"
+    },
+    {
+      "source": "own_neg/table/Old_Wooden_table_extract_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__6fdb069c56b87090.jpg"
+    },
+    {
+      "source": "own_neg/table/Old_wooden_table_with_flower_extract_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__52eb3ead3969340c.jpg"
+    },
+    {
+      "source": "own_neg/table/Outdoor_Wooden_Picnic_Table_Benches_Winter_Newton_Massachuse.jpg",
+      "split": "train",
+      "image": "train/images/negative__a525614cff8d8aea.jpg"
+    },
+    {
+      "source": "own_neg/table/Outdoor_Wooden_Picnic_Table_Winter_Newton_Massachusetts_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__a136021d7e73e42d.jpg"
+    },
+    {
+      "source": "own_neg/table/Table_wood_Museo_Egizio_Turin_S_8432_p01_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__113b0fedb8f7d4b1.jpg"
+    },
+    {
+      "source": "own_neg/table/Table_wood_Museo_Egizio_Turin_S_8432_p02_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__a3329dff23827870.jpg"
+    },
+    {
+      "source": "own_neg/table/Table_wood_Museo_Egizio_Turin_S_8432_p03_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__84f50e27d93c55ab.jpg"
+    },
+    {
+      "source": "own_neg/table/Table_wooden_Tamil_Nadu_JPG.jpg",
+      "split": "train",
+      "image": "train/images/negative__f842a68647a2141f.jpg"
+    },
+    {
+      "source": "own_neg/table/Wooden_Antique_Table_Lamp_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__55d9c1e893c02614.jpg"
+    },
+    {
+      "source": "own_neg/table/Wooden_Table_Part_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__f2b5865b6948c965.jpg"
+    },
+    {
+      "source": "own_neg/table/Wooden_clothes_pegs_on_a_table_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__c1f33514d5f2e322.jpg"
+    },
+    {
+      "source": "own_neg/table/Wooden_dressing_table_with_mirror_and_storage_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__018d8a0cc38a7e0e.jpg"
+    },
+    {
+      "source": "own_neg/table/Wooden_table_In_Taiwan_jpeg.jpg",
+      "split": "train",
+      "image": "train/images/negative__2eea9b9ecd852e99.jpg"
+    },
+    {
+      "source": "own_neg/table/Wooden_table_and_chairs_on_a_balcony_over_the_Mekong_at_sunr.jpg",
+      "split": "train",
+      "image": "train/images/negative__066d6fee9bbc770a.jpg"
+    },
+    {
+      "source": "own_neg/table/Wooden_table_and_chairs_over_the_Mekong_at_sunrise_in_Don_De.jpg",
+      "split": "test",
+      "image": "test/images/negative__404858f395de8c33.jpg"
+    },
+    {
+      "source": "own_neg/table/Wooden_table_part_No_2_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__a1b82b3f08e6a1e6.jpg"
+    },
+    {
+      "source": "own_neg/table/Wooden_table_with_2_wooden_benches_and_a_metal_rubbish_bin_n.jpg",
+      "split": "train",
+      "image": "train/images/negative__3da2227f1901d57b.jpg"
+    },
+    {
+      "source": "own_neg/tomato/Salad_platter_jpg.jpg",
+      "split": "test",
+      "image": "test/images/negative__edfb05a555781af9.jpg"
+    },
+    {
+      "source": "own_neg/tomato/Tomato_Plant_107140909_jpeg.jpg",
+      "split": "train",
+      "image": "train/images/negative__ed3682a01424fd2a.jpg"
+    },
+    {
+      "source": "own_neg/tomato/Tomato_Plant_10_2012_07_28_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__31faeaaa38825bf4.jpg"
+    },
+    {
+      "source": "own_neg/tomato/Tomato_Plant_1_2013_07_01_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__38c844762e385891.jpg"
+    },
+    {
+      "source": "own_neg/tomato/Tomato_Plant_6_2013_07_01_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__6e7eba8c7067c410.jpg"
+    },
+    {
+      "source": "own_neg/tomato/Tomato_Plant_8_2012_07_28_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__8eced07fc9d2fc94.jpg"
+    },
+    {
+      "source": "own_neg/tomato/Tomato_Plant_9_2012_07_28_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__ea6eb573ef97636a.jpg"
+    },
+    {
+      "source": "own_neg/tomato/Tomato_Plant_June_24_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__f20b9dfb5477e685.jpg"
+    },
+    {
+      "source": "own_neg/tomato/Tomato_Plant_in_Pune_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__4df7600627a5e2f0.jpg"
+    },
+    {
+      "source": "own_neg/tomato/Tomato_Plants_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__166b3798e97f6c58.jpg"
+    },
+    {
+      "source": "own_neg/tomato/Tomato_je_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__7874eb4c666ae0ba.jpg"
+    },
+    {
+      "source": "own_neg/tomato/Tomato_plant_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__1c7cc8532770a5c8.jpg"
+    },
+    {
+      "source": "own_neg/tomato/Tomato_plant_picture_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__98fa297627894afc.jpg"
+    },
+    {
+      "source": "own_neg/tomato/Tomato_planting_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__e00affa10ed2c1d6.jpg"
+    },
+    {
+      "source": "own_neg/tomato/Tomato_plants_2_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__5fa9f35b7a673e86.jpg"
+    },
+    {
+      "source": "own_neg/tomato/Tomato_plants_4_jpg.jpg",
+      "split": "train",
+      "image": "train/images/negative__2ba3b7e1565cef3b.jpg"
+    }
+  ]
+}

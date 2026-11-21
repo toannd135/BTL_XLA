@@ -13,6 +13,8 @@
 !/work/obb/data/**
 !/work/obb/*.ipynb
 !/work/exp/neg/test/**
+!/work/obb/seg_data_candidate/*.yaml
+!/work/obb/seg_data_candidate/*.json
 
 # Dữ liệu thô gốc (đã chuyển thành local_dataset/), video, trọng số pretrained tự tải: quá nặng cho GitHub (giới hạn 2GB/lần push)
 /raw/
@@ -24,7 +26,10 @@
 
 # Kết quả có thể tạo lại; không commit bản zip trùng dataset đã giải nén.
 out/
-runs/
+/runs/*
+!/runs/seg/
+/runs/seg/*
+!/runs/seg/seg_boundary_candidate_gpu/
 backup_*/
 *.zip
 *.cache
