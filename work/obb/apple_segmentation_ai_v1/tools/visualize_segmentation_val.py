@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Validate the current best checkpoint on val and save GT/prediction panels."""
 import json, sys
+import os
 from pathlib import Path
 
 import cv2
@@ -9,8 +10,8 @@ from ultralytics import YOLO
 
 ROOT=Path(__file__).resolve().parents[5]
 DATA=ROOT/'fruit/work/obb/apple_segmentation_ai_v1/dataset'
-WEIGHTS=ROOT/'fruit/runs/seg/apple_segmentation_ai_v1/weights/best.pt'
-OUT=ROOT/'fruit/work/obb/apple_segmentation_ai_v1/VISUAL_RESULTS'
+WEIGHTS=Path(os.environ.get('PHASE9_SEG_WEIGHTS',ROOT/'fruit/runs/seg/apple_segmentation_ai_gpu20/weights/best.pt'))
+OUT=Path(os.environ.get('PHASE9_SEG_VISUALS',ROOT/'fruit/work/obb/apple_segmentation_ai_v1/VISUAL_RESULTS'))
 NAMES={0:'banana',1:'apple',2:'orange'}
 COLORS={0:(60,220,60),1:(40,120,255),2:(0,220,255)}
 
@@ -42,11 +43,15 @@ def main():
     if not WEIGHTS.is_file():raise SystemExit(f'missing checkpoint: {WEIGHTS}')
     OUT.mkdir(parents=True,exist_ok=True)
     model=YOLO(str(WEIGHTS),task='segment')
-    metrics=model.val(data=str(DATA/'data.yaml'),split='val',imgsz=512,device='cpu',batch=2,workers=0,plots=False,project=str(OUT),name='metric_eval',exist_ok=True,verbose=False)
-    report={'checkpoint':str(WEIGHTS),'split':'val','image_count':236,'box_precision':float(metrics.box.mp),'box_recall':float(metrics.box.mr),'box_map50':float(metrics.box.map50),'box_map50_95':float(metrics.box.map),'mask_precision':float(metrics.seg.mp),'mask_recall':float(metrics.seg.mr),'mask_map50':float(metrics.seg.map50),'mask_map50_95':float(metrics.seg.map),'mask_per_class_map50_95':[float(x) for x in metrics.seg.maps],'names':NAMES,'annotation_caveat':'Validation masks are inherited/AI-assisted, not human-verified.'}
+    metrics=model.val(data=str(DATA/'data.yaml'),split='val',imgsz=512,device='0' if __import__('torch').cuda.is_available() else 'cpu',batch=4,workers=0,plots=False,project=str(OUT),name='metric_eval',exist_ok=True,verbose=False)
+    per_class={}
+    for i,class_id in enumerate(metrics.seg.ap_class_index):
+        precision,recall,map50,map5095=metrics.seg.class_result(i)
+        per_class[NAMES[int(class_id)]]={'precision':float(precision),'recall':float(recall),'mask_map50':float(map50),'mask_map50_95':float(map5095)}
+    report={'checkpoint':str(WEIGHTS),'split':'val','image_count':236,'box_precision':float(metrics.box.mp),'box_recall':float(metrics.box.mr),'box_map50':float(metrics.box.map50),'box_map50_95':float(metrics.box.map),'mask_precision':float(metrics.seg.mp),'mask_recall':float(metrics.seg.mr),'mask_map50':float(metrics.seg.map50),'mask_map50_95':float(metrics.seg.map),'mask_per_class':per_class,'names':NAMES,'annotation_caveat':'Validation masks are inherited/AI-assisted, not human-verified.'}
     (OUT/'validation_metrics.json').write_text(json.dumps(report,indent=2)+'\n')
     images=sorted((DATA/'val/images').glob('*'))[:12]
-    preds=model.predict([str(p) for p in images],imgsz=512,rect=False,device='cpu',batch=2,conf=.25,iou=.7,verbose=False)
+    preds=model.predict([str(p) for p in images],imgsz=512,rect=False,device='0' if __import__('torch').cuda.is_available() else 'cpu',batch=4,conf=.25,iou=.7,verbose=False)
     for path,res in zip(images,preds):
         im=cv2.imread(str(path));gt=overlay_gt(im,DATA/'val/labels'/f'{path.stem}.txt');pr=overlay_pred(im,res)
         panel=np.concatenate([cv2.resize(im,(512,512)),cv2.resize(gt,(512,512)),cv2.resize(pr,(512,512))],axis=1)
