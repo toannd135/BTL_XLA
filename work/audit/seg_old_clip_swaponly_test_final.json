@@ -1,0 +1,134 @@
+{
+  "candidate": {
+    "exact_count_accuracy": 0.8289855072463768,
+    "count_mae": 0.23478260869565218,
+    "over_instances": 48,
+    "under_instances": 33,
+    "pred_instances": 364,
+    "gt_instances": 349,
+    "negative_images": 71,
+    "negative_false_positive_images": 2,
+    "per_class": {
+      "banana": {
+        "recall": 0.6923076923076923,
+        "precision": 0.6878980891719745,
+        "matched": 108,
+        "gt": 156,
+        "pred": 157
+      },
+      "apple": {
+        "recall": 0.7755102040816326,
+        "precision": 0.7450980392156863,
+        "matched": 76,
+        "gt": 98,
+        "pred": 102
+      },
+      "orange": {
+        "recall": 0.8421052631578947,
+        "precision": 0.7619047619047619,
+        "matched": 80,
+        "gt": 95,
+        "pred": 105
+      }
+    },
+    "confusion_at_mask_iou50": {
+      "banana": {
+        "banana": 108,
+        "apple": 1,
+        "orange": 0,
+        "miss": 47
+      },
+      "apple": {
+        "banana": 1,
+        "apple": 76,
+        "orange": 2,
+        "miss": 19
+      },
+      "orange": {
+        "banana": 0,
+        "apple": 0,
+        "orange": 80,
+        "miss": 15
+      },
+      "background": {
+        "banana": 48,
+        "apple": 25,
+        "orange": 23
+      }
+    }
+  },
+  "checkpoint": "/mnt/01DC7E1E309A75E0/CODE/BTL_XLA/fruit/runs/seg/seg_boundary_candidate_gpu/weights/best.pt",
+  "checkpoint_sha256": "6da28310bb7627d00dfa574cc36147d215afb48e4d0c3d0705e62ecb05917982",
+  "split": "test",
+  "images": 345,
+  "imgsz": 640,
+  "conf": 0.4,
+  "iou": 0.7,
+  "device": "cpu",
+  "precision": "fp32",
+  "clip_arch": "ViT-L-14",
+  "clip_pretrained": "laion2b_s32b_b82k",
+  "clip_device": "cpu",
+  "clip_swap_threshold": 0.8,
+  "swapped_predictions": 2,
+  "det_seconds": 36.51879093100172,
+  "clip_seconds": 195.82297465500062,
+  "raw": {
+    "exact_count_accuracy": 0.8289855072463768,
+    "count_mae": 0.23478260869565218,
+    "over_instances": 48,
+    "under_instances": 33,
+    "pred_instances": 364,
+    "gt_instances": 349,
+    "negative_images": 71,
+    "negative_false_positive_images": 2,
+    "per_class": {
+      "banana": {
+        "recall": 0.6923076923076923,
+        "precision": 0.6835443037974683,
+        "matched": 108,
+        "gt": 156,
+        "pred": 158
+      },
+      "apple": {
+        "recall": 0.7755102040816326,
+        "precision": 0.7378640776699029,
+        "matched": 76,
+        "gt": 98,
+        "pred": 103
+      },
+      "orange": {
+        "recall": 0.8315789473684211,
+        "precision": 0.7669902912621359,
+        "matched": 79,
+        "gt": 95,
+        "pred": 103
+      }
+    },
+    "confusion_at_mask_iou50": {
+      "banana": {
+        "banana": 108,
+        "apple": 1,
+        "orange": 0,
+        "miss": 47
+      },
+      "apple": {
+        "banana": 1,
+        "apple": 76,
+        "orange": 2,
+        "miss": 19
+      },
+      "orange": {
+        "banana": 0,
+        "apple": 1,
+        "orange": 79,
+        "miss": 15
+      },
+      "background": {
+        "banana": 49,
+        "apple": 25,
+        "orange": 22
+      }
+    }
+  }
+}

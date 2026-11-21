@@ -1,0 +1,166 @@
+{
+  "phase": "1.1",
+  "scope": "Read-only package consistency check; source images, source labels, checkpoints, and review decisions were not modified.",
+  "review_manifest": {
+    "path": "work/audit/phase1_review_manifest.csv",
+    "rows_excluding_header": 664,
+    "unique_image_path_count": 194,
+    "unique_source_image_path_count": 194,
+    "split_image_counts": {
+      "test": 24,
+      "train": 143,
+      "val": 27
+    },
+    "review_status_counts": {
+      "pending": 664
+    },
+    "nonempty_reviewer_notes": 0
+  },
+  "review_subset": {
+    "path": "work/obb/seg_data_review_v1/review_subset",
+    "unique_image_count": 194,
+    "unique_split_relative_paths": 194,
+    "unique_image_sha256_count": 194,
+    "label_file_count": 194,
+    "split_image_counts": {
+      "train": 143,
+      "val": 27,
+      "test": 24
+    },
+    "manifest_items": 194,
+    "source_dataset_manifest_item_count": 2530,
+    "image_label_hash_mismatches": 0,
+    "mismatch_examples": []
+  },
+  "cvat_archive": {
+    "path": "work/obb/seg_data_review_v1/cvat_import_review_v1.zip",
+    "zip_integrity_error": null,
+    "unique_image_member_count": 194,
+    "label_member_count": 194,
+    "split_image_counts": {
+      "test": 24,
+      "train": 143,
+      "val": 27
+    },
+    "image_label_hash_mismatches": 0,
+    "mismatch_examples": [],
+    "matches_manifest_image_set": true,
+    "matches_manifest_label_set": true
+  },
+  "contact_sheets": {
+    "path": "work/audit/phase1_contact_sheets",
+    "file_count": 49,
+    "unique_images_represented": 194,
+    "sheet_dimensions": {
+      "1280x660": 48,
+      "1280x330": 1
+    },
+    "verified_source_image_panels": 194,
+    "panel_match_method": "Recreated generator resize/placement from source image; compared RGB pixels with mean absolute difference <= 15 to allow JPEG loss.",
+    "panel_match_failures": [],
+    "max_mean_absolute_difference": 5.696084781748174
+  },
+  "180_vs_194": {
+    "documentation_statement": "docs/cvat-workflow.md previously said 180-image subset.",
+    "current_ranked_selection_count": 180,
+    "current_manifest_count": 194,
+    "retained_prior_pending_images": 14,
+    "retained_prior_review_items_count": 14,
+    "explanation": "The selector limit remained 180, while regeneration preserved 14 pending files from an earlier deterministic selection instead of dropping them. The current manifest, subset, archive, and contact sheets use the resulting 194-image set."
+  },
+  "validators": {
+    "structural": {
+      "command": "python tools/validate_yolo_seg_export.py work/obb/seg_data_review_v1/review_subset --check structural",
+      "exit_code": 0,
+      "structural_problem_count": 0,
+      "topology_problem_count": 0,
+      "problem_count": 0,
+      "counts": {
+        "train": {
+          "images": 143,
+          "instances": 530,
+          "negative_images": 23
+        },
+        "val": {
+          "images": 27,
+          "instances": 51,
+          "negative_images": 0
+        },
+        "test": {
+          "images": 24,
+          "instances": 58,
+          "negative_images": 2
+        }
+      }
+    },
+    "topology": {
+      "command": "python tools/validate_yolo_seg_export.py work/obb/seg_data_review_v1/review_subset --check topology",
+      "exit_code": 1,
+      "structural_problem_count": 0,
+      "topology_problem_count": 151,
+      "problem_count": 151,
+      "counts": {
+        "train": {
+          "images": 143,
+          "instances": 530,
+          "negative_images": 23
+        },
+        "val": {
+          "images": 27,
+          "instances": 51,
+          "negative_images": 0
+        },
+        "test": {
+          "images": 24,
+          "instances": 58,
+          "negative_images": 2
+        }
+      }
+    },
+    "all": {
+      "command": "python tools/validate_yolo_seg_export.py work/obb/seg_data_review_v1/review_subset --check all",
+      "exit_code": 1,
+      "structural_problem_count": 0,
+      "topology_problem_count": 151,
+      "problem_count": 151,
+      "counts": {
+        "train": {
+          "images": 143,
+          "instances": 530,
+          "negative_images": 23
+        },
+        "val": {
+          "images": 27,
+          "instances": 51,
+          "negative_images": 0
+        },
+        "test": {
+          "images": 24,
+          "instances": 58,
+          "negative_images": 2
+        }
+      }
+    }
+  },
+  "historical_zero_vs_151": {
+    "explanation": "The earlier zero was from the structural-only validator version, which did not include edge topology. A stale sentence in docs/phase1-dataset-audit.md described zero as the total result after a later 151-candidate topology pass. The validator now supports --check structural and --check topology independently; current separate runs reproduce 0 and 151 respectively."
+  },
+  "perceptual_hash_leakage_candidates": {
+    "count": 362,
+    "pair_list_source": "work/audit/phase1_dataset_audit.json:leakage.near_duplicate_image_candidates_phash_le4",
+    "pair_list_canonical_json_sha256": "d5e2e7043a9ea63c0db01312e034a036d81ffabea70799efe9b01e8bfb7191ba",
+    "algorithm": "64-bit DCT pHash on 32x32 grayscale images; threshold Hamming distance <=4; cross-split pairs only.",
+    "reproducible_from": "tools/phase1_dataset_audit.py (audit_dataset), source dataset hashes recorded in phase1_dataset_audit.json.",
+    "pair_contact_sheets_present": false,
+    "general_review_contact_sheets_covering_both_pair_images": 0,
+    "candidate_pairs_with_at_least_one_endpoint_in_review_subset": 1,
+    "finding": "The JSON contains a reproducible pair list, but there are no dedicated side-by-side contact sheets for these candidate pairs. Existing review sheets are the 194-image annotation review set; both endpoints of no candidate pair are included."
+  },
+  "documentation_updates": {
+    "files": [
+      "docs/cvat-workflow.md",
+      "docs/phase1-dataset-audit.md"
+    ],
+    "changes": "Updated package count to 194, explained the 14 retained pending items, and documented separate structural/topology validator commands and results."
+  }
+}

@@ -1,0 +1,386 @@
+{
+  "schema_version": "1.0",
+  "status": "completed",
+  "run_name": "seg_v3_qg_controlled",
+  "started_host_gpu_monitor": "2026/11/19 11:40:38.111",
+  "finished_host_gpu_monitor": "2026/11/19 12:54:48.622",
+  "training_elapsed_seconds_from_results_csv": 4441.89,
+  "host_wall_seconds_from_gpu_monitor": 4450.511,
+  "epochs_completed": 40,
+  "best_epoch": 38,
+  "last_epoch": 40,
+  "best_checkpoint_fitness": 1.37284,
+  "best_epoch_fitness_from_results_csv": 1.37283,
+  "training_config": {
+    "model": "/mnt/01DC7E1E309A75E0/runs/segment/runs/seg/seg_v2_finetune/weights/best.pt",
+    "data": "/mnt/01DC7E1E309A75E0/CODE/BTL_XLA/fruit/work/audit/seg_data_training_prep_v1_qg.yaml",
+    "epochs": 40,
+    "imgsz": 640,
+    "batch": 1,
+    "device": "0",
+    "workers": 2,
+    "cache": false,
+    "amp": true,
+    "seed": 42,
+    "project": "/mnt/01DC7E1E309A75E0/CODE/BTL_XLA/fruit/runs/seg",
+    "name": "seg_v3_qg_controlled",
+    "exist_ok": false,
+    "optimizer": "auto",
+    "lr0": 0.01,
+    "lrf": 0.01,
+    "iou": 0.7,
+    "conf": null,
+    "optimizer_requested": "auto",
+    "optimizer_resolved": "AdamW",
+    "lr0_resolved": 0.001429,
+    "momentum_resolved": 0.9,
+    "augmentation_actual": {
+      "hsv_h": 0.015,
+      "hsv_s": 0.7,
+      "hsv_v": 0.4,
+      "degrees": 0.0,
+      "translate": 0.1,
+      "scale": 0.5,
+      "shear": 0.0,
+      "perspective": 0.0,
+      "flipud": 0.0,
+      "fliplr": 0.5,
+      "mosaic": 1.0,
+      "mixup": 0.0,
+      "cutmix": 0.0,
+      "copy_paste": 0.0,
+      "close_mosaic": 10,
+      "auto_augment": "randaugment",
+      "erasing": 0.4
+    },
+    "optimizer_and_augmentation_explicitly_pinned_in_quality_gate_recipe": false
+  },
+  "dataset_integrity": {
+    "dataset_tree_sha256_before": "2efda8f9908eb1e0a249e73aadae9d6b4097ce4e678ec2097bc9dafa17563d1e",
+    "dataset_tree_sha256_after": "2efda8f9908eb1e0a249e73aadae9d6b4097ce4e678ec2097bc9dafa17563d1e",
+    "dataset_files_before": 5070,
+    "dataset_files_after": 5070,
+    "all_file_hashes_match": true,
+    "yaml_sha256_before": "136642d3cef55160922665f7578051743255c5bd89fc8f9856ff43a75c5e72f9",
+    "yaml_sha256_after": "136642d3cef55160922665f7578051743255c5bd89fc8f9856ff43a75c5e72f9",
+    "train_list_sha256_before": "72c14ba131fca84730ac7a38e59f2553662cffe883095aa386ebe9aadf37dd96",
+    "train_list_sha256_after": "72c14ba131fca84730ac7a38e59f2553662cffe883095aa386ebe9aadf37dd96",
+    "generated_label_cache_restored_to_pretraining_hashes": true
+  },
+  "resources": {
+    "samples": 446,
+    "sampling_interval_seconds": 10,
+    "start_timestamp": "2026/11/19 11:40:38.111",
+    "end_timestamp": "2026/11/19 12:54:48.622",
+    "host_observed_total_gpu_memory_used_mib": 1167.0,
+    "host_observed_total_gpu_memory_total_mib": 6144.0,
+    "temperature_c": {
+      "min": 52.0,
+      "max": 72.0,
+      "mean": 63.90134529147982
+    },
+    "gpu_utilization_percent": {
+      "min": 0.0,
+      "max": 67.0,
+      "mean": 31.48878923766816
+    },
+    "power_w": {
+      "min": 12.16,
+      "max": 70.18,
+      "mean": 45.723318385650224
+    },
+    "trainer_reported_peak_gpu_mem_gib": 0.775
+  },
+  "errors": {
+    "Traceback": 0,
+    "CUDA out of memory": 0,
+    "OutOfMemoryError": 0
+  },
+  "warnings": [
+    "Ultralytics printed an update-available notice; software was not updated.",
+    "Ultralytics regenerated train/val labels.cache during training/validation; exact pre-training cache bytes were restored from matching seg_data_candidate cache files and all dataset hashes then matched."
+  ],
+  "v3_validation_metrics": {
+    "tag": "v3_best",
+    "checkpoint": "/mnt/01DC7E1E309A75E0/CODE/BTL_XLA/fruit/runs/seg/seg_v3_qg_controlled/weights/best.pt",
+    "checkpoint_sha256": "d6b598df678dd01df05198a9c46f1534e33903b0d4d699b790b052b3b48b7cdc",
+    "split": "val",
+    "data_yaml": "/mnt/01DC7E1E309A75E0/CODE/BTL_XLA/fruit/work/audit/seg_data_training_prep_v1_qg.yaml",
+    "settings": {
+      "imgsz": 640,
+      "batch": 1,
+      "device": 0,
+      "workers": 2,
+      "cache": false,
+      "amp": true,
+      "conf": 0.001,
+      "iou": 0.7
+    },
+    "overall": {
+      "metrics/precision(B)": 0.7286594526943938,
+      "metrics/recall(B)": 0.7246158697397087,
+      "metrics/mAP50(B)": 0.823379197770003,
+      "metrics/mAP50-95(B)": 0.7016974109880478,
+      "metrics/precision(M)": 0.7373371972871646,
+      "metrics/recall(M)": 0.6773298567149082,
+      "metrics/mAP50(M)": 0.7658620270712909,
+      "metrics/mAP50-95(M)": 0.6720569435103105,
+      "fitness": 1.3737543544983584
+    },
+    "per_class_box": {
+      "banana": {
+        "precision": 0.7583035003711366,
+        "recall": 0.5986842105263158,
+        "map50": 0.7258357047458492,
+        "map50_95": 0.48449599522844816
+      },
+      "apple": {
+        "precision": 0.8758252934107692,
+        "recall": 0.7222222222222222,
+        "map50": 0.8753490491965003,
+        "map50_95": 0.7821718200828514
+      },
+      "orange": {
+        "precision": 0.5518495643012757,
+        "recall": 0.8529411764705882,
+        "map50": 0.8689528393676595,
+        "map50_95": 0.8384244176528437
+      }
+    },
+    "per_class_mask": {
+      "banana": {
+        "precision": 0.7516266807522394,
+        "recall": 0.4934210526315789,
+        "map50": 0.5940385200358396,
+        "map50_95": 0.41424912054684865
+      },
+      "apple": {
+        "precision": 0.8929914828092538,
+        "recall": 0.6954312626111847,
+        "map50": 0.841958076320859,
+        "map50_95": 0.7792616987595528
+      },
+      "orange": {
+        "precision": 0.567393428300001,
+        "recall": 0.8431372549019608,
+        "map50": 0.8615894848571741,
+        "map50_95": 0.8226600112245299
+      }
+    },
+    "val_output_dir": "/mnt/01DC7E1E309A75E0/CODE/BTL_XLA/fruit/runs/val/seg_v3_best_on_v3_validation"
+  },
+  "v2_same_validation_metrics": {
+    "tag": "v2",
+    "checkpoint": "/mnt/01DC7E1E309A75E0/runs/segment/runs/seg/seg_v2_finetune/weights/best.pt",
+    "checkpoint_sha256": "0366c022c85cf6a55c7cd01911444d60adec1d84fc3aa4820699952097783af6",
+    "split": "val",
+    "data_yaml": "/mnt/01DC7E1E309A75E0/CODE/BTL_XLA/fruit/work/audit/seg_data_training_prep_v1_qg.yaml",
+    "settings": {
+      "imgsz": 640,
+      "batch": 1,
+      "device": 0,
+      "workers": 2,
+      "cache": false,
+      "amp": true,
+      "conf": 0.001,
+      "iou": 0.7
+    },
+    "overall": {
+      "metrics/precision(B)": 0.7729945646546329,
+      "metrics/recall(B)": 0.7928296614199177,
+      "metrics/mAP50(B)": 0.8610486862757947,
+      "metrics/mAP50-95(B)": 0.7537233252332268,
+      "metrics/precision(M)": 0.8955907740846776,
+      "metrics/recall(M)": 0.6932452318159233,
+      "metrics/mAP50(M)": 0.8331682404480819,
+      "metrics/mAP50-95(M)": 0.7463862105165422,
+      "fitness": 1.5001095357497691
+    },
+    "per_class_box": {
+      "banana": {
+        "precision": 0.7999233227777273,
+        "recall": 0.7101883306649818,
+        "map50": 0.7808927008514659,
+        "map50_95": 0.5618841951534981
+      },
+      "apple": {
+        "precision": 0.7837157024390041,
+        "recall": 0.8055555555555556,
+        "map50": 0.8905909855492535,
+        "map50_95": 0.8121333947740528
+      },
+      "orange": {
+        "precision": 0.7353446687471672,
+        "recall": 0.8627450980392157,
+        "map50": 0.9116623724266645,
+        "map50_95": 0.8871523857721296
+      }
+    },
+    "per_class_mask": {
+      "banana": {
+        "precision": 0.8605341201362735,
+        "recall": 0.5328947368421053,
+        "map50": 0.7432472626977213,
+        "map50_95": 0.5441816751217187
+      },
+      "apple": {
+        "precision": 0.916090446766416,
+        "recall": 0.7037037037037037,
+        "map50": 0.8536866500432203,
+        "map50_95": 0.8178480973000457
+      },
+      "orange": {
+        "precision": 0.9101477553513431,
+        "recall": 0.8431372549019608,
+        "map50": 0.9025708086033037,
+        "map50_95": 0.8771288591278624
+      }
+    },
+    "val_output_dir": "/mnt/01DC7E1E309A75E0/CODE/BTL_XLA/fruit/runs/val/seg_v2_on_v3_validation"
+  },
+  "v3_minus_v2_metric_deltas": {
+    "metrics/precision(B)": -0.04433511196023909,
+    "metrics/recall(B)": -0.06821379168020902,
+    "metrics/mAP50(B)": -0.03766948850579166,
+    "metrics/mAP50-95(B)": -0.052025914245178995,
+    "metrics/precision(M)": -0.15825357679751295,
+    "metrics/recall(M)": -0.01591537510101515,
+    "metrics/mAP50(M)": -0.06730621337679099,
+    "metrics/mAP50-95(M)": -0.07432926700623166
+  },
+  "per_class_v3_minus_v2_deltas": {
+    "per_class_box": {
+      "banana": {
+        "precision": -0.04161982240659068,
+        "recall": -0.11150412013866595,
+        "map50": -0.05505699610561665,
+        "map50_95": -0.07738819992504992
+      },
+      "apple": {
+        "precision": 0.09210959097176508,
+        "recall": -0.08333333333333337,
+        "map50": -0.015241936352753283,
+        "map50_95": -0.02996157469120142
+      },
+      "orange": {
+        "precision": -0.18349510444589145,
+        "recall": -0.009803921568627527,
+        "map50": -0.042709533059004934,
+        "map50_95": -0.048727968119285925
+      }
+    },
+    "per_class_mask": {
+      "banana": {
+        "precision": -0.10890743938403413,
+        "recall": -0.03947368421052638,
+        "map50": -0.14920874266188178,
+        "map50_95": -0.12993255457487002
+      },
+      "apple": {
+        "precision": -0.023098963957162266,
+        "recall": -0.008272441092519012,
+        "map50": -0.011728573722361357,
+        "map50_95": -0.03858639854049295
+      },
+      "orange": {
+        "precision": -0.3427543270513421,
+        "recall": 0.0,
+        "map50": -0.040981323746129616,
+        "map50_95": -0.05446884790333251
+      }
+    }
+  },
+  "v3_losses": {
+    "first_epoch_train": {
+      "box_loss": 0.46906,
+      "seg_loss": 1.30089,
+      "cls_loss": 1.11873,
+      "dfl_loss": 1.05657
+    },
+    "last_epoch_train": {
+      "box_loss": 0.29314,
+      "seg_loss": 0.7952,
+      "cls_loss": 0.51839,
+      "dfl_loss": 0.8471
+    },
+    "best_epoch_validation": {
+      "box_loss": 0.6074,
+      "seg_loss": 1.56359,
+      "cls_loss": 1.10801,
+      "dfl_loss": 1.23416
+    },
+    "last_epoch_validation": {
+      "box_loss": 0.6179,
+      "seg_loss": 1.71302,
+      "cls_loss": 1.08502,
+      "dfl_loss": 1.26036
+    }
+  },
+  "test_split_loaded": false,
+  "training_run_exit_code": 0,
+  "artifacts": {
+    "best_checkpoint": {
+      "path": "runs/seg/seg_v3_qg_controlled/weights/best.pt",
+      "bytes": 20489885,
+      "sha256": "d6b598df678dd01df05198a9c46f1534e33903b0d4d699b790b052b3b48b7cdc"
+    },
+    "last_checkpoint": {
+      "path": "runs/seg/seg_v3_qg_controlled/weights/last.pt",
+      "bytes": 20489885,
+      "sha256": "46793f73a37a95dfcf08e1c58c1ea7e3390522121cfb588c879431d0154c02fb"
+    },
+    "results_csv": {
+      "path": "runs/seg/seg_v3_qg_controlled/results.csv",
+      "bytes": 7360,
+      "sha256": "51d22ad08fa03d0e38e1d08f68a84c463a7f4a4d3a4405b166d13edcbe6491e9"
+    },
+    "args_yaml": {
+      "path": "runs/seg/seg_v3_qg_controlled/args.yaml",
+      "bytes": 1875,
+      "sha256": "a3d0964a7f90f677df5d770aaa2bae1bc2b811e482647e036188bf44f66d6e58"
+    },
+    "console_log": {
+      "path": "work/audit/seg_v3_qg_controlled_training.log",
+      "bytes": 5992737,
+      "sha256": "3924a17281af9adcff2a68797a76c31b56bff84f65348437fd6778f287b51a13"
+    },
+    "gpu_monitor_csv": {
+      "path": "work/audit/seg_v3_qg_controlled_gpu_monitor.csv",
+      "bytes": 44258,
+      "sha256": "189716b3d1c5fd40b4c05adc6d5398204ea33ad1a034bc9a032d61d8d776c3d6"
+    },
+    "validation_comparison_json": {
+      "path": "work/audit/seg_v3_validation_comparison.json",
+      "bytes": 5003,
+      "sha256": "cca2c0c44db661742b8fb624563b601ef97b88a73ddfa19937f08be6817920c9"
+    },
+    "pretraining_inventory": {
+      "path": "work/audit/seg_v3_qg_controlled_pretraining_inventory.json",
+      "bytes": 720925,
+      "sha256": "c69173000364cccd47ef466ef765d29685b992ae2fb6248563ecafd296b89407"
+    },
+    "run_args_yaml": {
+      "path": "runs/seg/seg_v3_qg_controlled/args.yaml",
+      "bytes": 1875,
+      "sha256": "a3d0964a7f90f677df5d770aaa2bae1bc2b811e482647e036188bf44f66d6e58"
+    },
+    "summary_markdown": {
+      "path": "docs/diagnostics/v3-training-summary.md",
+      "bytes": 4959,
+      "sha256": "6e84671051b631b5f7b463f58fa4d7147aff9eaca847d0cf7285a7f2d9ed21fe"
+    },
+    "execution_report": {
+      "path": "docs/diagnostics/v3-training-execution-report.md",
+      "bytes": 6726,
+      "sha256": "a74dfbeb2d0de5f8cb9d73127215c383566f0a5aa89879715579581ea0f0f6fb"
+    }
+  },
+  "execution_caveat": "The run completed under the earlier quality-gate command. That recipe did not explicitly pin optimizer or augmentation values; Ultralytics used optimizer=auto (resolved to AdamW) and its saved defaults. The stricter reissued request would require those fields to be explicitly frozen before any new run; no second run was launched.",
+  "posttraining_dataset_integrity": {
+    "pretraining_tree_sha256": "2efda8f9908eb1e0a249e73aadae9d6b4097ce4e678ec2097bc9dafa17563d1e",
+    "posttraining_tree_sha256": "2efda8f9908eb1e0a249e73aadae9d6b4097ce4e678ec2097bc9dafa17563d1e",
+    "all_file_hashes_match": true,
+    "file_count": 5070
+  },
+  "posttraining_inventory_path": "work/audit/seg_v3_qg_controlled_posttraining_inventory.json"
+}

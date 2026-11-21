@@ -20,19 +20,30 @@ from ultralytics import YOLO
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "backend"))
-from detection import detect, detect_obb, detect_seg
+from detection import detect, detect_obb, detect_seg, split_banana_cluster_detections
 
 
 LABELS = {0: "banana", 1: "apple", 2: "orange"}
+CLASS_IDS = {name: class_id for class_id, name in LABELS.items()}
+
+
+def model_label(model, class_id):
+    """Map a model's class index through its names instead of assuming COCO IDs."""
+    name = model.names.get(int(class_id), f"class_{int(class_id)}")
+    return name if name in CLASS_IDS else f"class_{int(class_id)}"
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Benchmark fruit counting performance.")
     parser.add_argument("--model", type=Path, default=ROOT / "yolo11s-seg.pt",
                         help="Path to YOLO model (seg, obb, or hbb)")
+    parser.add_argument("--obb-model", type=Path, default=None,
+                        help="Optional OBB helper used to split supported banana clusters")
+    parser.add_argument("--split-method", choices=("voronoi", "watershed"), default="voronoi")
     parser.add_argument("--data-split", type=Path, default=ROOT / "work/obb/seg_data_clean/val",
                         help="Path to split directory containing images/ and labels/")
     parser.add_argument("--conf", type=float, default=0.40)
+    parser.add_argument("--iou", type=float, default=0.60)
     parser.add_argument("--imgsz", type=int, default=640)
     parser.add_argument("--output", type=Path, default=ROOT / "work/audit/benchmark_count_results.json")
     parser.add_argument("--max-images", type=int, default=100)
@@ -104,6 +115,7 @@ def main():
 
     print(f"Loading model: {model_path}...")
     model = YOLO(str(model_path))
+    obb_model = YOLO(str(args.obb_model)) if args.obb_model else None
     task = model.task
     print(f"Model task: {task}")
 
@@ -123,6 +135,14 @@ def main():
     miscounted_caught_by_gate = 0
     total_miscounted = 0
     class_errors = defaultdict(int)
+    cluster_images = 0
+    cluster_exact = 0
+    cluster_abs_error = 0
+    cluster_over = 0
+    cluster_under = 0
+    negative_images = 0
+    negative_false_positives = 0
+    obb_split_stats = Counter()
 
     for img_path in images:
         lbl_path = lbl_dir / f"{img_path.stem}.txt"
@@ -135,12 +155,21 @@ def main():
         objects = []
         if task == "segment":
             polys, boxes, scores, classes, mask_metrics = detect_seg(
-                model, img, conf=args.conf, imgsz=args.imgsz,
+                model, img, conf=args.conf, imgsz=args.imgsz, iou=args.iou,
             )
+            if obb_model is not None:
+                image_split_stats = {}
+                polys, boxes, scores, classes = split_banana_cluster_detections(
+                    polys, boxes, scores, classes, obb_model, img,
+                    conf=max(0.30, args.conf), det_names=model.names,
+                    method=args.split_method,
+                    stats=image_split_stats,
+                )
+                obb_split_stats.update(image_split_stats)
             for k in range(len(boxes)):
                 c = int(classes[k])
                 objects.append({
-                    "label": LABELS.get(c, f"class_{c}"),
+                    "label": model_label(model, c),
                     "confidence": float(scores[k]),
                     "bbox": boxes[k].tolist(),
                     "polygon": polys[k].tolist() if k < len(polys) else None,
@@ -148,21 +177,21 @@ def main():
                     "occlusion_ratio": mask_metrics[k]["occlusion_ratio"] if k < len(mask_metrics) else 0.0,
                 })
         elif task == "obb":
-            polys, boxes, scores, classes = detect_obb(model, img, conf=args.conf, imgsz=args.imgsz)
+            polys, boxes, scores, classes = detect_obb(model, img, conf=args.conf, imgsz=args.imgsz, iou=args.iou)
             for k in range(len(boxes)):
                 c = int(classes[k])
                 objects.append({
-                    "label": LABELS.get(c, f"class_{c}"),
+                    "label": model_label(model, c),
                     "confidence": float(scores[k]),
                     "bbox": boxes[k].tolist(),
                     "polygon": polys[k].tolist() if k < len(polys) else None,
                 })
         else:
-            boxes, scores, classes = detect(model, img, conf=args.conf, imgsz=args.imgsz)
+            boxes, scores, classes = detect(model, img, conf=args.conf, imgsz=args.imgsz, iou=args.iou)
             for k in range(len(boxes)):
                 c = int(classes[k])
                 objects.append({
-                    "label": LABELS.get(c, f"class_{c}"),
+                    "label": model_label(model, c),
                     "confidence": float(scores[k]),
                     "bbox": boxes[k].tolist(),
                 })
@@ -190,6 +219,16 @@ def main():
 
         for c_lbl in ("banana", "apple", "orange"):
             class_errors[c_lbl] += abs(pred_counts[c_lbl] - true_counts[c_lbl])
+        if true_counts["banana"] >= 2:
+            cluster_images += 1
+            banana_error = pred_counts["banana"] - true_counts["banana"]
+            cluster_abs_error += abs(banana_error)
+            cluster_exact += banana_error == 0
+            cluster_over += banana_error > 0
+            cluster_under += banana_error < 0
+        if true_total == 0:
+            negative_images += 1
+            negative_false_positives += pred_total > 0
 
         results.append({
             "image": img_path.name,
@@ -214,6 +253,14 @@ def main():
         "quality_gate_safety_rate": round(miscounted_caught_by_gate / total_miscounted, 4) if total_miscounted else 1.0,
         "total_miscounted": total_miscounted,
         "miscounted_caught": miscounted_caught_by_gate,
+        "banana_cluster_images": cluster_images,
+        "banana_cluster_exact_count_accuracy": round(cluster_exact / cluster_images, 4) if cluster_images else 0.0,
+        "banana_cluster_count_mae": round(cluster_abs_error / cluster_images, 4) if cluster_images else 0.0,
+        "banana_cluster_over_count_images": cluster_over,
+        "banana_cluster_under_count_images": cluster_under,
+        "negative_images": negative_images,
+        "negative_false_positive_images": negative_false_positives,
+        "obb_split_diagnostics": dict(obb_split_stats),
     }
 
     args.output.parent.mkdir(parents=True, exist_ok=True)

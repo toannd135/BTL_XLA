@@ -1,4 +1,4 @@
-"""Export reviewed feedback into an isolated YOLO detection dataset.
+"""Export reviewed feedback masks into an isolated YOLO segmentation dataset.
 
 The source files in work/feedback are never changed. Only feedback entries with
 the requested verdict are exported, so the result can be inspected before use
@@ -12,6 +12,7 @@ import shutil
 from pathlib import Path
 
 import cv2
+import numpy as np
 
 
 LABELS = {"banana": 0, "apple": 1, "orange": 2}
@@ -48,18 +49,22 @@ def load_entry(path, verdict):
     return entry, result, image
 
 
-def convert_box(box, width, height):
-    if not isinstance(box, list) or len(box) != 4:
+def convert_polygon(polygon, width, height):
+    if not isinstance(polygon, list) or len(polygon) < 3:
         return None
     try:
-        x1, y1, x2, y2 = (float(value) for value in box)
+        points = np.asarray(polygon, dtype=np.float32).reshape(-1, 2)
     except (TypeError, ValueError):
         return None
-    x1, x2 = sorted((max(0.0, min(width, x1)), max(0.0, min(width, x2))))
-    y1, y2 = sorted((max(0.0, min(height, y1)), max(0.0, min(height, y2))))
-    if x2 <= x1 or y2 <= y1:
+    if len(points) < 3 or not np.isfinite(points).all():
         return None
-    return (x1 + x2) / 2 / width, (y1 + y2) / 2 / height, (x2 - x1) / width, (y2 - y1) / height
+    clipped = points.copy()
+    clipped[:, 0] = np.clip(clipped[:, 0], 0, width)
+    clipped[:, 1] = np.clip(clipped[:, 1], 0, height)
+    if cv2.contourArea(clipped.reshape(-1, 1, 2)) <= 0:
+        return None
+    normalized = clipped / np.asarray([width, height], dtype=np.float32)
+    return normalized, not np.array_equal(points, clipped)
 
 
 def export_entry(entry, result, image_path, output, split):
@@ -75,23 +80,21 @@ def export_entry(entry, result, image_path, output, split):
     clipped = 0
     for obj in result["objects"]:
         label = LABELS.get(obj.get("label"))
-        normalized = convert_box(obj.get("bbox"), width, height)
-        if label is None or normalized is None:
-            print(f"SKIP object in {image_path.name}: invalid label or box")
+        converted = convert_polygon(obj.get("polygon"), width, height)
+        if label is None or converted is None:
+            print(f"SKIP object in {image_path.name}: invalid label or mask polygon")
             continue
-        original = [float(value) for value in obj["bbox"]]
-        if original != list(map(float, [max(0.0, min(width, original[0])),
-                                        max(0.0, min(height, original[1])),
-                                        max(0.0, min(width, original[2])),
-                                        max(0.0, min(height, original[3]))])):
+        normalized, was_clipped = converted
+        if was_clipped:
             clipped += 1
-        lines.append(f"{label} " + " ".join(f"{value:.6f}" for value in normalized))
+        coords = normalized.reshape(-1)
+        lines.append(f"{label} " + " ".join(f"{value:.6f}" for value in coords))
     if not lines:
         print(f"SKIP {image_path.name}: no valid objects")
         return False
     shutil.copyfile(image_path, target_image)
     target_label.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    return {"image": image_path.name, "split": split, "objects": len(lines), "clipped_boxes": clipped}
+    return {"image": image_path.name, "split": split, "objects": len(lines), "clipped_masks": clipped}
 
 
 def main():

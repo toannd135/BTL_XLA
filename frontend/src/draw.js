@@ -1,45 +1,13 @@
-import { boxColor } from './boxStyle'
+import { instanceColor } from './instanceStyle'
 
 const FONT = "'Be Vietnam Pro', system-ui, sans-serif"
 
-// Vẽ polygon mượt dùng Catmull-Rom spline qua các điểm (thay vì đường gãy polyline)
-function smoothPolygonPath(ctx, pts) {
-  if (!pts || pts.length < 3) return
-  const n = pts.length
-  ctx.beginPath()
-  for (let i = 0; i < n; i++) {
-    const p0 = pts[(i - 1 + n) % n]
-    const p1 = pts[i]
-    const p2 = pts[(i + 1) % n]
-    const p3 = pts[(i + 2) % n]
-    // Catmull-Rom → Cubic Bezier control points (alpha=0.5)
-    const tension = 0.4
-    const cp1x = p1[0] + (p2[0] - p0[0]) * tension
-    const cp1y = p1[1] + (p2[1] - p0[1]) * tension
-    const cp2x = p2[0] - (p3[0] - p1[0]) * tension
-    const cp2y = p2[1] - (p3[1] - p1[1]) * tension
-    if (i === 0) ctx.moveTo(p1[0], p1[1])
-    ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, p2[0], p2[1])
-  }
-  ctx.closePath()
-}
-
-// Polygon cho Instance Segmentation (N >= 3, mượt) hoặc OBB (N = 4, cạnh thẳng), ngược lại box chữ nhật
+// Vẽ đúng các đỉnh polygon do backend trả về, không nội suy làm xê dịch biên.
 function shapePath(ctx, o) {
   if (o.polygon && o.polygon.length >= 3) {
-    // OBB (đúng 4 điểm góc): vẽ cạnh thẳng để giữ góc xoay chính xác
-    if (o.polygon.length === 4) {
-      ctx.beginPath()
-      o.polygon.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)))
-      ctx.closePath()
-    } else {
-      // Instance Segmentation mask: dùng Catmull-Rom để vẽ đường cong mượt
-      smoothPolygonPath(ctx, o.polygon)
-    }
-  } else if (o.bbox) {
-    const [x1, y1, x2, y2] = o.bbox
     ctx.beginPath()
-    ctx.rect(x1, y1, x2 - x1, y2 - y1)
+    o.polygon.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)))
+    ctx.closePath()
   }
 }
 
@@ -54,13 +22,12 @@ export function drawBoxes(ctx, objects, w, h, { selectedIndex = null, displaySca
   if (selected !== null) order.push(...order.splice(order.indexOf(selected), 1))
   order.forEach((index) => {
     const o = objects[index]
-    // Gắn tem nhãn vào đỉnh cao nhất của polygon hoặc góc trên-trái bbox
-    const [x1, y1] = (o.polygon && o.polygon.length >= 3)
-      ? o.polygon.reduce((top, p) => (p[1] < top[1] ? p : top))
-      : (o.bbox || [0, 0])
+    if (!o.polygon || o.polygon.length < 3) return
+    // Gắn tem nhãn vào đỉnh cao nhất của mask.
+    const [x1, y1] = o.polygon.reduce((top, p) => (p[1] < top[1] ? p : top))
     const active = selected === index
     const muted = selected !== null && !active
-    const color = boxColor(index)
+    const color = instanceColor(index)
 
     // Tô vùng mask bán trong suốt cho Instance Segmentation để phân biệt rõ từng quả
     if (o.polygon && o.polygon.length >= 3) {
@@ -73,30 +40,21 @@ export function drawBoxes(ctx, objects, w, h, { selectedIndex = null, displaySca
     }
 
     ctx.globalAlpha = muted ? 0.15 : 1
-    // Viền đậm phía ngoài giữ độ tương phản trên mọi nền
-    ctx.strokeStyle = 'rgba(0,0,0,0.55)'
-    ctx.lineWidth = (active ? 5 : 3) * s
-    if (o.is_occluded) {
-      ctx.setLineDash([4 * s, 4 * s])
-    } else {
-      ctx.setLineDash([])
-    }
+    // Keep the outline continuous and narrow; dashed occlusion styling made
+    // overlapping masks look like stray fragments and extra boundaries.
+    ctx.strokeStyle = 'rgba(0,0,0,0.45)'
+    ctx.lineWidth = (active ? 3 : 2) * s
+    ctx.setLineDash([])
     shapePath(ctx, o)
     ctx.stroke()
 
     // Viền màu đại diện cho đối tượng
     ctx.strokeStyle = color
-    ctx.lineWidth = (active ? 3 : 1.5) * s
+    ctx.lineWidth = (active ? 2 : 1.25) * s
     shapePath(ctx, o)
     ctx.stroke()
     ctx.setLineDash([])
 
-    if (active && (!o.polygon || o.polygon.length < 3)) {
-      ctx.globalAlpha = 0.08
-      ctx.fillStyle = color
-      ctx.fill()
-      ctx.globalAlpha = 1
-    }
     if (muted) return
 
     // Tem nhãn định danh đồng bộ với bảng kết quả

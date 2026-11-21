@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "phase": "2.0-training-readiness-audit",
+  "status": "BLOCKED",
+  "training_started": false,
+  "source_dataset_or_review_manifests_modified": false,
+  "split_changes_applied": 0,
+  "annotation_review": {
+    "manifest": "work/audit/phase1_review_manifest.csv",
+    "rows": 664,
+    "unique_images": 194,
+    "by_split": {
+      "train": {
+        "accepted": 0,
+        "corrected": 0,
+        "needs_review": 0,
+        "pending": 553
+      },
+      "val": {
+        "accepted": 0,
+        "corrected": 0,
+        "needs_review": 0,
+        "pending": 51
+      },
+      "test": {
+        "accepted": 0,
+        "corrected": 0,
+        "needs_review": 0,
+        "pending": 60
+      }
+    },
+    "reviewed_cvat_export_found": false,
+    "cvat_import_archive": {
+      "path": "work/obb/seg_data_review_v1/cvat_import_review_v1.zip",
+      "is_human_reviewed_export": false,
+      "members": 390,
+      "images": 194,
+      "labels": 194,
+      "expanded_package_hash_mismatches": 0
+    }
+  },
+  "leakage_review": {
+    "manifest": "work/audit/phase1.2_leakage_review_manifest.csv",
+    "pairs": 362,
+    "decisions": {
+      "same_capture": 0,
+      "near_duplicate": 0,
+      "similar_scene": 0,
+      "unrelated": 0,
+      "needs_review": 0,
+      "pending": 362
+    },
+    "blank_reviewer_decision_count": 362,
+    "cross_split_pair_counts": {
+      "train_val_pending": 332,
+      "train_test_pending": 30
+    },
+    "confirmed_same_capture_train_test": 0,
+    "confirmed_same_capture_train_val": 0,
+    "unresolved_train_test_candidates": 30,
+    "unresolved_train_val_candidates": 332,
+    "test_to_train_violations": 0,
+    "split_changes_applied": 0
+  },
+  "phase1_3_validator": {
+    "path": "work/audit/phase1.3_review_validation.json",
+    "status": "valid",
+    "issues": 0,
+    "pending_annotation_rows": 664,
+    "pending_annotation_images": 194,
+    "pending_leakage_pairs": 362
+  },
+  "dataset_integrity": {
+    "source_dataset": "work/obb/seg_data_candidate",
+    "source_counts": {
+      "train": {
+        "images": 1884,
+        "instances": 3675,
+        "negative_images": 287
+      },
+      "val": {
+        "images": 301,
+        "instances": 362,
+        "negative_images": 0
+      },
+      "test": {
+        "images": 345,
+        "instances": 349,
+        "negative_images": 71
+      }
+    },
+    "classes": {
+      "0": "banana",
+      "1": "apple",
+      "2": "orange"
+    },
+    "review_subset_images_mapped_to_source": 194,
+    "review_subset_hash_mismatches": 0,
+    "review_subset_split_mismatches": 0,
+    "source_missing_images_or_labels": 0,
+    "structural_validation": {
+      "exit_code": 0,
+      "problems": 0,
+      "empty_or_malformed_instances": 0,
+      "class_mapping_consistent": true,
+      "negative_images_preserved": true
+    },
+    "polygon_topology_validation": {
+      "exit_code": 1,
+      "self_intersection_candidates": 1041,
+      "train": 956,
+      "val": 41,
+      "test": 44,
+      "human_adjudication_complete": false
+    },
+    "review_subset_topology_candidates": 151,
+    "negative_images": {
+      "source_total": 358,
+      "review_subset": 25,
+      "review_decisions_confirmed": 0
+    }
+  },
+  "training_dataset_proposal": {
+    "created": false,
+    "reason": "No annotation decisions are complete; topology candidates and leakage candidates remain unresolved. Do not include pending or needs_review annotations."
+  },
+  "hardware": {
+    "python": "3.11.8",
+    "pytorch": "2.5.1+cu121",
+    "pytorch_cuda_build": "12.1",
+    "ultralytics": "8.4.180",
+    "opencv": "5.0.0",
+    "numpy": "2.4.6",
+    "cuda_available": false,
+    "cuda_device_count": 0,
+    "gpu_model": null,
+    "total_vram_bytes": null,
+    "free_vram_bytes": null,
+    "nvidia_smi": "failed to communicate with NVIDIA driver",
+    "gpu_memory_measured": false,
+    "disk": {
+      "filesystem": "/dev/nvme0n1p5",
+      "total": "69G",
+      "used": "66G",
+      "available": "2.8G",
+      "use_percent": 96
+    },
+    "training_configuration_approved": false,
+    "reason": "No CUDA device is visible in this environment, so target GPU model/VRAM and a safe CUDA configuration cannot be measured."
+  },
+  "existing_checkpoint": {
+    "path": "runs/seg/seg_boundary_candidate_gpu/weights/best.pt",
+    "exists": true,
+    "sha256": "6da28310bb7627d00dfa574cc36147d215afb48e4d0c3d0705e62ecb05917982",
+    "size_bytes": 20513629,
+    "metadata_task": "segment",
+    "class_names": {
+      "0": "banana",
+      "1": "apple",
+      "2": "orange"
+    },
+    "historical_train_args": {
+      "model": "yolo11s-seg.pt",
+      "epochs": 40,
+      "batch": 8,
+      "imgsz": 640,
+      "amp": true,
+      "cache": false,
+      "workers": 2,
+      "device": "unspecified",
+      "resume": false
+    },
+    "configuration_is_proof_of_current_hardware_fit": false
+  },
+  "blockers": [
+    "All 664 annotation review rows across 194 images are pending; no accepted or corrected human-reviewed labels are available.",
+    "The source dataset has 1,041 polygon self-intersection candidates (956 train, 41 val, 44 test); they are not human-adjudicated.",
+    "All 362 cross-split leakage pairs are pending, including 30 unresolved train-test candidates.",
+    "No human-reviewed CVAT export was found; the available ZIP is the unchanged import package.",
+    "CUDA/GPU and VRAM are unavailable to inspect in this runtime; target hardware compatibility cannot be established.",
+    "Only 2.8 GB of disk space is available, which is a material constraint for a training run and its outputs."
+  ],
+  "evidence": {
+    "structural_source_validator": "/tmp/phase20_source_structural.txt",
+    "topology_source_validator": "/tmp/phase20_source_topology.txt",
+    "structural_review_subset_validator": "/tmp/phase20_review_structural.txt",
+    "topology_review_subset_validator": "/tmp/phase20_review_topology.txt",
+    "structural_cvat_import_validator": "/tmp/phase20_cvat_structural.txt",
+    "topology_cvat_import_validator": "/tmp/phase20_cvat_topology.txt"
+  }
+}

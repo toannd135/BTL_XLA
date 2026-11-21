@@ -9,7 +9,7 @@ from pathlib import Path
 from ultralytics import YOLO
 
 ROOT = Path(__file__).resolve().parents[2]
-DATA = ROOT / "work/obb/seg_data_clean/seg.yaml"
+DATA = ROOT / "work/obb/seg_data_candidate/seg.yaml"
 
 
 def main():

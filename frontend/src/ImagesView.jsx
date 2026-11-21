@@ -9,13 +9,14 @@ import SummaryBar from './SummaryBar'
 import { downloadCanvas } from './draw'
 import { checkFile, isVideo, DROP_ACCEPT, MAX_FILES, MAX_MB } from './files'
 import { count, passConf, STATE_COLOR } from './labels'
-import { boxColor } from './boxStyle'
+import { instanceColor } from './instanceStyle'
 
 const STATUS = {
   wait: <Tag>Chờ</Tag>,
   run: <Tag color="blue">Đang chạy</Tag>,
   error: <Tag color="red">Lỗi</Tag>,
 }
+const IMAGE_WORKERS = 2
 
 // phần tử tự dùng phím mũi tên
 const ARROW_OWNERS = 'input, textarea, select, video, [contenteditable="true"], [role="slider"], ' +
@@ -27,30 +28,19 @@ const csvText = (s) => `"${(/^[=+\-@\t\r]/.test(s) ? "'" + s : s).replaceAll('"'
 const filterObjects = (result, minConf, excluded = []) =>
   (result?.objects || []).filter((o, i) => passConf(o, minConf) && !excluded.includes(i))
 
-// ảnh thu nhỏ + khung theo % kích thước ảnh, nhẹ hơn vẽ canvas cỡ gốc cho từng ảnh
+// Ảnh thu nhỏ với ranh giới mask riêng cho từng instance.
 function Thumb({ row, active, onOpen, onRemove }) {
   const res = row.result
   return (
     <div className={'g-item' + (active ? ' active' : '')} onClick={onOpen} title={row.error || row.name}>
       <div className="g-img">
         <img src={row.url} alt={row.name} loading="lazy" />
-        {res && row.objects.map((o, i) => {
-          const [x1, y1, x2, y2] = o.bbox
-          const color = boxColor(i)
-          return (
-            <span key={i} className="g-box" style={{
-              left: `${(x1 / res.image_width) * 100}%`,
-              top: `${(y1 / res.image_height) * 100}%`,
-              width: `${((x2 - x1) / res.image_width) * 100}%`,
-              height: `${((y2 - y1) / res.image_height) * 100}%`,
-              borderColor: color,
-            }}>
-              <span className="g-tag" style={{ background: color }}>
-                #{i + 1}
-              </span>
-            </span>
-          )
-        })}
+        {res && <svg className="g-mask-overlay" viewBox={`0 0 ${res.image_width} ${res.image_height}`} preserveAspectRatio="none" aria-hidden="true">
+          {row.objects.map((o, i) => o.polygon?.length >= 3 && (
+            <polygon key={i} points={o.polygon.map(([x, y]) => `${x},${y}`).join(' ')}
+              fill={`${instanceColor(i)}22`} stroke={instanceColor(i)} strokeWidth={Math.max(res.image_width, res.image_height) / 350} />
+          ))}
+        </svg>}
         <Button className="g-remove" type="text" size="small" title="Bỏ ảnh này"
           onClick={(e) => { e.stopPropagation(); onRemove() }}>
           ×
@@ -97,25 +87,28 @@ export default function ImagesView({ minConf, onVideo }) {
     itemsRef.current.forEach((it) => URL.revokeObjectURL(it.url))
   }, [])
 
-  // hàng đợi tuần tự: mỗi lần một ảnh, lấy ảnh 'wait' kế tiếp cho tới khi hết hoặc bị dừng
+  // Hai worker cho phép nạp/tiền xử lý upload kế tiếp trong khi model đang chạy.
   const pump = async () => {
     stopRef.current = false
     setStopping(false)
     if (runningRef.current) return
     runningRef.current = true
     setRunning(true)
-    while (!stopRef.current) {
-      const it = itemsRef.current.find((x) => x.status === 'wait')
-      if (!it) break
-      update(it.key, { status: 'run', error: null })
-      try {
-        const data = await predict(it.file)
-        // ảnh đã bị bỏ trong lúc chờ thì update không tìm thấy key, kết quả tự bị bỏ qua
-        update(it.key, { status: 'done', result: data, error: null, excluded: [] })
-      } catch (err) {
-        update(it.key, { status: 'error', error: errorText(err) })
+    const worker = async () => {
+      while (!stopRef.current) {
+        const it = itemsRef.current.find((x) => x.status === 'wait')
+        if (!it) return
+        update(it.key, { status: 'run', error: null })
+        try {
+          const data = await predict(it.file)
+          // ảnh đã bị bỏ trong lúc chờ thì update không tìm thấy key, kết quả tự bị bỏ qua
+          update(it.key, { status: 'done', result: data, error: null, excluded: [] })
+        } catch (err) {
+          update(it.key, { status: 'error', error: errorText(err) })
+        }
       }
     }
+    await Promise.all(Array.from({ length: IMAGE_WORKERS }, worker))
     runningRef.current = false
     setRunning(false)
     setStopping(false)
@@ -329,7 +322,7 @@ export default function ImagesView({ minConf, onVideo }) {
     resultBody = (
       <>
         <SummaryBar c={selC}
-          note={`${sel.result.inference_ms} ms, ảnh ${sel.result.image_width}×${sel.result.image_height}`} />
+          note={`${sel.result.total_ms ?? sel.result.inference_ms} ms tổng, model ${sel.result.inference_ms} ms, ảnh ${sel.result.image_width}×${sel.result.image_height}`} />
         {sel.result.quality?.status === 'needs_review' && (
           <Alert
             className="mb16"
@@ -353,8 +346,8 @@ export default function ImagesView({ minConf, onVideo }) {
             }
           />
         )}
-        <Typography.Paragraph type="secondary" className="box-hint">
-          Đối chiếu số quả với từng khung/mask trên ảnh. Bấm một dòng để làm nổi khung hoặc loại khung sai.
+        <Typography.Paragraph type="secondary" className="mask-hint">
+          Đối chiếu số quả với từng đường viền mask. Bấm một dòng để làm nổi bật instance hoặc loại instance sai.
         </Typography.Paragraph>
         <Space wrap className="mb16">
           <Typography.Text strong>Đánh giá kết quả:</Typography.Text>
@@ -367,13 +360,13 @@ export default function ImagesView({ minConf, onVideo }) {
         </Space>
         {selectedBox !== null && (
           <Space wrap className="mb16">
-            <Button size="small" onClick={() => setSelectedBox(null)}>Hiện tất cả khung</Button>
-            <Button size="small" danger onClick={excludeSelectedBox}>Loại khung #{selectedBox + 1} khỏi kết quả</Button>
+            <Button size="small" onClick={() => setSelectedBox(null)}>Hiện tất cả mask</Button>
+            <Button size="small" danger onClick={excludeSelectedBox}>Loại instance #{selectedBox + 1} khỏi kết quả</Button>
           </Space>
         )}
         {!!sel.excluded?.length && (
           <Typography.Paragraph type="secondary">
-            Đã loại thủ công {sel.excluded.length} khung.{' '}
+            Đã loại thủ công {sel.excluded.length} instance.{' '}
             <Button type="link" size="small" onClick={() => update(sel.key, { excluded: [] })}>
               Khôi phục các khung đã loại
             </Button>

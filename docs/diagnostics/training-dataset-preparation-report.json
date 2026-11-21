@@ -1,0 +1,159 @@
+{
+  "schema_version": "1.0",
+  "phase": "prepare_training_dataset",
+  "training_or_inference_run": false,
+  "source_dataset": {
+    "path": "work/obb/seg_data_candidate",
+    "tree_sha256": "231a786fab3bd669f280eef60864344ca5f3556979cbd304205ef0ccbd5cb1e6",
+    "tree_hash_algorithm": "SHA256 over sorted files: relative POSIX path + NUL + raw bytes of SHA256(file contents).",
+    "yaml_sha256": "d6e9813c256a5281b46df0fcc24b7f7e89fbfc2aece7b08b09bf312e8c215eb2",
+    "candidate_manifest_sha256": "bd37081c8decc17a0f83ac2901e9000dbd1c378589bfe1222a9209853cb3cde5",
+    "class_map": {
+      "0": "banana",
+      "1": "apple",
+      "2": "orange"
+    }
+  },
+  "new_dataset": {
+    "path": "work/obb/seg_data_training_prep_v1",
+    "tree_sha256": "2efda8f9908eb1e0a249e73aadae9d6b4097ce4e678ec2097bc9dafa17563d1e",
+    "bytes": 297995720,
+    "yaml_path": "work/obb/seg_data_training_prep_v1/seg.yaml",
+    "yaml_sha256": "3031b817a04ae8fae6618217be57734467a28be6f57cf009d0a62802e4981669",
+    "dataset_preparation_manifest": "work/obb/seg_data_training_prep_v1/dataset_preparation_manifest.json",
+    "proposal_root": "work/obb/seg_data_training_prep_v1/annotation_proposals",
+    "active_split_annotations_unchanged": true
+  },
+  "adjudication": {
+    "event_log_sha256": "15d9452f0872efb4da2ead352dd3998595b93f61fb49dda4f34a7a41f9b9342c",
+    "worksheet_sha256": "1538a1454cd7fb8c2d3df193c7725eb38b1db8db436c8422685cb9f11c15ef51",
+    "confirmed_missing_gt_proposals": 6,
+    "proposals_by_class": {
+      "banana": 0,
+      "apple": 2,
+      "orange": 4
+    },
+    "uncertain_prediction_items_excluded": 3,
+    "confirmed_banana_merge_errors_not_split": 1,
+    "pending_negative_images": 2,
+    "pending_negative_prediction_items": 5,
+    "p0_images_in_test_split_only": true
+  },
+  "counts": {
+    "active_original_rows_copied": 4386,
+    "active_base_instances_by_class": {
+      "banana": 3072,
+      "apple": 679,
+      "orange": 635
+    },
+    "optional_proposed_additions": 6,
+    "optional_proposed_test_instances_by_class": {
+      "banana": 156,
+      "apple": 100,
+      "orange": 99
+    },
+    "optional_proposed_total_by_class": {
+      "banana": 3072,
+      "apple": 681,
+      "orange": 639
+    },
+    "splits": {
+      "train": {
+        "images": 1884,
+        "instances": 3675,
+        "instances_by_class": {
+          "apple": 473,
+          "banana": 2764,
+          "orange": 438
+        },
+        "negative_images": 287,
+        "self_intersecting_polygon_rows": 956,
+        "overlapping_images": 320,
+        "overlap_pairs": 433,
+        "duplicate_annotation_pairs_iou_ge_0_98": 0
+      },
+      "val": {
+        "images": 301,
+        "instances": 362,
+        "instances_by_class": {
+          "apple": 108,
+          "banana": 152,
+          "orange": 102
+        },
+        "negative_images": 0,
+        "self_intersecting_polygon_rows": 41,
+        "overlapping_images": 11,
+        "overlap_pairs": 22,
+        "duplicate_annotation_pairs_iou_ge_0_98": 0
+      },
+      "test": {
+        "images": 345,
+        "instances": 349,
+        "instances_by_class": {
+          "apple": 98,
+          "banana": 156,
+          "orange": 95
+        },
+        "negative_images": 71,
+        "self_intersecting_polygon_rows": 44,
+        "overlapping_images": 19,
+        "overlap_pairs": 28,
+        "duplicate_annotation_pairs_iou_ge_0_98": 0
+      }
+    }
+  },
+  "validation": {
+    "images": 2530,
+    "label_files": 2530,
+    "image_label_pair_missing": 0,
+    "orphan_labels": 0,
+    "structural_polygon_errors": 0,
+    "known_class_ids_only": true,
+    "normalized_coordinates_finite_and_in_range": true,
+    "exact_duplicate_images_across_splits": 0,
+    "cross_split_near_duplicate_phash_candidates_hamming_le_4": 362,
+    "duplicate_annotation_pairs_same_class_mask_iou_ge_0_98": 0,
+    "overlap_images": 350,
+    "overlap_pairs": 483,
+    "self_intersecting_original_polygon_rows": 1041,
+    "self_intersections_by_split": {
+      "train": 956,
+      "val": 41,
+      "test": 44
+    },
+    "proposed_polygon_rows": 6,
+    "proposed_polygons_self_intersecting": 0,
+    "proposed_unknown_classes": 0,
+    "proposed_same_class_duplicate_iou_ge_0_98": 0,
+    "proposed_pairwise_max_iou_same_image": 0.0037840666639829316,
+    "built_in_structural_validator": "pass; 0 structural problems",
+    "built_in_topology_validator": "reports 1041 existing self-intersection findings; expected nonzero exit; source labels preserved"
+  },
+  "remaining_review_and_data_quality": {
+    "uncertain_p0_prediction_items": 3,
+    "pending_negative_prediction_items": 5,
+    "pending_negative_images": 2,
+    "banana_merge_error_needs_verified_instance_polygons_before_any_split_annotation": true,
+    "source_annotation_polygons_flagged_self_intersecting": 1041,
+    "cross_split_near_duplicate_candidates": 362,
+    "validation_split_empty_negative_images": 0,
+    "source_polygons_are_sam_derived_pseudolabels": true
+  },
+  "no_changes_to": [
+    "source dataset",
+    "original GT",
+    "GT-reviewed",
+    "frozen predictions",
+    "evaluator",
+    "manifest",
+    "model/checkpoint",
+    "backend",
+    "benchmark config"
+  ],
+  "notes": [
+    "Six additional polygons are available only as optional test annotation proposals; default seg.yaml and active train/val/test labels do not include them.",
+    "Uncertain prediction decisions are excluded. Both pending negative labels remain empty.",
+    "No polygon was synthesized to split banana det_0000.",
+    "The 1041 topology findings are inherited source issues and were not repaired."
+  ]
+}

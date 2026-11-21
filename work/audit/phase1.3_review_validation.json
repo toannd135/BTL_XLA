@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "validator": "phase1.3-human-review-read-only-v1",
+  "inputs": {
+    "annotation_manifest": "/mnt/01DC7E1E309A75E0/CODE/BTL_XLA/fruit/work/audit/phase1_review_manifest.csv",
+    "leakage_manifest": "/mnt/01DC7E1E309A75E0/CODE/BTL_XLA/fruit/work/audit/phase1.2_leakage_review_manifest.csv",
+    "source_audit": "/mnt/01DC7E1E309A75E0/CODE/BTL_XLA/fruit/work/audit/phase1_dataset_audit.json",
+    "review_dataset_dir": "/mnt/01DC7E1E309A75E0/CODE/BTL_XLA/fruit/work/obb/seg_data_review_v1"
+  },
+  "validation_status": "valid",
+  "issues_count": 0,
+  "issues_by_category": {},
+  "issues": [],
+  "annotation_review": {
+    "manifest_rows": 664,
+    "unique_review_images": 194,
+    "review_status_counts": {
+      "pending": 664
+    },
+    "pending_count": 664,
+    "pending_unique_image_count": 194
+  },
+  "leakage_review": {
+    "manifest_rows": 362,
+    "canonical_pair_count": 362,
+    "unique_pair_ids": 362,
+    "review_status_counts": {
+      "pending": 362
+    },
+    "reviewer_decision_counts": {
+      "<blank>": 362
+    },
+    "pending_count": 362,
+    "missing_pair_ids": [],
+    "duplicate_pair_ids": [],
+    "unexpected_pair_ids": []
+  },
+  "split_protection": {
+    "test_to_train_violations": 0,
+    "test_to_train_proposals": [],
+    "same_capture_train_test_future_flags": [],
+    "same_capture_train_val_future_flags": [],
+    "similar_or_unrelated_retain_current_pair_ids": [],
+    "split_changes_applied": 0,
+    "validator_modifies_decisions_or_splits": false
+  }
+}

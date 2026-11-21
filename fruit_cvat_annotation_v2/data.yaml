@@ -1,0 +1,6 @@
+names:
+  0: banana
+  1: apple
+  2: orange
+path: .
+train: train.txt

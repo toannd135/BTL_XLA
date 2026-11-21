@@ -47,11 +47,11 @@ body { margin: 0; background: #eef3ea; }
 .drop-small .ant-upload-hint { margin: 0 !important; font-size: 12px !important; }
 .img-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
 .image-mode { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
-.box-id { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 24px; padding: 0 3px; border-radius: 4px; color: #fff; font-size: 12px; font-weight: 700; }
-.box-row { cursor: pointer; }
-.box-row-selected > td { background: #e8efff !important; }
-.box-row:focus-visible { outline: 2px solid #2563eb; outline-offset: -2px; }
-.box-hint { margin-bottom: 8px !important; font-size: 12px; }
+.instance-id { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 24px; padding: 0 3px; border-radius: 4px; color: #fff; font-size: 12px; font-weight: 700; }
+.instance-row { cursor: pointer; }
+.instance-row-selected > td { background: #e8efff !important; }
+.instance-row:focus-visible { outline: 2px solid #2563eb; outline-offset: -2px; }
+.mask-hint { margin-bottom: 8px !important; font-size: 12px; }
 .img-actions { flex: 2 1 320px; display: flex; flex-direction: column; gap: 8px; }
 .img-progress { display: flex; align-items: center; gap: 12px; font-size: 13px; color: #5b6b5c; white-space: nowrap; }
 .img-progress .ant-progress { flex: 1; max-width: 240px; margin: 0; }
@@ -65,8 +65,7 @@ body { margin: 0; background: #eef3ea; }
 .g-remove { position: absolute; top: 4px; right: 4px; line-height: 1; background: rgba(255, 255, 255, 0.85) !important; }
 .g-img { position: relative; line-height: 0; background: #f4f8f1; }
 .g-img img { display: block; width: 100%; height: auto; }
-.g-box { position: absolute; border: 2px solid; border-radius: 3px; }
-.g-tag { position: absolute; left: -2px; bottom: 100%; padding: 1px 6px; border-radius: 4px 4px 0 0; color: #fff; font-size: 10px; font-weight: 600; line-height: 1.5; white-space: nowrap; }
+.g-mask-overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .g-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 12px; font-size: 13px; }
 .g-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #5b6b5c; }
 .g-count { white-space: nowrap; }

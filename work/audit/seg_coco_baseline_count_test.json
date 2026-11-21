@@ -1,0 +1,3437 @@
+{
+  "summary": {
+    "model": "yolo11s-seg.pt",
+    "task": "segment",
+    "total_images": 345,
+    "exact_count_accuracy": 0.6319,
+    "count_mae": 0.4928,
+    "over_count_rate": 0.1072,
+    "under_count_rate": 0.2609,
+    "per_class_mae": {
+      "banana": 0.2087,
+      "apple": 0.1942,
+      "orange": 0.1594
+    },
+    "quality_gate_safety_rate": 0.2441,
+    "total_miscounted": 127,
+    "miscounted_caught": 31,
+    "banana_cluster_images": 26,
+    "banana_cluster_exact_count_accuracy": 0.1538,
+    "banana_cluster_count_mae": 1.6154,
+    "banana_cluster_over_count_images": 2,
+    "banana_cluster_under_count_images": 20,
+    "negative_images": 71,
+    "negative_false_positive_images": 2
+  },
+  "details": [
+    {
+      "image": "mbk__apple_1.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (67%)"
+      ]
+    },
+    {
+      "image": "mbk__apple_16.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (62%)"
+      ]
+    },
+    {
+      "image": "mbk__apple_23.jpg",
+      "true_total": 3,
+      "pred_total": 3,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_25.jpg",
+      "true_total": 1,
+      "pred_total": 3,
+      "abs_error": 2,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 che khuất nhiều (100%)",
+        "khung #2 che khuất nhiều (100%)",
+        "khung #3 quá lớn (69%)",
+        "trùng lặp khung #1 và #3",
+        "trùng lặp khung #2 và #3"
+      ]
+    },
+    {
+      "image": "mbk__apple_36.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (71%)"
+      ]
+    },
+    {
+      "image": "mbk__apple_37.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_38.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_43.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_50.jpg",
+      "true_total": 3,
+      "pred_total": 6,
+      "abs_error": 3,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (64%)",
+        "khung #2 che khuất nhiều (99%)"
+      ]
+    },
+    {
+      "image": "mbk__apple_61.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_68.jpg",
+      "true_total": 2,
+      "pred_total": 0,
+      "abs_error": 2,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_69.jpg",
+      "true_total": 3,
+      "pred_total": 3,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_7.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_70.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_74.jpg",
+      "true_total": 2,
+      "pred_total": 2,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_75.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (84%)"
+      ]
+    },
+    {
+      "image": "mbk__apple_86.jpg",
+      "true_total": 2,
+      "pred_total": 5,
+      "abs_error": 3,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_87.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_88.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_89.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (69%)"
+      ]
+    },
+    {
+      "image": "mbk__apple_91.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_93.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__apple_94.jpg",
+      "true_total": 2,
+      "pred_total": 4,
+      "abs_error": 2,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 che khuất nhiều (95%)",
+        "khung #2 che khuất nhiều (100%)",
+        "khung #3 quá lớn (87%)",
+        "khung #4 che khuất nhiều (94%)",
+        "trùng lặp khung #2 và #3"
+      ]
+    },
+    {
+      "image": "mbk__banana_10.jpg",
+      "true_total": 4,
+      "pred_total": 5,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (87%)",
+        "khung #3 che khuất nhiều (59%)",
+        "trùng lặp khung #2 và #5"
+      ]
+    },
+    {
+      "image": "mbk__banana_11.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__banana_17.jpg",
+      "true_total": 4,
+      "pred_total": 1,
+      "abs_error": 3,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__banana_22.jpg",
+      "true_total": 3,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__banana_27.jpg",
+      "true_total": 3,
+      "pred_total": 1,
+      "abs_error": 2,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (71%)"
+      ]
+    },
+    {
+      "image": "mbk__banana_30.jpg",
+      "true_total": 3,
+      "pred_total": 1,
+      "abs_error": 2,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (73%)"
+      ]
+    },
+    {
+      "image": "mbk__banana_31.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (62%)"
+      ]
+    },
+    {
+      "image": "mbk__banana_32.jpg",
+      "true_total": 4,
+      "pred_total": 2,
+      "abs_error": 2,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__banana_35.jpg",
+      "true_total": 1,
+      "pred_total": 3,
+      "abs_error": 2,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__banana_4.jpg",
+      "true_total": 2,
+      "pred_total": 3,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__banana_41.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__banana_44.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__banana_49.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__banana_50.jpg",
+      "true_total": 4,
+      "pred_total": 4,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__banana_53.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__banana_54.jpg",
+      "true_total": 3,
+      "pred_total": 1,
+      "abs_error": 2,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (84%)"
+      ]
+    },
+    {
+      "image": "mbk__banana_58.jpg",
+      "true_total": 3,
+      "pred_total": 3,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #3 che khuất nhiều (98%)"
+      ]
+    },
+    {
+      "image": "mbk__banana_59.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__banana_6.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__banana_61.jpg",
+      "true_total": 2,
+      "pred_total": 2,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__banana_63.jpg",
+      "true_total": 2,
+      "pred_total": 2,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__banana_67.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__banana_69.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__banana_70.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (73%)"
+      ]
+    },
+    {
+      "image": "mbk__banana_71.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__banana_73.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (63%)"
+      ]
+    },
+    {
+      "image": "mbk__banana_75.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__banana_76.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (85%)"
+      ]
+    },
+    {
+      "image": "mbk__banana_77.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__banana_78.jpg",
+      "true_total": 2,
+      "pred_total": 0,
+      "abs_error": 2,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__banana_80.jpg",
+      "true_total": 2,
+      "pred_total": 1,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__banana_82.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__banana_84.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (67%)"
+      ]
+    },
+    {
+      "image": "mbk__banana_85.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (81%)"
+      ]
+    },
+    {
+      "image": "mbk__banana_87.jpg",
+      "true_total": 4,
+      "pred_total": 4,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__banana_89.jpg",
+      "true_total": 3,
+      "pred_total": 1,
+      "abs_error": 2,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (72%)"
+      ]
+    },
+    {
+      "image": "mbk__banana_94.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (89%)"
+      ]
+    },
+    {
+      "image": "mbk__mixed_20.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (64%)"
+      ]
+    },
+    {
+      "image": "mbk__mixed_22.jpg",
+      "true_total": 3,
+      "pred_total": 0,
+      "abs_error": 3,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__mixed_7.jpg",
+      "true_total": 3,
+      "pred_total": 4,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__orange_10.jpg",
+      "true_total": 2,
+      "pred_total": 2,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__orange_16.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__orange_18.jpg",
+      "true_total": 1,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__orange_30.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__orange_32.jpg",
+      "true_total": 2,
+      "pred_total": 2,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__orange_33.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (74%)"
+      ]
+    },
+    {
+      "image": "mbk__orange_35.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__orange_40.jpg",
+      "true_total": 2,
+      "pred_total": 3,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__orange_41.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__orange_49.jpg",
+      "true_total": 1,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__orange_53.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__orange_54.jpg",
+      "true_total": 1,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #2 che khuất nhiều (99%)",
+        "trùng lặp khung #1 và #2"
+      ]
+    },
+    {
+      "image": "mbk__orange_58.jpg",
+      "true_total": 1,
+      "pred_total": 3,
+      "abs_error": 2,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 che khuất nhiều (62%)",
+        "khung #2 quá lớn (70%)",
+        "khung #3 che khuất nhiều (98%)"
+      ]
+    },
+    {
+      "image": "mbk__orange_61.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__orange_62.jpg",
+      "true_total": 2,
+      "pred_total": 2,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__orange_63.jpg",
+      "true_total": 1,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__orange_70.jpg",
+      "true_total": 2,
+      "pred_total": 1,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (67%)"
+      ]
+    },
+    {
+      "image": "mbk__orange_71.jpg",
+      "true_total": 1,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__orange_73.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__orange_76.jpg",
+      "true_total": 2,
+      "pred_total": 7,
+      "abs_error": 5,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #3 che khuất nhiều (100%)",
+        "khung #5 che khuất nhiều (56%)",
+        "khung #6 quá lớn (90%)",
+        "trùng lặp khung #1 và #6",
+        "trùng lặp khung #3 và #6"
+      ]
+    },
+    {
+      "image": "mbk__orange_78.jpg",
+      "true_total": 1,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (79%)",
+        "khung #2 che khuất nhiều (100%)",
+        "trùng lặp khung #1 và #2"
+      ]
+    },
+    {
+      "image": "mbk__orange_8.jpg",
+      "true_total": 2,
+      "pred_total": 1,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (67%)"
+      ]
+    },
+    {
+      "image": "mbk__orange_80.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "mbk__orange_81.jpg",
+      "true_total": 3,
+      "pred_total": 4,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 che khuất nhiều (98%)",
+        "khung #2 che khuất nhiều (100%)",
+        "khung #3 che khuất nhiều (61%)",
+        "khung #4 quá lớn (60%)",
+        "trùng lặp khung #1 và #4",
+        "trùng lặp khung #2 và #4"
+      ]
+    },
+    {
+      "image": "mbk__orange_82.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (64%)"
+      ]
+    },
+    {
+      "image": "mbk__orange_84.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (67%)"
+      ]
+    },
+    {
+      "image": "mbk__orange_85.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (65%)"
+      ]
+    },
+    {
+      "image": "mbk__orange_92.jpg",
+      "true_total": 1,
+      "pred_total": 3,
+      "abs_error": 2,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 che khuất nhiều (99%)",
+        "khung #2 che khuất nhiều (58%)",
+        "khung #3 che khuất nhiều (99%)",
+        "trùng lặp khung #1 và #2",
+        "trùng lặp khung #2 và #3"
+      ]
+    },
+    {
+      "image": "negative__00fb1018c263cfef.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__0122410b5cce58f7.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__040e9b5a2fdffe6a.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__0522908ff4e4e487.jpg",
+      "true_total": 0,
+      "pred_total": 2,
+      "abs_error": 2,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__06b6dbb81a4b4668.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__0c01f2b0bb729d09.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__0cc81a06ff967b63.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__0dad4d77fef2ad4c.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__12b5f7a7786d3bcd.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__14a8727b42ec4e6f.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__15cac718565f9cf0.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__16fcc7534a48be79.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__1bc199ffc8aa82b1.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__1dd88268d8859b59.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__1eb0292d2897f025.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__226773d217765f5a.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__23a0a0e725ba4bcc.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__23ed722720c469e0.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__2bad5bddf0fd146c.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__32afb9efd0da77b5.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__3326df98ee945bed.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__3380336acb5ecc08.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__339234d88b0f799a.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__37ab90ae42272fab.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__3c1713543499c50a.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__404858f395de8c33.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__42661fa2c0bccc7b.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__43b7cc5628918854.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__43cd6c4a1cbeb07d.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__4a474fe1268d33f2.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__4acf70ff40618954.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__505e2a60aad698a4.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__54a04301f52fc35c.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__55d25efab25cff79.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__5dc7b61f9db4594b.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__5ea6f7cb8fc0568b.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__62a30b59436a9a84.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__6610e1f81ca72ad3.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__661faa905b37dc62.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__68e47fcac55d975d.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__6ae57c405bf843f1.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__6da4c85b450c6f0d.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__77dd3923e22c68ec.jpg",
+      "true_total": 0,
+      "pred_total": 1,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (70%)"
+      ]
+    },
+    {
+      "image": "negative__7f5c5e2752f7687a.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__88178ac54c399a6e.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__8969a4a016175acb.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__8ae8149dcafa8176.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__8ebbcd14cd2d3912.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__9551f7a242f73f56.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__9691577063119982.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__99fa89d285efb747.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__9ee3dc4494c25c29.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__a136021d7e73e42d.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__a24b07cb12c59a37.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__b4060b3daa602206.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__b54853395bcc29eb.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__c308a47e6932a580.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__c9bcf4fea6ee337d.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__cc3cf1cd3eeb14b2.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__d69df385f0dc398b.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__e20cba9198bbb8a0.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__e2e5c99f5f28f5f2.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__e46eb9ecda5c3841.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__e7187dbb8bc1ccc8.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__edd2af5fea1488e3.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__edfb05a555781af9.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__f2b5865b6948c965.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__f47a4cfbcedcb3ba.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__f48a2c2b2500cfff.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__f60ee2ab4884d4d8.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "negative__fc4a12d71f71793e.jpg",
+      "true_total": 0,
+      "pred_total": 0,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "own-apple_YTSave_YouTube_Media_U7S7bKThGb8_Apple-Timelapse_001_1080p__apple_YTSave_YouTube_Media_U7S7bKThGb8_Apple-Timelapse_001_1080p_002060.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "own-apple_YTSave_YouTube_Media_ajay1tq_roU_Apple-Timelapse-Video_001_1080p__apple_YTSave_YouTube_Media_ajay1tq_roU_Apple-Timelapse-Video_001_1080p_004620.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "own-apple_YTSave_YouTube_Media_ajay1tq_roU_Apple-Timelapse-Video_001_1080p__apple_YTSave_YouTube_Media_ajay1tq_roU_Apple-Timelapse-Video_001_1080p_004700.jpg",
+      "true_total": 1,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "own-apple_YTSave_YouTube_Media_ajay1tq_roU_Apple-Timelapse-Video_001_1080p__apple_YTSave_YouTube_Media_ajay1tq_roU_Apple-Timelapse-Video_001_1080p_004820.jpg",
+      "true_total": 1,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "own-apple_YTSave_YouTube_Media_ajay1tq_roU_Apple-Timelapse-Video_001_1080p__apple_YTSave_YouTube_Media_ajay1tq_roU_Apple-Timelapse-Video_001_1080p_004840.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "own-apple_YTSave_YouTube_Media_bNZd1zJKF6w_Green-Apple-Rotting_001_1080p__apple_YTSave_YouTube_Media_bNZd1zJKF6w_Green-Apple-Rotting_001_1080p_005160.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "own-apple_YTSave_YouTube_Media_bNZd1zJKF6w_Green-Apple-Rotting_001_1080p__apple_YTSave_YouTube_Media_bNZd1zJKF6w_Green-Apple-Rotting_001_1080p_006340.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "own-banana_Banana_Decomposition_on_Scale__banana_Banana_Decomposition_on_Scale_000980.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (93%)"
+      ]
+    },
+    {
+      "image": "own-banana_Banana_Decomposition_on_Scale__banana_Banana_Decomposition_on_Scale_001000.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (93%)"
+      ]
+    },
+    {
+      "image": "own-banana_Banana_Decomposition_on_Scale__banana_Banana_Decomposition_on_Scale_001020.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (93%)"
+      ]
+    },
+    {
+      "image": "own-banana_Banana_Decomposition_on_Scale__banana_Banana_Decomposition_on_Scale_001040.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (93%)"
+      ]
+    },
+    {
+      "image": "own-banana_Banana_Decomposition_on_Scale__banana_Banana_Decomposition_on_Scale_001060.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (93%)"
+      ]
+    },
+    {
+      "image": "own-banana_Banana_Decomposition_on_Scale__banana_Banana_Decomposition_on_Scale_001080.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (93%)"
+      ]
+    },
+    {
+      "image": "own-banana_Banana_Decomposition_on_Scale__banana_Banana_Decomposition_on_Scale_001100.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (93%)"
+      ]
+    },
+    {
+      "image": "own-banana_Banana_Decomposition_on_Scale__banana_Banana_Decomposition_on_Scale_001120.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (93%)"
+      ]
+    },
+    {
+      "image": "own-banana_Banana_Decomposition_on_Scale__banana_Banana_Decomposition_on_Scale_007820.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (91%)"
+      ]
+    },
+    {
+      "image": "own-banana_Banana_Decomposition_on_Scale__banana_Banana_Decomposition_on_Scale_007840.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (89%)"
+      ]
+    },
+    {
+      "image": "own-banana_Banana_Decomposition_on_Scale__banana_Banana_Decomposition_on_Scale_007860.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (92%)"
+      ]
+    },
+    {
+      "image": "own-banana_Banana_Decomposition_on_Scale__banana_Banana_Decomposition_on_Scale_007880.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (92%)"
+      ]
+    },
+    {
+      "image": "own-orange_YTSave_YouTube_Media_U51N0t3w7CI_Tangerine-Mandarin-Orange-Time-Lapse_001_1080p__orange_YTSave_YouTube_Media_U51N0t3w7CI_Tangerine-Mandarin-Orange-Time-Lapse_001_1080p_002540.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "own-orange_YTSave_YouTube_Media_U51N0t3w7CI_Tangerine-Mandarin-Orange-Time-Lapse_001_1080p__orange_YTSave_YouTube_Media_U51N0t3w7CI_Tangerine-Mandarin-Orange-Time-Lapse_001_1080p_002680.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "own-orange_YTSave_YouTube_Media_U51N0t3w7CI_Tangerine-Mandarin-Orange-Time-Lapse_001_1080p__orange_YTSave_YouTube_Media_U51N0t3w7CI_Tangerine-Mandarin-Orange-Time-Lapse_001_1080p_002700.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "own-orange_YTSave_YouTube_Media_U51N0t3w7CI_Tangerine-Mandarin-Orange-Time-Lapse_001_1080p__orange_YTSave_YouTube_Media_U51N0t3w7CI_Tangerine-Mandarin-Orange-Time-Lapse_001_1080p_002720.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "own-orange_YTSave_YouTube_Media_U51N0t3w7CI_Tangerine-Mandarin-Orange-Time-Lapse_001_1080p__orange_YTSave_YouTube_Media_U51N0t3w7CI_Tangerine-Mandarin-Orange-Time-Lapse_001_1080p_002740.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "own-orange_YTSave_YouTube_Media_bPCPTUw3Oy4_Orange-Timelapse_001_1080p__orange_YTSave_YouTube_Media_bPCPTUw3Oy4_Orange-Timelapse_001_1080p_003480.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "own-orange_YTSave_YouTube_Media_bPCPTUw3Oy4_Orange-Timelapse_001_1080p__orange_YTSave_YouTube_Media_bPCPTUw3Oy4_Orange-Timelapse_001_1080p_003500.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "own-orange_YTSave_YouTube_Media_bPCPTUw3Oy4_Orange-Timelapse_001_1080p__orange_YTSave_YouTube_Media_bPCPTUw3Oy4_Orange-Timelapse_001_1080p_003520.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "own-orange_YTSave_YouTube_Media_bPCPTUw3Oy4_Orange-Timelapse_001_1080p__orange_YTSave_YouTube_Media_bPCPTUw3Oy4_Orange-Timelapse_001_1080p_003540.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_18_28-PM_png.rf.ea53bf919c3a371d71752cdd1bf90bc7.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_18_41-PM_png.rf.57b491c5e6ccf1cd524e7f1d67ec8e33.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (64%)"
+      ]
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_20_40-PM_png.rf.9a2d5c3726456e83c0cb8020a177649f.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (83%)"
+      ]
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_20_40-PM_png.rf.c7711cf178773c03776afb1c87122bf2.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (90%)"
+      ]
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_20_40-PM_png.rf.e2ae29d44573467e8ea5e1a4d98a4d43.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (80%)"
+      ]
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_21_10-PM_png.rf.4ac5092ecfe80600721cc2860fcf0479.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_23_09-PM_png.rf.8c883de8572a31aa54092969348ffac9.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_23_46-PM_png.rf.03d064edc39d35545420abc5ad01a65c.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_24_43-PM_png.rf.6e470e6392b88320951790c5eb201d07.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_25_16-PM_png.rf.a6768ba565d0bbba8f9b3655b95e82d2.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_26_02-PM_png.rf.c1b411111e0cd354adef3d085dbc4df5.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_27_26-PM_png.rf.a4d150b11772d41f2e93833a933ea479.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_28_08-PM_png.rf.47cf77e3539c51f3237a348248511b81.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_28_08-PM_png.rf.8d8d3584f6d961938c3452c353199c3e.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_28_08-PM_png.rf.d97d79ce9524245adeb7bb9f63ed0280.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_28_17-PM_png.rf.9a32522c1331ee407ece2e1b7ec199b8.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_28_33-PM_png.rf.354b07fa096ddd9b65432c1bbea242aa.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_30_35-PM_png.rf.30fe572eb8d86c6b10d6847a3c2c13ff.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_32_04-PM_png.rf.79ad2543ce9f49a0ed89b61be67ab2c0.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_32_33-PM_png.rf.0aac77e4014eaec6fed0f71e595c5d9c.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (64%)"
+      ]
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_32_33-PM_png.rf.2d42eeef3f108ed196478d90c5626f19.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (66%)"
+      ]
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_32_33-PM_png.rf.72fdaa6c674d475ce0df8be67fd7d554.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (73%)"
+      ]
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_33_06-PM_png.rf.11a9da3310a2442e7dbcb4e28b5b809c.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_33_06-PM_png.rf.6953ef910315c377cc5d3b6a5f1b2e65.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_33_06-PM_png.rf.77f97e21c3004dbf213aa9f1869e4511.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_50_33-PM_png.rf.64a6c03ab23c6759b182173802082972.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (85%)"
+      ]
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_55_00-PM_png.rf.795187b4cd46725cc90dc00bfd609025.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (65%)"
+      ]
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_55_37-PM_png.rf.587b3012d1bfef86fc44c0b8dd9953ba.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (75%)"
+      ]
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_55_42-PM_png.rf.06a46be2b22de9728237ca8d79df81f5.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (74%)"
+      ]
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_56_48-PM_png.rf.c720b9347cd0c2a4b7ff998985314c8a.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (76%)"
+      ]
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_57_07-PM_png.rf.09e85325a95b0d2bd483f222783b6aef.jpg",
+      "true_total": 2,
+      "pred_total": 2,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (83%)"
+      ]
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_58_02-PM_png.rf.903a6cfa3d0155493464f3c251a920b5.jpg",
+      "true_total": 2,
+      "pred_total": 2,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (72%)",
+        "khung #2 độ lồi bất thường (0.53)"
+      ]
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_58_11-PM_png.rf.1d602dd6ac61a6d0072ea2066d39b317.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-12-at-11_58_43-PM_png.rf.1b0a956be52bbf451c32a321c6111245.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (79%)"
+      ]
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-13-at-12_00_02-AM_png.rf.9ab0ccfcadf06a09634f775bd4c76498.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (62%)"
+      ]
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-13-at-12_00_23-AM_png.rf.2024f260d34bd619937c3928291248fb.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-13-at-12_02_45-AM_png.rf.e8d37b58f83a69e41a81b73c48682e10.jpg",
+      "true_total": 1,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (77%)"
+      ]
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-13-at-12_04_34-AM_png.rf.c1ce5b6da8934ce654814e598ad4d1c9.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (75%)"
+      ]
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-13-at-12_04_39-AM_png.rf.d39c7f369ff543e54fc1e820ee95d6bf.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (75%)"
+      ]
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-13-at-12_05_27-AM_png.rf.8aa8077309d0d5d0dc25233fdd8aed3a.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (72%)"
+      ]
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-13-at-12_06_01-AM_png.rf.9a83605fdf21c56fc6dd5dee73b5e0c7.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (89%)"
+      ]
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-13-at-12_06_10-AM_png.rf.92febfb5de96197847173d828ae9a833.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (75%)"
+      ]
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-13-at-12_06_15-AM_png.rf.8597d0bd8fd058bd9417d1ad52705e30.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__Screen-Shot-2018-06-13-at-12_06_52-AM_png.rf.0cfa4dafac2f772cc5e656eba9b743c4.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (70%)"
+      ]
+    },
+    {
+      "image": "rf_v7__a_f005_png.rf.500da2fd6041d9075537f292c652c999.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (60%)"
+      ]
+    },
+    {
+      "image": "rf_v7__a_f005_png.rf.922c316dabf642e1f10591c80db3109a.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (61%)"
+      ]
+    },
+    {
+      "image": "rf_v7__a_f005_png.rf.93c42b67a4f25aba589bbc443472289d.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_f016_png.rf.0d55d9a8d3fd46f8d2c07419729e1169.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_f016_png.rf.710db10a7ee9b544cecabf7b6319c342.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_f016_png.rf.9ce4397cc1ab886338489a445b935d57.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (61%)"
+      ]
+    },
+    {
+      "image": "rf_v7__a_f032_png.rf.518e9810fb9275c72ac0a07be8fe6260.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_f032_png.rf.a230d5d63eaeb7527e724090daab8211.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_f032_png.rf.eba8ed72cac34625a319f9a607920721.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_f041_png.rf.4662113e5ea19878921811d6936f323b.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (71%)"
+      ]
+    },
+    {
+      "image": "rf_v7__a_f041_png.rf.b18fda4ca85faa5247aa154d83f23e7d.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (69%)"
+      ]
+    },
+    {
+      "image": "rf_v7__a_f041_png.rf.e8ba168a0fa33782bfca8be9beb9088f.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_f052_png.rf.339f47ca1ae7b9fa6ab8849c2a8d0e2c.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_f052_png.rf.5e6c760f4891ee4c7845ebb60bc8908e.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_f052_png.rf.ff12c7ff6d198df1fa0fcb212f9ac9ce.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_f058_png.rf.0bef7cb6a91177849af36b634754b8ff.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (66%)"
+      ]
+    },
+    {
+      "image": "rf_v7__a_f058_png.rf.24235f333de0b5d58f380e4000d7165d.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_f058_png.rf.2c93109dadb5d6cd5aa1fb969d12270d.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_f074_png.rf.046da8b72c7803e5b032567e336593b7.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_f074_png.rf.3bb5c3dceea38671f09c0fee062138e0.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (64%)"
+      ]
+    },
+    {
+      "image": "rf_v7__a_f074_png.rf.f5381dfaa9a598505a1ad2fbd5c28e24.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_f085_png.rf.3528a77bb4a01256ea645ba704e5d700.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_f085_png.rf.b0ec9cc9a5ce72fe2be0276fbab87f81.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_f085_png.rf.e70bdab8da8618f7790033f9d9a0af88.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (71%)"
+      ]
+    },
+    {
+      "image": "rf_v7__a_f095_png.rf.38aea29c1f9b2593589742327fc4a936.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (86%)"
+      ]
+    },
+    {
+      "image": "rf_v7__a_f095_png.rf.a3f9ea6322c28144695135557b1af1d1.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_f095_png.rf.c88719b501b70a890141ed38bec2667d.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (85%)"
+      ]
+    },
+    {
+      "image": "rf_v7__a_r008_png.rf.748cb0f17f0866d28f577c2fd020dde8.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (69%)"
+      ]
+    },
+    {
+      "image": "rf_v7__a_r009_png.rf.61b0da8500e95cce93da47f19d43cf93.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_r010_png.rf.1d196e4a67e5bf30fb4a40c8716a1f8f.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_r011_png.rf.3a64788647b773a31a29c190d03a6386.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_r016_png.rf.813a368565ac87b8f5399e2e4ecc9f40.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (72%)"
+      ]
+    },
+    {
+      "image": "rf_v7__a_r019_png.rf.79d89b850101e980bb61a0c2d874dd6c.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (62%)"
+      ]
+    },
+    {
+      "image": "rf_v7__a_r025_png.rf.d45ae3ec0a207ccd72eba23b6f0a6a71.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (67%)"
+      ]
+    },
+    {
+      "image": "rf_v7__a_r026_png.rf.755a8f5babcbc71ba95b9dbc8dbfffb7.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_r027_png.rf.5d3472dd2147da097fdf41403a60fca2.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_r029_png.rf.51468e918dafa7b7176b3b2e8631519b.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (69%)"
+      ]
+    },
+    {
+      "image": "rf_v7__a_r031_png.rf.73da0ee8cf8518e5a0e953464455cba1.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (93%)"
+      ]
+    },
+    {
+      "image": "rf_v7__a_r033_png.rf.906c4dcff3afc0216011a81448d0ce46.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_r040_png.rf.cdb7196f42d44e89358a1177dd99a1c5.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_r042_png.rf.00655a027df0dd7a115b83fde9329435.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (72%)"
+      ]
+    },
+    {
+      "image": "rf_v7__a_r045_png.rf.5b654b0710da71634b6be838d52072f4.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (72%)"
+      ]
+    },
+    {
+      "image": "rf_v7__a_r049_png.rf.d73bcbe740b68a65f9fe0f08fddd4d7f.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (74%)"
+      ]
+    },
+    {
+      "image": "rf_v7__a_r050_png.rf.dafa78fc767e1aa2eaa384f43f8ff6c3.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_r058_png.rf.d6109fd24e36d0c4031940ba1e382347.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_r062_png.rf.eeb66eb17c5aa7b1d85d457c67e4bba0.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_r065_png.rf.94162c30ce5ac17ccb58b9038075b718.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_r067_png.rf.9768f4bb866c9f6a88401d7ce86a8fce.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_r075_png.rf.7fb3a3e37a4dcf27c5fcaca1c3279586.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_r080_png.rf.f0b17def9faa6428a6be17474fb4a8f1.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (70%)"
+      ]
+    },
+    {
+      "image": "rf_v7__a_r081_png.rf.dd82b2a3e9ab850aafddd26dcc68cf44.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_r086_png.rf.9ef3a449c09c9fb44e3fe7fccfa0e35f.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_r088_png.rf.1a98c479b001ec7989f7aca0833b677d.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__a_r089_png.rf.d506f9316c4c2be60e9d9eb9f221263c.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (83%)"
+      ]
+    },
+    {
+      "image": "rf_v7__a_r090_png.rf.de70a8b677cb387a45e6d097f5d663cb.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (91%)"
+      ]
+    },
+    {
+      "image": "rf_v7__a_r095_png.rf.5cef2d60721f3929ec1bdeed820f3d85.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__b_f007_png.rf.157b26fbe0929125f41367255eb4073f.jpg",
+      "true_total": 1,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (65%)",
+        "khung #2 quá lớn (64%)",
+        "trùng lặp khung #1 và #2"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f007_png.rf.8a6adc888410f1f784e939b2f573977a.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (91%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f007_png.rf.8acaf250d7d6c1435e537154f71f251c.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (90%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f009_png.rf.2bcf2a24a57dd7cfc97eb129fca2ec0e.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (86%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f009_png.rf.a436c71c66a54fd274d53675b44aac51.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (67%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f009_png.rf.daa3a1e2904dfb7a3b2b8549ec23ff9e.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (80%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f016_png.rf.44028000bef03dcd3a5c7f1c5375203e.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (60%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f016_png.rf.56bf7d5d85c8baa2fb03c3e43024c09c.jpg",
+      "true_total": 1,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (71%)",
+        "khung #2 che khuất nhiều (100%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f016_png.rf.ccbd09cf3517fd488c9043aa41079bcf.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (77%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f042_png.rf.0c1b6ac8672ea917aa237a15b252f07c.jpg",
+      "true_total": 1,
+      "pred_total": 3,
+      "abs_error": 2,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (90%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f042_png.rf.22a138859902303583be3a807ffc4d55.jpg",
+      "true_total": 1,
+      "pred_total": 5,
+      "abs_error": 4,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #2 quá lớn (76%)",
+        "khung #4 che khuất nhiều (84%)",
+        "trùng lặp khung #1 và #2",
+        "trùng lặp khung #2 và #5",
+        "trùng lặp khung #4 và #5"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f042_png.rf.3d4f05eb8a775ec8da23daff22626ea8.jpg",
+      "true_total": 1,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (81%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f046_png.rf.132c7b1d5fac8387983aac77011c8257.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (77%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f046_png.rf.524284313ecf86c0216569924132b88f.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (88%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f046_png.rf.64c5781941b94e2e6d9c8049a49c6fdf.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (88%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f058_png.rf.1ded1fabd803deee2b9a8e70645cb776.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (99%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f058_png.rf.9c8525a7016f9fbbb34581c5e44d5817.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (90%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f058_png.rf.d41de317282e1abc279f67c78839268a.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (99%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f063_png.rf.8fb030190023b57789df99f29f678411.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__b_f063_png.rf.dd220081b19e6b0285dae54f232030b9.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__b_f063_png.rf.e19831db7a6202edfb5a8b90fb7a19c4.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__b_f068_png.rf.17b6dbcc75e19659a66bd1e0b2d91d53.jpg",
+      "true_total": 1,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (86%)",
+        "khung #2 che khuất nhiều (95%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f068_png.rf.531d3a5896b7189fddd9b97ecd4c1245.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (78%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f068_png.rf.f7fd5e90f8b00f493f75eb915e6284cc.jpg",
+      "true_total": 1,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__b_f070_png.rf.19c60ffdcd408b45b16084bf13abdf66.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (73%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f070_png.rf.2a4daa531276f926da0b128d4e1e5717.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (79%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f070_png.rf.a6c6ed7c4cb98e23de3bcb8ae1625672.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (87%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f071_png.rf.5d9434351b2f4def867920a3e33c0bfc.jpg",
+      "true_total": 1,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (85%)",
+        "khung #2 che khuất nhiều (100%)",
+        "trùng lặp khung #1 và #2"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f071_png.rf.a47ef246d6eef367a030e5bb435483c2.jpg",
+      "true_total": 1,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__b_f071_png.rf.b6dd21cc0bdb51ea78dc83089bfcb2a3.jpg",
+      "true_total": 1,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (79%)",
+        "khung #2 che khuất nhiều (100%)",
+        "trùng lặp khung #1 và #2"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f078_png.rf.016856dbb3061dcc17ddc42fef147d91.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (75%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f078_png.rf.8bd3fe7b9d0479aa436a56146c14b7db.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (83%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f078_png.rf.bfa14f8ba922feefa747b241790241fa.jpg",
+      "true_total": 1,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 che khuất nhiều (92%)",
+        "khung #2 quá lớn (61%)",
+        "khung #2 che khuất nhiều (65%)",
+        "trùng lặp khung #1 và #2"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f084_png.rf.544a9db38b27091b9ca858548ff6c28b.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__b_f084_png.rf.aaae861c0d409e6aacac03c75d3bb13a.jpg",
+      "true_total": 1,
+      "pred_total": 4,
+      "abs_error": 3,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (68%)",
+        "khung #3 che khuất nhiều (98%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_f084_png.rf.fc343d7381f924594939e176b1fc92e5.jpg",
+      "true_total": 1,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (71%)",
+        "khung #2 che khuất nhiều (94%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_r001_png.rf.c4151f12ac1e90701ace8a27852ae482.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (64%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_r006_png.rf.3afc3deae18ec6ddaefa172703ad0073.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (79%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_r010_png.rf.59a76a982897aebad077a90dcbd20de7.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__b_r013_png.rf.93838998aa581f7fe6135ddef3401c74.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__b_r015_png.rf.b73caff76197c52a664df042731c78f4.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (67%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_r027_png.rf.1ada96d0a9be8d85257602f749709773.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__b_r034_png.rf.646e7abf83b047d52543b4d39349a0c8.jpg",
+      "true_total": 2,
+      "pred_total": 0,
+      "abs_error": 2,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__b_r049_png.rf.08d2ce28dab039c2a13476c73bfbb109.jpg",
+      "true_total": 3,
+      "pred_total": 1,
+      "abs_error": 2,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (86%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_r050_png.rf.9ffec6e630bea1e04bd907b2e0360e4b.jpg",
+      "true_total": 3,
+      "pred_total": 0,
+      "abs_error": 3,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__b_r051_png.rf.57d64a1019f8182da991d820e6be7ae2.jpg",
+      "true_total": 2,
+      "pred_total": 0,
+      "abs_error": 2,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__b_r052_png.rf.ecdd0f3576449f4280b0bd8d5a5bd73c.jpg",
+      "true_total": 2,
+      "pred_total": 1,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__b_r065_png.rf.78df87aa58abb36691ab81d0ec3a6508.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__b_r070_png.rf.a6178b7ac593bcf7f2229f5158f864a0.jpg",
+      "true_total": 2,
+      "pred_total": 0,
+      "abs_error": 2,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__b_r071_png.rf.e131a1fee78e049684a927c692307ac5.jpg",
+      "true_total": 4,
+      "pred_total": 0,
+      "abs_error": 4,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__b_r082_png.rf.2d525d693d8679eb642ff23ee401e329.jpg",
+      "true_total": 1,
+      "pred_total": 0,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__b_r083_png.rf.e59e0f7a8bdc3bbba9dd12284fbb30c6.jpg",
+      "true_total": 3,
+      "pred_total": 0,
+      "abs_error": 3,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__b_r087_png.rf.cb58fd648c837252858d46e53100ae0b.jpg",
+      "true_total": 3,
+      "pred_total": 2,
+      "abs_error": 1,
+      "is_exact": false,
+      "flagged_needs_review": false,
+      "reasons": []
+    },
+    {
+      "image": "rf_v7__b_r089_png.rf.f4e01793b6a08a82ed8a9aa1e1972566.jpg",
+      "true_total": 1,
+      "pred_total": 1,
+      "abs_error": 0,
+      "is_exact": true,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (67%)"
+      ]
+    },
+    {
+      "image": "rf_v7__b_r095_png.rf.e3272329fc0fb82df50447f2efb048ca.jpg",
+      "true_total": 4,
+      "pred_total": 2,
+      "abs_error": 2,
+      "is_exact": false,
+      "flagged_needs_review": true,
+      "reasons": [
+        "khung #1 quá lớn (67%)",
+        "khung #2 che khuất nhiều (80%)"
+      ]
+    }
+  ]
+}

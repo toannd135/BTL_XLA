@@ -33,7 +33,12 @@ class ClipChecker:
     # Mặc định ViT-L-14 (test: loại 85% crop vật khác, B-32 77%, cùng số quả mất 17/349; ~9 ms/crop, 1.6 GB VRAM).
     # Máy yếu: CLIP_ARCH=ViT-B-32 CLIP_PRETRAINED=laion2b_s34b_b79k (~2 ms/crop, 0.6 GB).
     def __init__(self, arch=os.getenv("CLIP_ARCH", "ViT-L-14"), pretrained=os.getenv("CLIP_PRETRAINED", "laion2b_s32b_b82k"), device=None):
-        self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+        selected = device or os.getenv("CLIP_DEVICE", "cpu")
+        if selected == "auto":
+            selected = "cuda" if torch.cuda.is_available() else "cpu"
+        if selected.startswith("cuda") and not torch.cuda.is_available():
+            raise RuntimeError(f"CLIP requested {selected}, but CUDA is unavailable")
+        self.device = selected
         self.model, _, self.preprocess = open_clip.create_model_and_transforms(arch, pretrained=pretrained, device=self.device)
         self.model.eval()
         if self.device == "cuda":

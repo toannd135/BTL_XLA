@@ -24,15 +24,14 @@ from PIL import Image
 from ultralytics import YOLO
 
 import collect
+from coordinate_transform import ImageTransform
+from runtime_memory import memory_snapshot, reset_peak_memory, resolve_device
+from inference.providers.yolo_provider import YoloSegProvider
+from inference.router import InferenceRouter
+from postprocessing.counting import count_instances
+from postprocessing.quality_gate import assess_instances
 from detection import (
-    crop_rotated,
-    deduplicate_boxes,
-    detect,
-    detect_obb,
-    detect_seg,
-    fuse_teacher_boxes,
     refine_types,
-    split_banana_cluster_detections,
     compute_mask_metrics,
 )
 
@@ -40,31 +39,28 @@ from detection import (
 Image.MAX_IMAGE_PIXELS = None
 
 ROOT = Path(__file__).resolve().parent.parent
-DET_PATH = os.getenv("MODEL_PATH", str(ROOT / "yolo11s-seg.pt" if (ROOT / "yolo11s-seg.pt").exists() else ROOT / "exports/det_obb_s.pt"))
-OBB_PATH = os.getenv("OBB_MODEL_PATH", str(ROOT / "exports/det_obb_s.pt"))
-HBB_FALLBACK = os.getenv("HBB_FALLBACK", "1") == "1"
-HBB_PATH = os.getenv("HBB_MODEL_PATH", str(ROOT / "exports/det_B_clean_backup.pt"))
+# Best saved held-out count result: work/audit/seg_candidate_count_test.json.
+DEFAULT_DET_PATH = str(ROOT / "runs/seg/seg_boundary_candidate_gpu/weights/best.pt")
+DET_PATH = os.getenv("MODEL_PATH", DEFAULT_DET_PATH)
 CLS_PATH = os.getenv("CLS_MODEL_PATH", str(ROOT / "exports/cls_finetune_best.pt"))
 FEEDBACK_DIR = Path(os.getenv("FEEDBACK_DIR", str(ROOT / "work" / "feedback")))
-TEACHER_CHECK = os.getenv("TEACHER_CHECK", "1") == "1"
-TEACHER_PATH = os.getenv("TEACHER_MODEL_PATH", str(ROOT / "yolo11s.pt"))
+DEVICE_REQUESTED = os.getenv("DEVICE", "auto")
+INFERENCE_PROVIDER = os.getenv("INFERENCE_PROVIDER", "local_yolo").strip().lower()
+CLASSIFIER_CHECK = os.getenv("CLASSIFIER_CHECK", "1") == "1"
+CLASSIFIER_DEVICE_REQUESTED = os.getenv("CLASSIFIER_DEVICE", "cpu")
+CLIP_DEVICE_REQUESTED = os.getenv("CLIP_DEVICE", "cpu")
 
 # giống notebook: CONF_PRED, IMGSZ, CLS_IMGSZ, CROP_PAD
-CONF = float(os.getenv("CONF", "0.4"))   # chốt 0.40 cho model C (F1 tổng 0.82, nền sai 1/71); hạ xuống 0.25-0.35 nếu hay bỏ sót chuối
-IMGSZ = 640
-QUALITY_IMGSZ = 640   # 960 đếm chuối thừa ~2.4x, nền sai 3/71 (docs/handoff/dem-chuoi.md)
-OBB_IMGSZ = int(os.getenv("OBB_IMGSZ", "1280"))
-NMS_IOU = float(os.getenv("NMS_IOU", "0.7"))   # giữ các quả chuối sát nhau; đặt 0.6 nếu tăng box trùng
+CONF = float(os.getenv("CONF", "0.4"))
+IMGSZ = int(os.getenv("MODEL_IMGSZ", "640"))
+NMS_IOU = float(os.getenv("NMS_IOU", "0.6"))
 QUANT = 16 if os.getenv("HALF", "1") == "1" else None   # FP16 trên GPU (ultralytics tự tắt khi chạy CPU); đặt HALF=0 để tắt
 CLS_IMGSZ = 224
 CROP_PAD = 0.10
-# CLIP kiểm tra loại quả từng crop (zero-shot): bỏ vật không phải chuối/táo/cam (dâu, nho...), sửa nhầm táo/cam.
-# Ngưỡng chọn trên val (work/fruitcls/eval_gate.py): test 373 ảnh đếm đúng 75.6% -> 78.8%, ảnh "vật khác" báo sai 318 -> 110/1054.
-CLIP_CHECK = os.getenv("CLIP_CHECK", "1") == "1"
+# CLIP chỉ kiểm tra ngữ nghĩa; các instance chuối luôn được giữ nguyên.
+CLIP_CHECK = os.getenv("CLIP_CHECK", "0") == "1"
 CLIP_T_OTHER = float(os.getenv("CLIP_T_OTHER", "0.8"))
-CLIP_T_SWAP = float(os.getenv("CLIP_T_SWAP", "0.8"))   # val: 0.8 = 0.9 (cùng lỗi), 0.7 sai thêm; 0.8 sửa thêm táo bị gọi cam
-# Có CLIP: chạy detector ở ngưỡng thấp hơn, box điểm < CONF chỉ giữ khi CLIP chắc >= CLIP_T_RESCUE là quả (bớt bỏ sót)
-RESCUE_CONF = float(os.getenv("RESCUE_CONF", "0.25"))
+CLIP_T_SWAP = float(os.getenv("CLIP_T_SWAP", "0.8"))
 CLIP_T_RESCUE = float(os.getenv("CLIP_T_RESCUE", "0.9"))
 
 MAX_SIZE = 10 * 1024 * 1024
@@ -75,6 +71,8 @@ ALLOWED = {"image/jpeg", "image/png", "image/webp"}
 ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(",")
 
 models = {}
+runtime = {"device": None, "device_reason": None, "classifier_device": None,
+           "clip_device": None, "clip_error": None, "last_gpu_memory": None}
 # model ultralytics không an toàn khi nhiều luồng gọi cùng lúc
 lock = threading.Lock()
 
@@ -83,30 +81,57 @@ lock = threading.Lock()
 async def lifespan(app):
     torch.set_num_threads(CPU_THREADS)
     cv2.setNumThreads(CPU_THREADS)
+    runtime["device"], runtime["device_reason"] = resolve_device(DEVICE_REQUESTED)
+    print(f"Detection device: {runtime['device']} ({runtime['device_reason']})")
+    requested_gpu_models = int(runtime["device"].startswith("cuda"))
+    if CLASSIFIER_CHECK and CLASSIFIER_DEVICE_REQUESTED != "cpu":
+        runtime["classifier_device"], _ = resolve_device(CLASSIFIER_DEVICE_REQUESTED, "classifier")
+        requested_gpu_models += int(runtime["classifier_device"].startswith("cuda"))
+    if CLIP_CHECK and CLIP_DEVICE_REQUESTED != "cpu":
+        runtime["clip_device"], _ = resolve_device(CLIP_DEVICE_REQUESTED, "CLIP")
+        requested_gpu_models += int(runtime["clip_device"].startswith("cuda"))
+    if requested_gpu_models > 1:
+        raise RuntimeError("Only one inference model may be assigned to CUDA at a time; keep optional models on CPU or disable them")
+    print(f"Detection checkpoint: {Path(DET_PATH).expanduser().resolve()}")
+    if INFERENCE_PROVIDER != "local_yolo":
+        raise RuntimeError(f"Unsupported or unconfigured INFERENCE_PROVIDER={INFERENCE_PROVIDER!r}")
     models["det"] = YOLO(DET_PATH)
-    models["cls"] = YOLO(CLS_PATH)
-    if Path(OBB_PATH).exists() and Path(DET_PATH).resolve() != Path(OBB_PATH).resolve():
-        models["obb"] = YOLO(OBB_PATH)
-    if HBB_FALLBACK and Path(DET_PATH).resolve() != Path(HBB_PATH).resolve():
-        models["hbb"] = YOLO(HBB_PATH)
-    if TEACHER_CHECK:
-        models["teacher"] = YOLO(TEACHER_PATH)
+    if models["det"].task != "segment":
+        raise RuntimeError("Banana Instance Separation requires a YOLO segmentation model (task=segment).")
+    class_names = {str(name).lower() for name in models["det"].names.values()}
+    if not {"banana", "apple", "orange"}.issubset(class_names):
+        raise RuntimeError(f"Segmentation checkpoint must support banana, apple and orange; got {models['det'].names}")
+    print(f"Detection model loaded: task={models['det'].task}, classes={models['det'].names}")
+    models["inference_router"] = InferenceRouter({
+        "local_yolo": YoloSegProvider(
+            models["det"], conf=CONF, imgsz=IMGSZ, iou=NMS_IOU,
+            quantize=QUANT, device=runtime["device"],
+            half=bool(QUANT and runtime["device"].startswith("cuda")),
+        ),
+    }, default_provider=INFERENCE_PROVIDER)
+    if CLASSIFIER_CHECK:
+        if runtime["classifier_device"] is None:
+            runtime["classifier_device"], _ = resolve_device(CLASSIFIER_DEVICE_REQUESTED, "classifier")
+        models["cls"] = YOLO(CLS_PATH)
+        if models["cls"].task != "classify":
+            raise RuntimeError(f"Classifier checkpoint must have task=classify; got {models['cls'].task}")
     if CLIP_CHECK:
         try:
             from clip_check import ClipChecker
-            models["clip"] = ClipChecker()
+            if runtime["clip_device"] is None:
+                runtime["clip_device"], _ = resolve_device(CLIP_DEVICE_REQUESTED, "CLIP")
+            models["clip"] = ClipChecker(device=runtime["clip_device"])
         except Exception as e:   # thiếu open_clip/model: chạy tiếp không có bước kiểm tra
+            runtime["clip_error"] = str(e)
             print("CLIP_CHECK tắt:", e)
     # chạy thử 1 lượt để request đầu tiên không bị chậm
     blank = np.zeros((IMGSZ, IMGSZ, 3), np.uint8)
-    models["det"].predict(blank, imgsz=IMGSZ, quantize=QUANT, verbose=False)
-    if "obb" in models:
-        models["obb"].predict(blank, imgsz=IMGSZ, quantize=QUANT, verbose=False)
-    if "hbb" in models:
-        models["hbb"].predict(blank, imgsz=IMGSZ, quantize=QUANT, verbose=False)
-    models["cls"].predict(blank, imgsz=CLS_IMGSZ, quantize=QUANT, verbose=False)
-    if "teacher" in models:
-        models["teacher"].predict(blank, imgsz=IMGSZ, quantize=QUANT, classes=[46, 47, 49], verbose=False)
+    models["det"].predict(blank, imgsz=IMGSZ, quantize=QUANT, device=runtime["device"],
+                          half=bool(QUANT and runtime["device"].startswith("cuda")), verbose=False)
+    if "cls" in models:
+        models["cls"].predict(blank, imgsz=CLS_IMGSZ, quantize=QUANT,
+                              device=runtime["classifier_device"],
+                              half=bool(QUANT and runtime["classifier_device"].startswith("cuda")), verbose=False)
     # Some Ultralytics device setup paths reset torch's thread count.
     torch.set_num_threads(CPU_THREADS)
     yield
@@ -136,7 +161,7 @@ def crop_box(img, xyxy, pad=CROP_PAD):
     return img[y1:y2, x1:x2]
 
 
-def assess_detection(objects, width, height, diagnostics=None):
+def assess_detection(objects, width, height):
     """Mark predictions that are unsafe to confirm without human review."""
     reasons = []
     image_area = max(width * height, 1)
@@ -144,17 +169,15 @@ def assess_detection(objects, width, height, diagnostics=None):
     # 1. Per-object checks
     for index, obj in enumerate(objects):
         lbl = obj["label"]
-        x1, y1, x2, y2 = obj["bbox"]
-        area = max(x2 - x1, 0) * max(y2 - y1, 0)
         conf = obj.get("confidence", 1.0)
 
         # Low confidence
         if conf < CONF and not obj.get("rescued"):
             reasons.append(f"quả #{index + 1} ({lbl}) có độ tin cậy thấp ({conf:.2f} < {CONF})")
 
-        # Oversized object: covering large portion of image, likely a cluster/group
-        if area / image_area > 0.60:
-            reasons.append(f"khung #{index + 1} quá lớn ({area / image_area:.0%}), có nguy cơ gộp nhiều quả")
+        mask_area = obj.get("mask_area", 0)
+        if mask_area / image_area > 0.60:
+            reasons.append(f"mask #{index + 1} quá lớn ({mask_area / image_area:.0%}), có nguy cơ gộp nhiều quả")
 
         # Solidity check for segmentation masks (irregular/dumbbell shaped masks)
         solidity = obj.get("solidity", 1.0)
@@ -169,34 +192,30 @@ def assess_detection(objects, width, height, diagnostics=None):
         if occlusion >= 0.55:
             reasons.append(f"quả #{index + 1} ({lbl}) bị che khuất nhiều ({occlusion:.0%}), ranh giới không hoàn chỉnh")
 
-    # 2. Pairwise instance overlap check
+    # 2. Pairwise mask overlap check
+    masks = []
+    for obj in objects:
+        mask = np.zeros((height, width), dtype=np.uint8)
+        polygon = obj.get("polygon") or []
+        if len(polygon) >= 3:
+            cv2.fillPoly(mask, [np.asarray(polygon, dtype=np.int32)], 1)
+        masks.append(mask)
     for i in range(len(objects)):
         oi = objects[i]
         for j in range(i + 1, len(objects)):
             oj = objects[j]
-            xi1, yi1, xi2, yi2 = oi["bbox"]
-            xj1, yj1, xj2, yj2 = oj["bbox"]
-            inter = max(0, min(xi2, xj2) - max(xi1, xj1)) * max(0, min(yi2, yj2) - max(yi1, yj1))
-            area_i = max(xi2 - xi1, 0) * max(yi2 - yi1, 0)
-            area_j = max(xj2 - xj1, 0) * max(yj2 - yj1, 0)
+            inter = int(np.count_nonzero(masks[i] & masks[j]))
+            area_i = int(np.count_nonzero(masks[i]))
+            area_j = int(np.count_nonzero(masks[j]))
             union = area_i + area_j - inter
             iou = inter / max(union, 1e-9)
 
             if oi["label"] == oj["label"]:
                 if iou >= 0.40:
-                    reasons.append(f"hai quả cùng loại #{i + 1} và #{j + 1} ({oi['label']}) bị chồng lấn lớn (IoU {iou:.0%})")
+                    reasons.append(f"hai mask cùng loại #{i + 1} và #{j + 1} ({oi['label']}) chồng lấn lớn (IoU {iou:.0%})")
             else:
                 if iou >= 0.50:
-                    reasons.append(f"hai quả khác loại #{i + 1} ({oi['label']}) và #{j + 1} ({oj['label']}) đè lên nhau quá nhiều (IoU {iou:.0%})")
-
-    # 3. Model discrepancy check
-    if diagnostics:
-        if diagnostics.get("fallback_used"):
-            reasons.append("mô hình kiểm chứng (fallback) cho kết quả khác biệt, cần đối chiếu số lượng")
-        p_cnt = diagnostics.get("primary_count")
-        f_cnt = diagnostics.get("fallback_count")
-        if p_cnt is not None and f_cnt is not None and abs(p_cnt - f_cnt) >= 2:
-            reasons.append(f"số lượng quả giữa các mô hình lệch nhau (Detector chính: {p_cnt}, Kiểm chứng: {f_cnt})")
+                    reasons.append(f"hai mask khác loại #{i + 1} ({oi['label']}) và #{j + 1} ({oj['label']}) chồng lấn lớn (IoU {iou:.0%})")
 
     unique_reasons = list(dict.fromkeys(reasons))
     is_uncertain = len(unique_reasons) > 0
@@ -208,79 +227,48 @@ def assess_detection(objects, width, height, diagnostics=None):
 
 
 def predict(img, mode="careful"):
-    det, cls = models["det"], models["cls"]
+    det, cls = models["det"], models.get("cls")
     with lock:
         torch.set_num_threads(CPU_THREADS)
         polys = None
         mask_metrics = None
-        diagnostics = {"fallback_used": False, "primary_count": None, "fallback_count": None}
-        conf = min(CONF, RESCUE_CONF) if "clip" in models else CONF
+        diagnostics = {"instance_count": 0}
+        # Keep the detector threshold fixed: CLIP cannot rescue or discard
+        # banana instances and therefore cannot change the banana count.
+        conf = CONF
 
-        if det.task == "segment":
-            # Instance Segmentation: đếm và phân tách quả bằng mask đa giác thực
-            polys, boxes, scores, classes, mask_metrics = detect_seg(
-                det, img, conf=conf, imgsz=IMGSZ, iou=NMS_IOU, quantize=QUANT,
-            )
-            # Tách nải chuối (banana cluster) thành từng quả riêng biệt bằng OBB spine partitioning
-            if "obb" in models and len(boxes):
-                polys, boxes, scores, classes = split_banana_cluster_detections(
-                    polys, boxes, scores, classes, models["obb"], img,
-                    conf=max(0.30, conf), det_names=det.names, quantize=QUANT,
-                )
-                mask_metrics = compute_mask_metrics(polys, boxes, img.shape[1], img.shape[0])
-            diagnostics["primary_count"] = len(boxes)
-            if "hbb" in models:
-                hbb_boxes, _, _ = detect(
-                    models["hbb"], img, conf=conf, imgsz=QUALITY_IMGSZ,
-                    iou=NMS_IOU, quantize=QUANT, rotated=False,
-                )
-                diagnostics["fallback_count"] = len(hbb_boxes)
-        elif det.task == "obb":   # khung xoay: một lượt, không cần xoay ảnh (model đã học góc bất kỳ)
-            polys, boxes, scores, classes = detect_obb(
-                det, img, conf=conf, imgsz=OBB_IMGSZ, iou=NMS_IOU, quantize=QUANT,
-            )
-            diagnostics["primary_count"] = len(boxes)
-            # OBB is better for crowded/diagonal fruit, while HBB B is stronger
-            # on ordinary scenes. Use HBB only when it clearly recovers more
-            # candidates and the OBB result is not already crowded.
-            if "hbb" in models and len(boxes) <= 6:
-                hbb_boxes, hbb_scores, hbb_classes = detect(
-                    models["hbb"], img, conf=conf, imgsz=QUALITY_IMGSZ,
-                    iou=NMS_IOU, quantize=QUANT, rotated=False,
-                )
-                diagnostics["fallback_count"] = len(hbb_boxes)
-                if len(hbb_boxes) >= len(boxes) + 2:
-                    boxes, scores, classes = hbb_boxes, hbb_scores, hbb_classes
-                    polys = None
-                    diagnostics["fallback_used"] = True
-            if "teacher" in models and polys is not None:
-                teacher_result = models["teacher"].predict(
-                    img, conf=0.20, imgsz=IMGSZ, quantize=QUANT,
-                    classes=[46, 47, 49], verbose=False,
-                )[0]
-                detector_ids = {name: idx for idx, name in det.names.items()}
-                teacher_map = {46: detector_ids["banana"], 47: detector_ids["apple"], 49: detector_ids["orange"]}
-                teacher_thresholds = {
-                    teacher_map[46]: 0.60,
-                    teacher_map[47]: 0.38,
-                    teacher_map[49]: 0.80,
-                }
-                polys, boxes, scores, classes = fuse_teacher_boxes(
-                    polys, boxes, scores, classes,
-                    teacher_result.boxes.xyxy.cpu().numpy(),
-                    np.asarray(teacher_result.boxes.conf.tolist(), dtype=np.float32),
-                    np.asarray(teacher_result.boxes.cls.tolist(), dtype=np.int64),
-                    teacher_map, teacher_thresholds,
-                )
-        else:
-            boxes, scores, classes = detect(det, img, conf=conf,
-                imgsz=QUALITY_IMGSZ if mode == "careful" else IMGSZ,
-                iou=NMS_IOU, quantize=QUANT, rotated=mode == "careful")
-            diagnostics["primary_count"] = len(boxes)
+        # Keep model-produced instances intact. Distance-transform splitting is
+        # benchmark-only until it improves held-out count results.
+        reset_peak_memory(runtime["device"])
+        try:
+            provider_result = models["inference_router"].predict(img)
+            instances = provider_result.instances
+            polys = [instance.polygon for instance in instances]
+            boxes = np.asarray([instance.bbox_xyxy for instance in instances], dtype=np.float32).reshape(-1, 4)
+            scores = np.asarray([instance.confidence for instance in instances], dtype=np.float32)
+            classes = np.asarray([instance.class_id for instance in instances], dtype=np.int64)
+            diagnostics["provider"] = provider_result.provider
+        except (torch.cuda.OutOfMemoryError, RuntimeError) as exc:
+            if isinstance(exc, torch.cuda.OutOfMemoryError) or (runtime["device"].startswith("cuda") and "out of memory" in str(exc).lower()):
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+                raise HTTPException(503, "CUDA ran out of memory during segmentation; inference was not retried on CPU") from exc
+            raise
+        # Mask geometry is computed once after mapping polygons back to the
+        # uploaded image, in restore_objects_to_original().
+        mask_metrics = None
         if len(boxes) and "clip" in models:
             clip = models["clip"]
-            keep, classes = refine_types(det.names, classes, clip.names,
-                                         clip.probs_boxes(img, boxes, CROP_PAD, t_other=CLIP_T_OTHER), CLIP_T_OTHER, CLIP_T_SWAP,
+            try:
+                type_probs = clip.probs_boxes(img, boxes, CROP_PAD, t_other=CLIP_T_OTHER)
+            except (torch.cuda.OutOfMemoryError, RuntimeError) as exc:
+                if isinstance(exc, torch.cuda.OutOfMemoryError) or (runtime["clip_device"] and runtime["clip_device"].startswith("cuda") and "out of memory" in str(exc).lower()):
+                    if torch.cuda.is_available():
+                        torch.cuda.empty_cache()
+                    raise HTTPException(503, "CUDA ran out of memory during CLIP; no CPU fallback was attempted") from exc
+                raise
+            keep, classes = refine_types(det.names, classes, clip.names, type_probs,
+                                         CLIP_T_OTHER, CLIP_T_SWAP,
                                          scores=scores, conf=CONF, t_rescue=CLIP_T_RESCUE,
                                          protected_min_conf=0.30)
             boxes, scores, classes = boxes[keep], scores[keep], classes[keep]
@@ -288,26 +276,43 @@ def predict(img, mode="careful"):
                 polys = [p for i, p in enumerate(polys) if keep[i]]
             if mask_metrics is not None:
                 mask_metrics = [m for i, m in enumerate(mask_metrics) if keep[i]]
-        if polys is not None and det.task == "obb" and len(boxes):
-            polys, boxes, scores, classes = deduplicate_boxes(polys, boxes, scores, classes)
+        diagnostics["instance_count"] = len(boxes)
+        runtime["last_gpu_memory"] = memory_snapshot(runtime["device"])
+        diagnostics["gpu_memory"] = runtime["last_gpu_memory"]
         if not len(boxes):
             return [], diagnostics
-        crops = [crop_rotated(img, q, CROP_PAD) for q in polys] if (polys is not None and det.task == "obb") else [crop_box(img, b) for b in boxes]
-        # Explicit chunks: predict(list) does not honor batch in every Ultralytics version.
         rs = []
-        for start in range(0, len(crops), 8):
-            rs.extend(cls.predict(crops[start:start + 8], imgsz=CLS_IMGSZ, quantize=QUANT, verbose=False))
+        if cls is not None:
+            crops = [crop_box(img, b) for b in boxes]
+            # Explicit chunks: predict(list) does not honor batch in every Ultralytics version.
+            try:
+                for start in range(0, len(crops), 8):
+                    rs.extend(cls.predict(crops[start:start + 8], imgsz=CLS_IMGSZ, quantize=QUANT,
+                                          device=runtime["classifier_device"],
+                                          half=bool(QUANT and runtime["classifier_device"].startswith("cuda")),
+                                          verbose=False))
+            except (torch.cuda.OutOfMemoryError, RuntimeError) as exc:
+                if isinstance(exc, torch.cuda.OutOfMemoryError) or (runtime["classifier_device"].startswith("cuda") and "out of memory" in str(exc).lower()):
+                    if torch.cuda.is_available():
+                        torch.cuda.empty_cache()
+                    raise HTTPException(503, "CUDA ran out of memory during classifier inference; no CPU fallback was attempted") from exc
+                raise
+        runtime["last_gpu_memory"] = memory_snapshot(runtime["device"])
+        diagnostics["gpu_memory"] = runtime["last_gpu_memory"]
     out = []
-    for k, (b, c, conf, p) in enumerate(zip(boxes, classes, scores, rs)):
+    for k, (b, c, conf) in enumerate(zip(boxes, classes, scores)):
         lbl = det.names[int(c)] if int(c) in det.names else f"fruit_{int(c)}"
         item = {
             "label": lbl,
             "confidence": round(float(conf), 4),
-            "state": cls.names[int(p.probs.top1)],
-            "state_confidence": round(float(p.probs.top1conf), 4),
-            "bbox": [round(float(v), 1) for v in b],
-            "rescued": bool(float(conf) < CONF),   # điểm detector < CONF nhưng CLIP xác nhận là quả
         }
+        if cls is not None:
+            p = rs[k]
+            item["state"] = cls.names[int(p.probs.top1)]
+            item["state_confidence"] = round(float(p.probs.top1conf), 4)
+        else:
+            item["state"] = "unknown"
+            item["state_confidence"] = 0.0
         if polys is not None and k < len(polys) and len(polys[k]) > 0:
             item["polygon"] = [[round(float(x), 1), round(float(y), 1)] for x, y in polys[k]]
         if mask_metrics is not None and k < len(mask_metrics):
@@ -324,27 +329,31 @@ def health():
     return {
         "status": "ok" if models else "loading",
         # predictor mới giữ thiết bị thật (model.device vẫn báo cpu)
-        "device": str(models["det"].predictor.device) if models else None,
+        "device": runtime["device"],
         "det_model": Path(DET_PATH).name,
-        "obb_helper": "obb" in models,
-        "obb_model": Path(OBB_PATH).name if "obb" in models else None,
-        "hbb_fallback": HBB_FALLBACK and "hbb" in models,
-        "hbb_model": Path(HBB_PATH).name if "hbb" in models else None,
-        "cls_model": Path(CLS_PATH).name,
+        "cls_model": Path(CLS_PATH).name if "cls" in models else None,
+        "classifier_check": "cls" in models,
+        "classifier_device": runtime["classifier_device"],
+        "clip_device": runtime["clip_device"],
+        "clip_error": runtime["clip_error"],
+        "device_reason": runtime["device_reason"],
+        "cuda_available": torch.cuda.is_available(),
+        "gpu_memory": memory_snapshot(runtime["device"] or "cpu"),
+        "last_inference_gpu_memory": runtime["last_gpu_memory"],
         "cpu_threads": torch.get_num_threads(),
+        "det_task": models["det"].task if models else None,
+        "fruit_class_names": models["det"].names if models else None,
         "conf": CONF,
         "nms_iou": NMS_IOU,
         "default_mode": "careful",
-        "careful_imgsz": QUALITY_IMGSZ,
-        "obb_imgsz": OBB_IMGSZ,
         "clip_check": "clip" in models,
-        "teacher_check": "teacher" in models,
-        "teacher_model": Path(TEACHER_PATH).name if "teacher" in models else None,
+        "inference_provider": INFERENCE_PROVIDER,
+        "model_imgsz": IMGSZ,
     }
 
 
-async def read_image(file):
-    """Kiểm tra và giải mã ảnh tải lên. Trả về (bytes, ảnh BGR)."""
+async def read_image(file, with_transform=False):
+    """Validate/decode and preprocess an upload; optionally return its geometry transform."""
     if file.content_type not in ALLOWED:
         raise HTTPException(400, "Chỉ nhận ảnh jpg, png hoặc webp")
     # đọc tối đa MAX_SIZE + 1 byte, không nạp cả file quá lớn vào bộ nhớ
@@ -354,20 +363,59 @@ async def read_image(file):
     if not data:
         raise HTTPException(400, "File ảnh rỗng")
 
-    # đọc kích thước từ phần đầu file trước khi giải mã cả ảnh
+    img, transform = await run_in_threadpool(decode_and_preprocess, data)
+    if with_transform:
+        return data, img, transform
+    return data, img
+
+
+def decode_and_preprocess(data: bytes):
+    """Decode, validate dimensions, and preprocess without blocking ASGI's event loop."""
     try:
         with Image.open(io.BytesIO(data)) as im:
-            w, h = im.size
-    except Exception:
+            width, height = im.size
+    except Exception as exc:
+        raise HTTPException(400, "Không đọc được file ảnh") from exc
+    if width * height > MAX_PIXELS:
+        raise HTTPException(413, f"Ảnh quá lớn ({width}x{height}), tối đa khoảng 40 triệu điểm ảnh")
+    original = cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_COLOR)
+    if original is None:
         raise HTTPException(400, "Không đọc được file ảnh")
-    if w * h > MAX_PIXELS:
-        raise HTTPException(413, f"Ảnh quá lớn ({w}x{h}), tối đa khoảng 40 triệu điểm ảnh")
+    return preprocess_image(original)
 
-    img = cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_COLOR)
-    if img is None:
-        raise HTTPException(400, "Không đọc được file ảnh")
-    img = enhance_image(img)
-    return data, img
+
+def preprocess_image(img: np.ndarray):
+    """Preprocess an image and retain exact original/processed geometry."""
+    processed = enhance_image(img)
+    original_h, original_w = img.shape[:2]
+    processed_h, processed_w = processed.shape[:2]
+    transform = ImageTransform.from_sizes((original_w, original_h),
+                                          (processed_w, processed_h))
+    return processed, transform
+
+
+def restore_objects_to_original(objects, transform):
+    """Map output polygons and mask metrics from processed to uploaded-image pixels."""
+    polygons = []
+    boxes = []
+    for obj in objects:
+        polygon = obj.get("polygon")
+        if not polygon or len(polygon) < 3:
+            polygons.append(np.zeros((0, 2), dtype=np.float32))
+            boxes.append(np.zeros(4, dtype=np.float32))
+            continue
+        mapped = transform.map_points_to_original(polygon)
+        obj["polygon"] = [[round(float(x), 1), round(float(y), 1)] for x, y in mapped]
+        polygons.append(mapped)
+        boxes.append(np.asarray([mapped[:, 0].min(), mapped[:, 1].min(),
+                                 mapped[:, 0].max(), mapped[:, 1].max()], dtype=np.float32))
+    metrics = compute_mask_metrics(polygons, boxes, transform.original_width, transform.original_height)
+    for obj, item in zip(objects, metrics):
+        obj["mask_area"] = item["mask_area"]
+        obj["solidity"] = item["solidity"]
+        obj["occlusion_ratio"] = item["occlusion_ratio"]
+        obj["is_occluded"] = item["is_occluded"]
+    return objects
 
 
 def enhance_image(img: np.ndarray) -> np.ndarray:
@@ -407,23 +455,39 @@ def enhance_image(img: np.ndarray) -> np.ndarray:
 
 @app.post("/api/predict")
 async def predict_api(file: UploadFile = File(...), mode: Literal["fast", "careful"] = Form("careful")):
-    _, img = await read_image(file)
+    request_started = time.perf_counter()
+    _, img, transform = await read_image(file, with_transform=True)
+    preprocessing_ms = (time.perf_counter() - request_started) * 1000
     t = time.perf_counter()
     objects, diagnostics = await run_in_threadpool(predict, img, mode)
     ms = (time.perf_counter() - t) * 1000
 
-    h, w = img.shape[:2]
-    quality = assess_detection(objects, w, h, diagnostics)
+    objects = await run_in_threadpool(restore_objects_to_original, objects, transform)
+    w, h = transform.original_width, transform.original_height
+    quality = await run_in_threadpool(assess_detection, objects, w, h)
+    total_ms = (time.perf_counter() - request_started) * 1000
     return {
         "image_width": w,
         "image_height": h,
+        "preprocessing": transform.to_dict(),
         "inference_ms": round(ms, 1),
+        "preprocessing_ms": round(preprocessing_ms, 1),
+        "total_ms": round(total_ms, 1),
         "mode": mode,
         "objects": objects,
+        "runtime": {
+            "device": runtime["device"],
+            "device_reason": runtime["device_reason"],
+            "classifier_enabled": "cls" in models,
+            "classifier_device": runtime["classifier_device"],
+            "clip_enabled": "clip" in models,
+            "gpu_memory": diagnostics.get("gpu_memory"),
+        },
         "quality": quality | {
-            "fallback_used": diagnostics["fallback_used"],
-            "primary_count": diagnostics["primary_count"],
-            "fallback_count": diagnostics["fallback_count"],
+            "instance_count": diagnostics["instance_count"],
+            "count": count_instances(objects),
+            "instance_signals": assess_instances(objects, w, h, min_confidence=CONF),
+            "provider": diagnostics.get("provider", INFERENCE_PROVIDER),
         },
     }
 
@@ -442,21 +506,15 @@ async def feedback_api(
     if not isinstance(payload, dict) or not isinstance(payload.get("objects"), list):
         raise HTTPException(400, "Kết quả phản hồi phải chứa danh sách objects")
     valid_labels = {"banana", "apple", "orange"}
-    valid_states = {"fresh", "rotten"}
+    valid_states = {"fresh", "rotten", "unknown"}
     for obj in payload["objects"]:
         if not isinstance(obj, dict):
             raise HTTPException(400, "Mỗi object phản hồi phải là một object JSON")
         if obj.get("label") not in valid_labels or obj.get("state") not in valid_states:
             raise HTTPException(400, "Nhãn quả hoặc trạng thái phản hồi không hợp lệ")
-        bbox = obj.get("bbox")
-        if not isinstance(bbox, list) or len(bbox) != 4:
-            raise HTTPException(400, "Bounding box phản hồi không hợp lệ")
-        try:
-            coords = [float(value) for value in bbox]
-        except (TypeError, ValueError):
-            raise HTTPException(400, "Bounding box phản hồi phải là số")
-        if not all(np.isfinite(coords)) or coords[2] <= coords[0] or coords[3] <= coords[1]:
-            raise HTTPException(400, "Bounding box phản hồi phải có kích thước dương")
+        polygon = obj.get("polygon")
+        if not isinstance(polygon, list) or len(polygon) < 3:
+            raise HTTPException(400, "Mask phản hồi không hợp lệ")
 
     _, img = await read_image(file)
     FEEDBACK_DIR.mkdir(parents=True, exist_ok=True)
@@ -493,6 +551,8 @@ def feedback_stats():
 async def collect_api(file: UploadFile = File(...), session: str = Form(...)):
     if not collect.SESSION_RE.match(session):
         raise HTTPException(400, "Mã phiên thu thập không hợp lệ")
+    if "cls" not in models:
+        raise HTTPException(503, "Thu thập nhãn cần bật CLASSIFIER_CHECK")
     data, img = await read_image(file)
     return await run_in_threadpool(collect.collect, data, img, session, models, lock, crop_box, CONF, IMGSZ, CLS_IMGSZ)
 

@@ -1,0 +1,81 @@
+{
+  "checkpoint": "runs/seg/seg_boundary_candidate_gpu/weights/best.pt",
+  "split": "val",
+  "images": 301,
+  "imgsz": 640,
+  "conf": 0.4,
+  "iou": 0.7,
+  "clip_arch": "ViT-L-14",
+  "clip_pretrained": "laion2b_s32b_b82k",
+  "clip_device": "cpu",
+  "clip_t_swap": 0.8,
+  "clip_t_other_drop_disabled": true,
+  "clip_threshold_other_hits": 21,
+  "swapped_predictions": 5,
+  "det_seconds": 33.56788158100096,
+  "clip_seconds": 211.21013659699986,
+  "raw": {
+    "exact_count_accuracy": 0.867109634551495,
+    "count_mae": 0.23920265780730898,
+    "over_instances": 47,
+    "under_instances": 25,
+    "pred_instances": 384,
+    "gt_instances": 362,
+    "per_class": {
+      "banana": {
+        "recall": 0.6776315789473685,
+        "precision": 0.6866666666666666,
+        "matched": 103,
+        "gt": 152,
+        "pred": 150
+      },
+      "apple": {
+        "recall": 0.8148148148148148,
+        "precision": 0.7787610619469026,
+        "matched": 88,
+        "gt": 108,
+        "pred": 113
+      },
+      "orange": {
+        "recall": 0.8725490196078431,
+        "precision": 0.7355371900826446,
+        "matched": 89,
+        "gt": 102,
+        "pred": 121
+      }
+    }
+  },
+  "clip_swap_only": {
+    "exact_count_accuracy": 0.867109634551495,
+    "count_mae": 0.23920265780730898,
+    "over_instances": 47,
+    "under_instances": 25,
+    "pred_instances": 384,
+    "gt_instances": 362,
+    "per_class": {
+      "banana": {
+        "recall": 0.6776315789473685,
+        "precision": 0.6866666666666666,
+        "matched": 103,
+        "gt": 152,
+        "pred": 150
+      },
+      "apple": {
+        "recall": 0.8148148148148148,
+        "precision": 0.8,
+        "matched": 88,
+        "gt": 108,
+        "pred": 110
+      },
+      "orange": {
+        "recall": 0.8921568627450981,
+        "precision": 0.7338709677419355,
+        "matched": 91,
+        "gt": 102,
+        "pred": 124
+      }
+    }
+  },
+  "dataset_manifest_sha256": "9fc1e01f59842df03909623445942a17884c3d94606aa83941b4c927c080be6f",
+  "note": "Validation-only selection report. Candidate preserves all detections and only relabels a fruit when CLIP top fruit probability >= 0.8."
+}

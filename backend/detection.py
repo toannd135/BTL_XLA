@@ -267,6 +267,10 @@ def refine_types(det_names, classes, type_names, type_probs, t_other=0.6, t_swap
     fruit_ids = [i for i, n in type_names.items() if n != "other"]
     for k, p in enumerate(type_probs):
         p = np.asarray(p, dtype=np.float32)
+        # CLIP may check semantics for other detections, but it must never
+        # remove, relabel, or change the count of detector-produced bananas.
+        if det_names.get(int(out[k])) == "banana":
+            continue
         # box dưới ngưỡng detector (conf) chỉ giữ khi bộ kiểm tra chắc chắn là quả (>= t_rescue)
         if scores is not None and conf is not None and scores[k] < conf and max(p[i] for i in fruit_ids) < t_rescue:
             keep[k] = False
@@ -284,36 +288,6 @@ def refine_types(det_names, classes, type_names, type_probs, t_other=0.6, t_swap
         elif name in det_idx and det_idx[name] != out[k] and p[top] >= t_swap:
             out[k] = det_idx[name]
     return keep, out
-
-
-from scipy.ndimage import gaussian_filter1d
-
-
-def smooth_contour_curve(pts, sigma=1.8, max_points=100):
-    """Smooth closed 2D polygon contour coordinates using Gaussian filtering along parameter curve.
-    Removes proto-mask 160x160 scaling staircase artifacts and sharp jagged corners,
-    producing an organic, visually pleasing fruit outline while preserving real area.
-    """
-    pts = np.asarray(pts, dtype=np.float32).reshape(-1, 2)
-    if len(pts) < 6:
-        return pts
-    x = gaussian_filter1d(pts[:, 0], sigma=sigma, mode="wrap")
-    y = gaussian_filter1d(pts[:, 1], sigma=sigma, mode="wrap")
-    smoothed = np.column_stack([x, y])
-    if len(smoothed) > max_points:
-        step = len(smoothed) / float(max_points)
-        idx = [int(i * step) for i in range(max_points)]
-        smoothed = smoothed[idx]
-    return np.round(smoothed, 1)
-
-
-def simplify_polygon(poly, epsilon=1.5):
-    """Simplify polygon contour points to keep JSON payload compact and smooth."""
-    pts = np.asarray(poly, dtype=np.float32)
-    if len(pts) < 3:
-        return pts
-    approx = cv2.approxPolyDP(pts.reshape(-1, 1, 2), epsilon=epsilon, closed=True).reshape(-1, 2)
-    return approx if len(approx) >= 3 else pts
 
 
 def compute_mask_metrics(polygons, boxes, width, height):
@@ -365,7 +339,84 @@ def compute_mask_metrics(polygons, boxes, width, height):
     return metrics
 
 
-def detect_seg(model, image, conf=0.4, imgsz=640, iou=0.6, quantize=None, simplify_eps=1.5):
+def mask_to_polygon(mask, width, height):
+    """Extract a correctly ordered outer contour from a binary instance mask."""
+    mask = np.asarray(mask)
+    if mask.shape[:2] != (height, width):
+        mask = cv2.resize(mask.astype(np.uint8), (width, height), interpolation=cv2.INTER_NEAREST)
+    binary = (mask > 0).astype(np.uint8)
+    contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    if not contours:
+        return np.zeros((0, 2), dtype=np.float32)
+    contour = max(contours, key=cv2.contourArea).reshape(-1, 2).astype(np.float32)
+    return contour if len(contour) >= 3 else np.zeros((0, 2), dtype=np.float32)
+
+
+def split_banana_masks_by_distance(polygons, boxes, scores, classes, names, image):
+    """Conservatively separate merged banana masks using distance-transform markers.
+
+    No detector boxes or OBB proposals participate in instance counting. A mask is
+    split only when its distance transform has at least two well-separated peaks
+    and the resulting watershed regions retain most of the original mask area.
+    """
+    height, width = image.shape[:2]
+    banana_ids = {i for i, name in names.items() if name == "banana"}
+    out_polys, out_boxes, out_scores, out_classes = [], [], [], []
+    for poly, box, score, cls in zip(polygons, boxes, scores, classes):
+        if int(cls) not in banana_ids or poly is None or len(poly) < 3:
+            out_polys.append(poly); out_boxes.append(box); out_scores.append(score); out_classes.append(cls)
+            continue
+        mask = np.zeros((height, width), np.uint8)
+        cv2.fillPoly(mask, [np.round(poly).astype(np.int32)], 1)
+        if cv2.countNonZero(mask) < 500:
+            out_polys.append(poly); out_boxes.append(box); out_scores.append(score); out_classes.append(cls)
+            continue
+        distance = cv2.distanceTransform(mask, cv2.DIST_L2, 5)
+        peak = float(distance.max())
+        if peak < 3:
+            out_polys.append(poly); out_boxes.append(box); out_scores.append(score); out_classes.append(cls)
+            continue
+        # Local maxima separated by roughly one fruit width avoid treating the
+        # ridge along one banana as several instances.
+        radius = max(3, int(round(peak * 1.4)))
+        kernel_size = min(61, radius * 2 + 1)
+        kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_size, kernel_size))
+        maxima = (distance >= cv2.dilate(distance, kernel) - 1e-4) & (distance >= peak * 0.32)
+        maxima = (maxima.astype(np.uint8) & mask)
+        n_markers, marker_map = cv2.connectedComponents(maxima)
+        if n_markers <= 2:
+            out_polys.append(poly); out_boxes.append(box); out_scores.append(score); out_classes.append(cls)
+            continue
+        markers = np.zeros((height, width), np.int32)
+        markers[mask == 0] = 1
+        markers[marker_map > 0] = marker_map[marker_map > 0] + 1
+        # Watershed on the inverted distance surface places boundaries at narrow
+        # necks between lobes; image color does not decide how many fruits exist.
+        relief = np.clip((1.0 - distance / peak) * 255, 0, 255).astype(np.uint8)
+        relief_bgr = cv2.cvtColor(relief, cv2.COLOR_GRAY2BGR)
+        labels = cv2.watershed(relief_bgr, markers)
+        pieces = [(labels == marker_map_id + 1) & (mask > 0) for marker_map_id in range(1, n_markers)]
+        min_area = max(100, int(cv2.countNonZero(mask) * 0.025))
+        pieces = [p.astype(np.uint8) for p in pieces if int(p.sum()) >= min_area]
+        coverage = sum(int(p.sum()) for p in pieces) / max(cv2.countNonZero(mask), 1)
+        if len(pieces) < 2 or coverage < 0.60:
+            out_polys.append(poly); out_boxes.append(box); out_scores.append(score); out_classes.append(cls)
+            continue
+        for piece in pieces:
+            contour = mask_to_polygon(piece, width, height)
+            if len(contour) < 3:
+                continue
+            x, y, w, h = cv2.boundingRect(contour.astype(np.int32))
+            out_polys.append(contour)
+            out_boxes.append(np.array([x, y, x + w, y + h], dtype=np.float32))
+            out_scores.append(score)
+            out_classes.append(cls)
+    return (out_polys, np.asarray(out_boxes, dtype=np.float32).reshape(-1, 4),
+            np.asarray(out_scores, dtype=np.float32), np.asarray(out_classes, dtype=np.int64))
+
+
+def detect_seg(model, image, conf=0.4, imgsz=640, iou=0.6, quantize=None,
+               device=None, half=None, compute_metrics=True):
     """YOLO Instance Segmentation.
     Runs prediction and returns (polygons, boxes, scores, classes, mask_metrics).
     Handles both custom 3-class fruit models (banana/apple/orange) and 80-class COCO seg models.
@@ -381,7 +432,7 @@ def detect_seg(model, image, conf=0.4, imgsz=640, iou=0.6, quantize=None, simpli
     result = model.predict(
         image, conf=conf, imgsz=imgsz, quantize=quantize,
         agnostic_nms=True, iou=iou, max_det=300, verbose=False,
-        classes=classes_arg,
+        classes=classes_arg, device=device, half=half,
     )[0]
 
     if result.boxes is None or len(result.boxes) == 0:
@@ -393,23 +444,16 @@ def detect_seg(model, image, conf=0.4, imgsz=640, iou=0.6, quantize=None, simpli
     classes = raw_classes
 
     polygons = []
-    if result.masks is not None and len(result.masks.xy) > 0:
-        for poly in result.masks.xy:
-            if len(poly) >= 3:
-                # Apply smooth Gaussian curve FIRST to remove pixel-grid staircase artifacts
-                # from YOLO's 160x160 proto-mask upscaling, then simplify
-                smooth = smooth_contour_curve(poly, sigma=1.8, max_points=120)
-                simp = simplify_polygon(smooth, epsilon=simplify_eps)
-                simp[:, 0] = np.clip(simp[:, 0], 0, width)
-                simp[:, 1] = np.clip(simp[:, 1], 0, height)
-                polygons.append(simp)
-            else:
-                polygons.append(np.zeros((0, 2), dtype=np.float32))
+    if result.masks is not None and len(result.masks.data) > 0:
+        # Derive ordered contours from the binary mask itself. The exported `masks.xy`
+        # contour can be malformed by runtime/resampling and produce crossing chords.
+        for mask in result.masks.data.cpu().numpy():
+            polygons.append(mask_to_polygon(mask, width, height))
     else:
         for b in boxes:
             polygons.append(np.array([[b[0], b[1]], [b[2], b[1]], [b[2], b[3]], [b[0], b[3]]], dtype=np.float32))
 
-    mask_metrics = compute_mask_metrics(polygons, boxes, width, height)
+    mask_metrics = compute_mask_metrics(polygons, boxes, width, height) if compute_metrics else None
     return polygons, boxes, scores, classes, mask_metrics
 
 
@@ -435,24 +479,40 @@ def dist_to_segment(p, s1, s2):
     return float(np.linalg.norm(p - proj))
 
 
+def _distances_to_segment(points, s1, s2):
+    """Vectorized point-to-segment distances for every foreground mask pixel."""
+    v = s2 - s1
+    length_sq = float(np.dot(v, v))
+    if length_sq == 0:
+        return np.linalg.norm(points - s1, axis=1)
+    t = np.clip(((points - s1) @ v) / length_sq, 0.0, 1.0)
+    return np.linalg.norm(points - (s1 + t[:, None] * v), axis=1)
+
+
 def split_banana_cluster_detections(polygons, boxes, scores, classes, obb_model, image,
-                                    conf=0.35, det_names=None, quantize=None):
+                                    conf=0.35, det_names=None, quantize=None,
+                                    method="voronoi", stats=None):
     """Partitions grouped banana cluster masks into individual banana instances using OBB guidance.
 
     Pipeline:
     1. Run OBB detector (det_obb_s.pt) to find individual banana orientations.
     2. Deduplicate OBB bananas by mask IoU (keeps distinct non-overlapping boxes only).
-    3. For each seg banana mask overlapping >= 2 OBB bananas:
-       - Assign each foreground pixel to the nearest OBB spine (Voronoi partitioning).
-       - Morphological close + Gaussian blur smoothing on each sub-mask.
-       - Extract clean smoothed contour polygon for each separated banana.
+    3. For each seg banana mask containing >= 2 well-supported OBB bananas,
+       split by nearest spine (voronoi) or image-gradient watershed markers.
     4. Non-banana objects are passed through unchanged.
     """
+    if stats is not None:
+        stats.setdefault("obb_candidates", 0)
+        stats.setdefault("matched_clusters", 0)
+        stats.setdefault("matched_instances", 0)
+        stats.setdefault("split_instances", 0)
     if len(boxes) == 0 or obb_model is None:
         return polygons, boxes, scores, classes
 
     height, width = image.shape[:2]
     banana_ids = {k for k, v in det_names.items() if v == "banana"} if det_names else {0, 46}
+    if not banana_ids or not np.any(np.asarray(classes, dtype=np.int64)[:, None] == np.asarray(list(banana_ids))):
+        return polygons, boxes, scores, classes
     obb_banana_ids = {k for k, v in obb_model.names.items() if v == "banana"}
 
     # Run OBB prediction to detect individual banana orientations
@@ -472,6 +532,8 @@ def split_banana_cluster_detections(polygons, boxes, scores, classes, obb_model,
             cv2.fillPoly(b_mask, [np.round(pts).astype(np.int32)], 1)
             raw_obb.append({"conf": float(c_conf), "pts": pts, "mask": b_mask, "area": float(b_mask.sum())})
     raw_obb.sort(key=lambda x: -x["conf"])
+    if stats is not None:
+        stats["obb_candidates"] += len(raw_obb)
 
     # Deduplicate: remove OBBs that overlap heavily with a higher-confidence OBB
     obb_bananas = []
@@ -512,7 +574,9 @@ def split_banana_cluster_detections(polygons, boxes, scores, classes, obb_model,
         cur_mask = np.zeros((height, width), dtype=np.uint8)
         cv2.fillPoly(cur_mask, [np.round(poly).astype(np.int32)], 1)
 
-        # Match OBB bananas that overlap significantly with this seg mask
+        # An occlusion can move an OBB center outside the visible mask. Require
+        # meaningful area support, while allowing the detector's rotated box to
+        # extend beyond the visible banana boundary.
         matched = []
         for ob in obb_bananas:
             inter = int((cur_mask & ob["mask"]).sum())
@@ -527,41 +591,87 @@ def split_banana_cluster_detections(polygons, boxes, scores, classes, obb_model,
             new_classes.append(c)
             continue
 
-        # --- Spine-distance Voronoi partitioning ---
+        if stats is not None:
+            stats["matched_clusters"] += 1
+            stats["matched_instances"] += len(matched)
+
+        # --- Marker generation and instance separation ---
         y_idxs, x_idxs = np.where(cur_mask > 0)
         coords = np.column_stack([x_idxs, y_idxs]).astype(np.float32)
         dists = []
         for ob in matched:
             s1, s2 = ob["spine"]
-            dists.append([dist_to_segment(p, s1, s2) for p in coords])
-        assigned = np.argmin(np.array(dists), axis=0)
+            dists.append(_distances_to_segment(coords, s1, s2))
+        distance_matrix = np.stack(dists)
+        assigned = np.argmin(distance_matrix, axis=0)
 
-        for m_idx, ob in enumerate(matched):
-            sub_mask = np.zeros((height, width), dtype=np.uint8)
-            sub_mask[y_idxs[assigned == m_idx], x_idxs[assigned == m_idx]] = 255
+        if method == "watershed":
+            markers = np.zeros((height, width), dtype=np.int32)
+            markers[cur_mask == 0] = 1
+            seed_candidates = []
+            for ob in matched:
+                seed = ((ob["mask"] > 0) & (cur_mask > 0)).astype(np.uint8)
+                short_side = max(3, int(min(cv2.minAreaRect(ob["pts"])[1]) * 0.12))
+                kernel_size = min(21, short_side if short_side % 2 else short_side + 1)
+                kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,
+                                                   (kernel_size, kernel_size))
+                seed = cv2.erode(seed, kernel)
+                seed_candidates.append(seed > 0)
+            candidate_stack = np.stack(seed_candidates)
+            ys, xs = np.where(candidate_stack.any(axis=0))
+            if len(xs):
+                candidate_ids = candidate_stack[:, ys, xs]
+                # Pixel coordinates here are already the full foreground list;
+                # use a lookup so overlapping OBB seed regions get one owner.
+                distance_at = np.full((len(matched), height, width), np.inf, dtype=np.float32)
+                for label, seed in enumerate(seed_candidates):
+                    points = np.column_stack(np.where(seed))[:, ::-1].astype(np.float32)
+                    if len(points):
+                        distance_at[label, points[:, 1].astype(int), points[:, 0].astype(int)] = \
+                            _distances_to_segment(points, *matched[label]["spine"])
+                local_distances = distance_at[:, ys, xs]
+                local_distances[~candidate_ids] = np.inf
+                owners = np.argmin(local_distances, axis=0)
+                markers[ys, xs] = owners.astype(np.int32) + 2
+            # Ensure every OBB contributes at least a small foreground seed.
+            for label, ob in enumerate(matched):
+                if not np.any(markers == label + 2):
+                    center = np.round(ob["pts"].mean(axis=0)).astype(int)
+                    cx, cy = int(np.clip(center[0], 0, width - 1)), int(np.clip(center[1], 0, height - 1))
+                    if cur_mask[cy, cx]:
+                        cv2.circle(markers, (cx, cy), 2, label + 2, -1)
+            markers = cv2.watershed(image.copy(), markers)
+            split_masks = [(markers == label + 2).astype(np.uint8) * cur_mask
+                           for label in range(len(matched))]
+        elif method == "voronoi":
+            split_masks = []
+            for m_idx in range(len(matched)):
+                mask = np.zeros((height, width), dtype=np.uint8)
+                mask[y_idxs[assigned == m_idx], x_idxs[assigned == m_idx]] = 1
+                split_masks.append(mask)
+        else:
+            raise ValueError(f"Unknown banana split method: {method}")
 
-            # Morphological close to fill seam gaps, then Gaussian blur to smooth jagged boundary
-            kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
-            sub_mask = cv2.morphologyEx(sub_mask, cv2.MORPH_CLOSE, kernel)
-            sub_mask = cv2.GaussianBlur(sub_mask, (7, 7), 2.0)
-            _, sub_mask = cv2.threshold(sub_mask, 127, 255, cv2.THRESH_BINARY)
-
-            cnts, _ = cv2.findContours(sub_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_TC89_KCOS)
+        for m_idx, (ob, sub_mask) in enumerate(zip(matched, split_masks)):
+            sub_mask = (sub_mask > 0).astype(np.uint8) * 255
+            cnts, _ = cv2.findContours(sub_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
             if not cnts:
                 continue
             cnt = max(cnts, key=cv2.contourArea)
             if cv2.contourArea(cnt) < 100:
                 continue
 
-            # Smooth the contour with Gaussian curve to remove staircase artifacts
-            smooth = smooth_contour_curve(cnt.reshape(-1, 2), sigma=2.0, max_points=100)
-            smooth[:, 0] = np.clip(smooth[:, 0], 0, width)
-            smooth[:, 1] = np.clip(smooth[:, 1], 0, height)
+            contour = cnt.reshape(-1, 2).astype(np.float32)
+            contour[:, 0] = np.clip(contour[:, 0], 0, width)
+            contour[:, 1] = np.clip(contour[:, 1], 0, height)
             x, y, bw, bh = cv2.boundingRect(cnt)
-            new_polys.append(smooth)
+            new_polys.append(contour)
             new_boxes.append(np.array([x, y, x + bw, y + bh], dtype=np.float32))
             new_scores.append(float(ob["conf"]))
             new_classes.append(default_banana_cls)
+
+        if stats is not None:
+            stats["split_instances"] += sum(1 for p in split_masks if np.count_nonzero(p) >= 100)
 
     return (
         new_polys,

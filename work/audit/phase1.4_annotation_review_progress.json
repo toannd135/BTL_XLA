@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "phase": "1.4-annotation-review-progress",
+  "reviewed_cvat_export": {
+    "found": false,
+    "searched_scope": "repository work/, CVAT-named files/directories, and configured review package",
+    "note": "Only cvat_import_review_v1.zip and its extracted import copy were found. Other out/instance_review_* artifacts are diagnostic review payloads; their manifests state labels are initially unreviewed and do not provide a CVAT polygon export or human decisions.",
+    "expected_export_location_from_workflow": "work/obb/seg_data_review_v1_cvat_export/"
+  },
+  "inputs": {
+    "annotation_manifest": "work/audit/phase1_review_manifest.csv",
+    "annotation_manifest_rows": 664,
+    "source_dataset": "work/obb/seg_data_candidate",
+    "available_import_archive": "work/obb/seg_data_review_v1/cvat_import_review_v1.zip",
+    "available_import_tree": "work/obb/seg_data_review_v1/cvat_import_review_v1"
+  },
+  "review_progress": {
+    "status_counts_by_split": {
+      "train": {
+        "accepted": 0,
+        "corrected": 0,
+        "needs_review": 0,
+        "pending": 553
+      },
+      "val": {
+        "accepted": 0,
+        "corrected": 0,
+        "needs_review": 0,
+        "pending": 51
+      },
+      "test": {
+        "accepted": 0,
+        "corrected": 0,
+        "needs_review": 0,
+        "pending": 60
+      }
+    },
+    "total": {
+      "accepted": 0,
+      "corrected": 0,
+      "needs_review": 0,
+      "pending": 664
+    },
+    "decision_source": "Explicit review_status values in the original Phase 1 manifest only; identical source/import labels are not treated as acceptance."
+  },
+  "class_distribution": {
+    "manifest_instance_rows": {
+      "banana": 492,
+      "apple": 72,
+      "orange": 75
+    },
+    "reviewed_instances": 0,
+    "corrected_instances": 0,
+    "pending_instances": {
+      "banana": 492,
+      "apple": 72,
+      "orange": 75
+    },
+    "negative_image_manifest_rows": 25
+  },
+  "image_level": {
+    "review_subset_images": 194,
+    "images_reviewed": 0,
+    "images_with_corrections": 0,
+    "images_with_explicit_needs_review_instances": 0,
+    "images_with_pending_or_unresolved_review_work": 194,
+    "pending_instance_annotations": 639,
+    "negative_images_in_review_subset": 25,
+    "negative_images_reviewed": 0
+  },
+  "matching_and_comparison": {
+    "original_manifest_image_paths_matched_to_source": 194,
+    "original_manifest_instance_ids_matched_by_source_label_row_order_and_class": 639,
+    "available_import_image_label_pairs_matched": 194,
+    "available_import_images_missing": 0,
+    "available_import_labels_missing": 0,
+    "available_import_labels_byte_identical_to_source": 194,
+    "available_import_labels_different_from_source": 0,
+    "reviewed_export_image_annotations_matched": 0,
+    "reviewed_export_instance_annotations_matched": 0,
+    "reason_reviewed_export_matches_zero": "No reviewed CVAT export is present. The available archive is the original prepared import package; unchanged labels are not evidence of human review."
+  },
+  "polygon_geometry": {
+    "available_import_structurally_valid_polygons": 639,
+    "available_import_polygons_passing_topology_screen": 488,
+    "self_intersection_candidates_remaining": 151,
+    "empty_or_malformed_masks": 0,
+    "human_confirmed_valid_polygons": 0,
+    "interpretation": "Structural validator accepted all polygon rows; topology validator flags crossing/touching candidates. The 488 count is an automated topology-screen result, not human acceptance."
+  },
+  "split_protection": {
+    "review_subset_images_by_split": {
+      "train": 143,
+      "val": 27,
+      "test": 24
+    },
+    "test_images_present_in_test_package": 24,
+    "test_images_also_present_in_train_package": 0,
+    "split_mismatches": 0,
+    "test_to_train_moves": 0
+  },
+  "missing_or_unmatched": {
+    "reviewed_export_missing": true,
+    "review_subset_images_without_reviewed_export_counterpart": 194,
+    "pending_instance_rows_without_reviewed_export_counterpart": 639,
+    "pending_negative_images_without_reviewed_export_counterpart": 25,
+    "unmatched_or_missing_pairs_in_available_import_package": 0,
+    "extra_images_or_labels_in_available_import_package": 0
+  },
+  "training_started": false,
+  "source_images_labels_splits_and_review_decisions_modified": false
+}

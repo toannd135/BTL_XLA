@@ -1,14 +1,14 @@
 import { Progress, Select, Table, Tag } from 'antd'
 import { FruitSticker, StateMark } from './Sticker'
 import { FRUIT, STATE, pct } from './labels'
-import { boxColor } from './boxStyle'
+import { instanceColor } from './instanceStyle'
 
 const columns = [
   {
     title: '#',
     dataIndex: 'idx',
     width: 48,
-    render: (v) => <span className="box-id" style={{ background: boxColor(v - 1) }}>#{v}</span>,
+    render: (v) => <span className="instance-id" style={{ background: instanceColor(v - 1) }}>#{v}</span>,
   },
   {
     title: 'Loại quả',
@@ -67,14 +67,14 @@ export default function ResultTable({ objects, selectedIndex = null, onSelect, o
       rowKey="idx"
       pagination={false}
       columns={columns}
-      rowClassName={(r) => onSelect ? `box-row${r.idx - 1 === selectedIndex ? ' box-row-selected' : ''}` : ''}
+      rowClassName={(r) => onSelect ? `instance-row${r.idx - 1 === selectedIndex ? ' instance-row-selected' : ''}` : ''}
       onRow={(r) => onSelect ? {
         onClick: () => onSelect(r.idx - 1),
         onKeyDown: (event) => {
           if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); onSelect(r.idx - 1) }
         },
         tabIndex: 0,
-        'aria-label': `Khung số ${r.idx}, bấm để làm nổi bật trên ảnh`,
+        'aria-label': `Instance số ${r.idx}, bấm để làm nổi bật trên ảnh`,
         'aria-selected': r.idx - 1 === selectedIndex,
       } : {}}
       dataSource={objects.map((o, i) => ({ ...o, _source: o, idx: i + 1, onEdit }))}

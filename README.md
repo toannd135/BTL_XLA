@@ -191,11 +191,11 @@ Cách đọc: **điểm yếu của hệ thống nằm ở tầng detector, khô
 - Phép đo end-to-end này **chưa được chạy lại với detector đang dùng (OBB + CLIP) và ngưỡng 0.40**. Cần đo lại trước khi kết luận về bản đang dùng.
 - Con số classifier 99.91% là trên crop của tập công khai; số end-to-end 60.7% là trên ảnh gốc tự chụp qua cả hai tầng. Hai con số trả lời hai câu hỏi khác nhau, không thể so trực tiếp.
 
-### 5.5 CLIP kiểm tra loại quả (zero-shot, sau detector OBB)
+### 5.5 CLIP kiểm tra loại quả (đánh giá lịch sử với detector box)
 
-Classifier tươi/hỏng không có lớp "không phải quả", nên mọi vật detector nhận nhầm đều thành "quả tươi/hỏng". Thêm CLIP (open_clip, không train) chấm từng crop: xác suất "vật khác" ≥ 0.8 thì bỏ box; loại quả khác detector với xác suất ≥ 0.9 thì đổi nhãn. Ngưỡng chọn trên val. Hai bổ sung sau cùng:
+Phần dưới ghi lại kết quả thử nghiệm CLIP với detector box trước đây; các chỉ số này không mô tả pipeline hiện tại. Hiện tại detector segmentation quyết định instance và số lượng chuối. CLIP chỉ kiểm tra ngữ nghĩa cho các loại quả khác, không thêm, bỏ hoặc đổi nhãn instance chuối.
 
-- **Cứu box gần ngưỡng**: detector chạy ở conf 0.25; box điểm 0.25-0.40 chỉ được giữ khi CLIP chắc ≥ 0.9 đó là quả (`RESCUE_CONF`, `CLIP_T_RESCUE`). Mục đích: bớt bỏ sót chuối.
+- **Cứu box gần ngưỡng (đã ngừng dùng)**: kết quả cũ không thuộc pipeline segmentation hiện tại.
 - **Hai lần nhìn**: box bị CLIP coi là "vật khác" thì nhìn lại phần giữa crop (thu nhỏ 10%), giữ box nếu lần này chắc ≥ 0.9 là quả (`CLIP_T_INNER`). Sửa ca quả cam bị quả dâu che một phần. Bản không siết ngưỡng làm ảnh vật khác báo sai tăng 69 → 126 nên phải đặt 0.9. Thu nhỏ crop cho **mọi** box thì mất chuối nằm chéo, không dùng.
 
 Đo bằng `work/fruitcls/eval_gate.py exports/det_obb_s.pt clip test` (`work/fruitcls/eval_gate_clip_test*.json`):
@@ -406,7 +406,7 @@ YOLO là bộ phát hiện **một giai đoạn**: chạy ảnh qua mạng một
 3. Detector mặc định OBB (FP16 trên GPU, conf 0.40, NMS IoU 0.7, `agnostic_nms`) tìm các quả; HBB B dùng khi chọn qua `MODEL_PATH`.
 4. Backend cắt từng box (pad 10%); CLIP chấm từng crop để bỏ vật khác và sửa nhãn loại quả (`backend/clip_check.py`, `detection.refine_types`). Box điểm 0.25-0.40 chỉ được giữ khi CLIP chắc ≥ 0.9 là quả; box bị coi là vật khác được nhìn lại phần giữa trước khi bỏ.
 5. Đưa **tất cả crop còn lại vào classifier trong một batch**.
-6. Gộp thành danh sách `{label, confidence, state, state_confidence, bbox}` cùng thời gian xử lý.
+6. Gộp thành danh sách `{label, confidence, state, state_confidence, polygon}` cùng thời gian xử lý.
 7. Frontend vẽ box, loại quả, trạng thái, confidence; thống kê tươi/hỏng; xuất CSV.
 
 Quyết định thiết kế:
@@ -438,7 +438,7 @@ python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\
 pip install -r backend/requirements.txt opencv-python-headless
 ```
 
-Model trong `exports/`: detector `det_obb_s.pt` (**mặc định của backend**), `det_B_clean_backup.pt` (bản HBB, đổi qua biến `MODEL_PATH`, mAP50 0.9101), `det_C_candidate.pt`, `det_finetune_best.pt`, và classifier `cls_finetune_best.pt`. CLIP ViT-L-14 tự tải lần đầu vào `work/weights/hf/` (~1.7 GB); cài `pip install --no-deps open_clip_torch==2.30.0 timm` để không kéo bản torch khác. Có GPU NVIDIA thì cài PyTorch bản CUDA trước; không có GPU vẫn chạy được trên CPU (đặt `HALF=0` khi chạy backend).
+Model trong `exports/` gồm detector OBB `det_obb_s.pt`, các checkpoint HBB/segmentation, và classifier `cls_finetune_best.pt`. **Backend hiện mặc định chạy segmentation candidate** `runs/seg/seg_boundary_candidate_gpu/weights/best.pt`, không tự bật OBB. Benchmark test đã lưu cho checkpoint này đạt exact count 83.77%, MAE 0.2261 trên 345 ảnh; riêng cụm chuối chỉ đạt 46.15% (12/26), nên chưa thể xem là đáng tin cậy cho mọi cảnh chồng lấn. Xem [kiểm toán pipeline](docs/FRUIT_DETECTION_AUDIT.md) và [kết quả benchmark](docs/baseline-results.md). CLIP ViT-L-14 tự tải lần đầu vào `work/weights/hf/` (~1.7 GB); cài `pip install --no-deps open_clip_torch==2.30.0 timm` để không kéo bản torch khác. Có GPU NVIDIA thì cài PyTorch bản CUDA trước; không có GPU vẫn chạy được trên CPU (đặt `HALF=0` khi chạy backend).
 
 ### Dòng lệnh
 
@@ -458,7 +458,7 @@ uvicorn main:app --reload --port 8000
 | Endpoint | Chức năng |
 |---|---|
 | `GET /api/health` | Trạng thái, thiết bị (cpu/cuda), tên model |
-| `POST /api/predict` | Form-data trường `file` (jpg/png/webp, ≤ 10MB, ≤ 40 triệu điểm ảnh); trả về kích thước ảnh, danh sách quả (nhãn, độ tin cậy, trạng thái, độ tin cậy trạng thái, bbox) và thời gian xử lý |
+| `POST /api/predict` | Form-data trường `file` (jpg/png/webp, ≤ 10MB, ≤ 40 triệu điểm ảnh); trả về kích thước ảnh, danh sách quả cùng mask polygon và thời gian xử lý |
 | `POST /api/collect`, `GET /api/collect/stats` | Lưu khung hình thu thập để làm dữ liệu sau này |
 | `POST /api/feedback` | Lưu ảnh và kết quả đã được người dùng duyệt (`verdict=correct` hoặc `needs_review`) vào `work/feedback/` |
 | `GET /api/feedback/stats` | Thống kê số kết quả đúng và số ảnh cần duyệt lại |
@@ -500,7 +500,7 @@ tránh đưa nhãn mâu thuẫn vào train; xem `audit.json` và chỉ dùng
 cắt vào ảnh và được ghi nhận trong báo cáo. Kết quả có confidence trạng thái dưới
 ngưỡng được hiển thị là **Chưa chắc**, không tự động ép thành tươi hoặc hỏng.
 
-Biến môi trường: `CONF` (0.40), `NMS_IOU` (0.70; thử 0.60 nếu xuất hiện box trùng), `OBB_IMGSZ` (1280 cho cảnh chuối chồng lấn; 960 nhanh hơn), `HALF` (1), `MODEL_PATH`, `CLS_MODEL_PATH`, `COLLECT_DIR`, `CORS_ORIGINS`; CLIP: `CLIP_CHECK` (1, đặt 0 để tắt), `CLIP_ARCH` (ViT-L-14; máy yếu dùng ViT-B-32), `CLIP_T_OTHER` (0.8), `CLIP_T_SWAP` (0.9), `RESCUE_CONF` (0.25), `CLIP_T_RESCUE` (0.9), `CLIP_T_INNER` (0.9). `TEACHER_CHECK` (1) bật YOLO11s COCO độc lập để cứu box táo/loại quả bị detector chính bỏ sót; đặt 0 để tắt, hoặc đổi `TEACHER_MODEL_PATH`.
+Biến môi trường backend: `INFERENCE_PROVIDER=local_yolo` (provider hiện được triển khai), `MODEL_PATH` (YOLO segmentation có đủ 3 lớp), `MODEL_IMGSZ` (640 theo benchmark lưu sẵn), `DEVICE` (`auto`/`cpu`/`cuda[:index]`), `CONF` (0.40), `NMS_IOU` (0.60), `HALF` (1), `CLASSIFIER_CHECK` (1), `CLS_MODEL_PATH`, `CLASSIFIER_DEVICE` (mặc định CPU), `CLIP_CHECK` (mặc định 0; bật bằng `CLIP_CHECK=1` khi cần), `CLIP_DEVICE` (mặc định CPU), `CLIP_ARCH`, `CLIP_T_OTHER`, `CLIP_T_SWAP`, `COLLECT_DIR`, `CORS_ORIGINS`. Không chuyển sang CPU nếu cấu hình đã yêu cầu CUDA mà CUDA không khả dụng. Xem `backend/.env.example`. OBB recovery, SAM2 và Roboflow chưa được nối vào API; không đặt chúng làm provider đang hoạt động.
 
 ### Frontend (React + Ant Design)
 
